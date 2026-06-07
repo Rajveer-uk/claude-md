@@ -4,6 +4,8 @@
     "defaultMode": "plan",
     "disableBypassPermissionsMode": "disable",
     "deny": [
+      "WebFetch",
+      "WebSearch",
       "Read(./.env)",
       "Read(./.env.*)",
       "Read(**/.env)",

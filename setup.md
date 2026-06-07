@@ -30,7 +30,7 @@ $dest = "$env:USERPROFILE\.claude"
 # 1. Global directories
 New-Item -ItemType Directory -Force "$dest\agents", "$dest\hooks" | Out-Null
 
-# 2. Install the 22 agents globally (reused everywhere)
+# 2. Install the 35 agents globally (reused everywhere)
 Copy-Item "$repo\.claude\agents\*.md" "$dest\agents\" -Force
 
 # 3. Install the security baseline at USER scope (covers every project)
@@ -39,6 +39,9 @@ Copy-Item "$repo\.claude\settings.json" "$dest\settings.json" -Force
 
 # 4. (Optional) Install the hooks: guard (security) + format/verify (convenience)
 Copy-Item "$repo\.claude\hooks\*.ps1" "$dest\hooks\" -Force
+
+# 5. (Optional) Install the /council skill (see council-and-network-config.md for the network connector)
+Copy-Item "$repo\.claude\skills" "$dest\skills" -Recurse -Force
 ```
 
 Then, **only if you installed the hook**, add this to `~/.claude/settings.json` next to `permissions`:
@@ -62,7 +65,7 @@ Then, **only if you installed the hook**, add this to `~/.claude/settings.json` 
 ```powershell
 Get-Content "$env:USERPROFILE\.claude\settings.json" -Raw | ConvertFrom-Json | Out-Null; "settings OK"
 # then inside Claude Code:
-#   /agents   -> lists all 22 agents with tools + model
+#   /agents   -> lists all 35 agents with tools + model
 #   /memory   -> shows which CLAUDE.md files are loaded
 ```
 
@@ -83,7 +86,7 @@ DEST="$HOME/.claude"
 # 1. Global directories
 mkdir -p "$DEST/agents" "$DEST/hooks"
 
-# 2. Install the 22 agents globally (reused everywhere)
+# 2. Install the 35 agents globally (reused everywhere)
 cp "$REPO"/.claude/agents/*.md "$DEST/agents/"
 
 # 3. Install the security baseline at USER scope (covers every project)
@@ -93,6 +96,9 @@ cp "$REPO/.claude/settings.json" "$DEST/settings.json"
 # 4. (Optional) Install the hooks: guard (security) + format/verify (convenience)
 cp "$REPO"/.claude/hooks/*.sh "$DEST/hooks/"
 chmod +x "$DEST"/hooks/*.sh
+
+# 5. (Optional) Install the /council skill (see council-and-network-config.md for the network connector)
+cp -r "$REPO/.claude/skills" "$DEST/skills"
 ```
 
 Then, **only if you installed the hook**, add this to `~/.claude/settings.json` next to `permissions`:
@@ -115,9 +121,9 @@ Then, **only if you installed the hook**, add this to `~/.claude/settings.json` 
 **Verify (bash):**
 ```bash
 jq . "$HOME/.claude/settings.json" >/dev/null && echo "settings OK"
-ls "$HOME/.claude/agents" | wc -l        # expect 22
+ls "$HOME/.claude/agents" | wc -l        # expect 35
 # then inside Claude Code:
-#   /agents   -> lists all 22 agents with tools + model
+#   /agents   -> lists all 35 agents with tools + model
 #   /memory   -> shows which CLAUDE.md files are loaded
 ```
 
