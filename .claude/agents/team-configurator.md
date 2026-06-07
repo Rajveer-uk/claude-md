@@ -18,7 +18,7 @@ For each area (backend, frontend, API, data, UI, tests, deploy, docs, …):
 ## Generated-agent template (must match the existing agents)
 
 - Frontmatter: `name`, a `description` that leads with trigger words, a **least-privilege** `tools` list, and a `model` tier (planning→`opus`, execution→`sonnet`, docs/admin→`haiku`).
-- A generated agent may hold **at most** `Read, Write, Edit, Grep, Glob` — **never `Bash`, never `WebFetch`/`WebSearch`, never any permission bypass.** `Bash` is the de-facto execution/egress primitive; generated specialists must not have it.
+- A generated agent may hold **at most** `Read, Write, Edit, Grep, Glob` — **never `Bash`, never `WebFetch`/`WebSearch`, never any permission bypass.** `Bash` is the de-facto execution/egress primitive; generated specialists must not have it. If a stack genuinely needs a Bash-capable expert to run its toolchain, recommend it be added as a curated, human-reviewed agent (like the shipped `laravel-expert`/`react-tailwind-expert`/`frappe-expert`/`n8n-expert`) rather than auto-generated.
 - One clear responsibility, stack-specific guidance, and the same Guardrails block every other agent carries.
 
 ## Output

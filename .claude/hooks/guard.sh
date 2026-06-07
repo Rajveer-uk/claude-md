@@ -12,7 +12,7 @@
 # Reads the hook JSON from stdin; prints a permission decision as JSON on stdout.
 # ANY unexpected condition exits 0 (defer to the normal permission flow) so it can never
 # wedge a session. Requires jq:  sudo apt-get install -y jq
-# It deliberately does NOT touch the 16 curated agents - only files ending "-expert.md".
+# It deliberately does NOT touch the curated agents - only files ending "-expert.md".
 
 input="$(cat 2>/dev/null || true)"
 [ -z "$input" ] && exit 0

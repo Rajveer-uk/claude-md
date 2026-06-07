@@ -1,6 +1,6 @@
 ---
 name: security-auditor
-description: Scan code and config for vulnerabilities, secret leakage, and injection flaws (OWASP-style). Use before a release, or when touching auth, input handling, file uploads, or secrets. Read-only.
+description: Scan code and config for vulnerabilities, secret leakage, and injection flaws (OWASP-style). Use proactively before a release and whenever changes touch auth, input handling, file uploads, secrets, or dependencies. Read-only.
 tools: Read, Grep, Glob
 model: opus
 ---

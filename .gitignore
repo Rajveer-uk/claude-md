@@ -1,6 +1,9 @@
 # --- Personal / local Claude Code state (never commit) ---
 .claude/settings.local.json
 .claude/*.local.json
+# Auto-executed by the optional verify hook — keep user-authored, never pull from an untrusted repo
+.claude/checks.cmd
+.claude/checks.sh
 
 # --- Secrets & environment (defense-in-depth; also blocked from agent reads) ---
 .env

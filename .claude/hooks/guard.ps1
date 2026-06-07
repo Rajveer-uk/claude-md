@@ -11,7 +11,7 @@
 #
 # It reads the hook JSON from stdin and prints a permission decision as JSON on stdout.
 # ANY unexpected error exits 0 (defer to the normal permission flow) so it can never
-# wedge a session. It deliberately does NOT touch the 16 curated agents - only files
+# wedge a session. It deliberately does NOT touch the curated agents - only files
 # whose name ends in "-expert.md" (the team-configurator generation convention).
 
 try {

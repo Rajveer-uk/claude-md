@@ -6,9 +6,9 @@ This config is **stack-agnostic and OS-agnostic**. The files are identical on ev
 
 | Piece | Scope | Location | Why |
 |------|-------|----------|-----|
-| 16 agents (`.claude/agents/*.md`) | **Global / user** | `~/.claude/agents/` | Reused across every project |
+| 22 agents (`.claude/agents/*.md`) | **Global / user** | `~/.claude/agents/` | Reused across every project (universal + curated stack experts) |
 | `settings.json` (deny-list + modes) | **Global / user** | `~/.claude/settings.json` | The secret/egress protection must travel with the global agents |
-| `guard.ps1` / `guard.sh` (optional hook) | **Global / user** | `~/.claude/hooks/` | Mechanical enforcement of the Bash + agent-generation rules |
+| Hooks `guard`/`format`/`verify` (`.ps1`+`.sh`, optional) | **Global / user** | `~/.claude/hooks/` | guard = enforce no-secret-read/egress + safe agent-gen; format = auto-format edited file; verify = run project checks before finishing |
 | `managed-settings.json` (optional) | **Machine policy** | OS policy dir (see §E) | Unbreakable: locks bypass-disable + crown-jewel secret denies |
 | `CLAUDE.md` | **Per project** | `<project>/CLAUDE.md` | Project description, package map, conventions |
 | `templates/CLAUDE.package.md` | **Per package** | `<project>/<area>/CLAUDE.md` | On-demand stack commands for each subsystem |
@@ -30,15 +30,15 @@ $dest = "$env:USERPROFILE\.claude"
 # 1. Global directories
 New-Item -ItemType Directory -Force "$dest\agents", "$dest\hooks" | Out-Null
 
-# 2. Install the 16 agents globally (reused everywhere)
+# 2. Install the 22 agents globally (reused everywhere)
 Copy-Item "$repo\.claude\agents\*.md" "$dest\agents\" -Force
 
 # 3. Install the security baseline at USER scope (covers every project)
 Copy-Item "$repo\.claude\settings.json" "$dest\settings.json" -Force
 #   If you already have ~/.claude/settings.json, merge the "permissions" block by hand.
 
-# 4. (Optional) Install the enforcement hook
-Copy-Item "$repo\.claude\hooks\guard.ps1" "$dest\hooks\guard.ps1" -Force
+# 4. (Optional) Install the hooks: guard (security) + format/verify (convenience)
+Copy-Item "$repo\.claude\hooks\*.ps1" "$dest\hooks\" -Force
 ```
 
 Then, **only if you installed the hook**, add this to `~/.claude/settings.json` next to `permissions`:
@@ -46,22 +46,23 @@ Then, **only if you installed the hook**, add this to `~/.claude/settings.json` 
 ```json
 "hooks": {
   "PreToolUse": [
-    {
-      "matcher": "Bash|Write|Edit",
-      "hooks": [
-        { "type": "command", "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"C:\\Users\\RV\\.claude\\hooks\\guard.ps1\"" }
-      ]
-    }
+    { "matcher": "Bash|Write|Edit", "hooks": [ { "type": "command", "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"C:\\Users\\<you>\\.claude\\hooks\\guard.ps1\"" } ] }
+  ],
+  "PostToolUse": [
+    { "matcher": "Edit|Write", "hooks": [ { "type": "command", "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"C:\\Users\\<you>\\.claude\\hooks\\format.ps1\"" } ] }
+  ],
+  "Stop": [
+    { "hooks": [ { "type": "command", "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"C:\\Users\\<you>\\.claude\\hooks\\verify.ps1\"" } ] }
   ]
 }
 ```
-> Adjust the path if your home directory differs (`$env:USERPROFILE`).
+> Adjust the path if your home directory differs (`$env:USERPROFILE`). Install only the hooks you want — `guard` (security) is the recommended one; `format`/`verify` are convenience. **Trust note:** `format` auto-runs the project's local formatter binaries and `verify` auto-runs the project's `.claude\checks.cmd`, so enable them only on repos you trust. **`verify` is allowlist-gated:** it runs a project's `.claude\checks.cmd` only when that project's path is also listed in `%USERPROFILE%\.claude\verify-allowed.txt`, so a cloned repo can't auto-run code. Enable a trusted project with `Add-Content "$env:USERPROFILE\.claude\verify-allowed.txt" "<project path>"`, then create `.claude\checks.cmd`.
 
 **Verify (PowerShell):**
 ```powershell
 Get-Content "$env:USERPROFILE\.claude\settings.json" -Raw | ConvertFrom-Json | Out-Null; "settings OK"
 # then inside Claude Code:
-#   /agents   -> lists all 16 agents with tools + model
+#   /agents   -> lists all 22 agents with tools + model
 #   /memory   -> shows which CLAUDE.md files are loaded
 ```
 
@@ -82,16 +83,16 @@ DEST="$HOME/.claude"
 # 1. Global directories
 mkdir -p "$DEST/agents" "$DEST/hooks"
 
-# 2. Install the 16 agents globally (reused everywhere)
+# 2. Install the 22 agents globally (reused everywhere)
 cp "$REPO"/.claude/agents/*.md "$DEST/agents/"
 
 # 3. Install the security baseline at USER scope (covers every project)
 cp "$REPO/.claude/settings.json" "$DEST/settings.json"
 #   If you already have ~/.claude/settings.json, merge the "permissions" block by hand.
 
-# 4. (Optional) Install the enforcement hook
-cp "$REPO/.claude/hooks/guard.sh" "$DEST/hooks/guard.sh"
-chmod +x "$DEST/hooks/guard.sh"
+# 4. (Optional) Install the hooks: guard (security) + format/verify (convenience)
+cp "$REPO"/.claude/hooks/*.sh "$DEST/hooks/"
+chmod +x "$DEST"/hooks/*.sh
 ```
 
 Then, **only if you installed the hook**, add this to `~/.claude/settings.json` next to `permissions`:
@@ -99,23 +100,24 @@ Then, **only if you installed the hook**, add this to `~/.claude/settings.json` 
 ```json
 "hooks": {
   "PreToolUse": [
-    {
-      "matcher": "Bash|Write|Edit",
-      "hooks": [
-        { "type": "command", "command": "$HOME/.claude/hooks/guard.sh" }
-      ]
-    }
+    { "matcher": "Bash|Write|Edit", "hooks": [ { "type": "command", "command": "$HOME/.claude/hooks/guard.sh" } ] }
+  ],
+  "PostToolUse": [
+    { "matcher": "Edit|Write", "hooks": [ { "type": "command", "command": "$HOME/.claude/hooks/format.sh" } ] }
+  ],
+  "Stop": [
+    { "hooks": [ { "type": "command", "command": "$HOME/.claude/hooks/verify.sh" } ] }
   ]
 }
 ```
-> If your Claude Code build doesn't expand `$HOME` in hook commands, use the absolute path (e.g. `/home/<you>/.claude/hooks/guard.sh`).
+> If your Claude Code build doesn't expand `$HOME` in hook commands, use the absolute path (e.g. `/home/<you>/.claude/hooks/guard.sh`). Install only the hooks you want — `guard` is the recommended security one. **Trust note:** `format` auto-runs the project's local formatter binaries and `verify` auto-runs the project's executable `.claude/checks.sh`, so enable them only on repos you trust. **`verify` is allowlist-gated:** it runs a project's executable `.claude/checks.sh` only when that project's path is listed in `~/.claude/verify-allowed.txt`, so a cloned repo can't auto-run code. Enable a trusted project with `echo "/path/to/project" >> ~/.claude/verify-allowed.txt`, then create the executable `.claude/checks.sh`.
 
 **Verify (bash):**
 ```bash
 jq . "$HOME/.claude/settings.json" >/dev/null && echo "settings OK"
-ls "$HOME/.claude/agents" | wc -l        # expect 16
+ls "$HOME/.claude/agents" | wc -l        # expect 22
 # then inside Claude Code:
-#   /agents   -> lists all 16 agents with tools + model
+#   /agents   -> lists all 22 agents with tools + model
 #   /memory   -> shows which CLAUDE.md files are loaded
 ```
 
@@ -201,4 +203,5 @@ sudo cp "$REPO/managed/managed-settings.json" "/Library/Application Support/Clau
 - **Start in Plan mode.** `settings.json` sets `defaultMode: "plan"` and `disableBypassPermissionsMode: "disable"`. Never launch with `--dangerously-skip-permissions`.
 - **The `Read` deny-list does not cover shell reads or network egress.** The `Bash(...)` denies are a *speed-bump* (evadable via `.exe`/wrappers/aliases). Real enforcement = plan-mode + per-command approval + no agent has network tools + the optional hook.
 - **Unbreakable enforcement** of bypass-disable + core secret denies is the managed policy in §E (highest tier, admin-owned, cannot be overridden).
+- **The optional `format`/`verify` hooks run outside the permission system** — plan-mode, the deny-list, and bypass-disable do not constrain hook-spawned processes. `verify` only runs a project's checks when that project's path is on your `~/.claude/verify-allowed.txt` allowlist (so a cloned repo can't auto-run code); `format` runs only formatters already installed in the project. Enable both only on repos you trust. `guard` is the only hook that hardens posture and is safe on any repo.
 - Every file is identical across Windows/macOS/Linux — only paths and the hook script (`guard.ps1` vs `guard.sh`) differ.
