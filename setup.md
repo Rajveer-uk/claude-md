@@ -133,18 +133,24 @@ ls "$HOME/.claude/agents" | wc -l        # expect 35
 
 From inside each project root:
 
-**Windows**
+**Windows** (run in PowerShell — not cmd — from your project root)
 ```powershell
+$repo = "D:\Github\claude-md\claude md"     # the config repo; RE-SET this in each new terminal
 Copy-Item "$repo\CLAUDE.md" ".\CLAUDE.md"
-Copy-Item "$repo\templates\CLAUDE.package.md" ".\apps\web\CLAUDE.md"   # repeat per package/area
-Copy-Item "$repo\.gitignore" ".\.gitignore"                            # or merge into an existing one
+# Per package/area — repeat for each REAL subsystem folder (create it first if needed):
+New-Item -ItemType Directory -Force ".\apps\web" | Out-Null
+Copy-Item "$repo\templates\CLAUDE.package.md" ".\apps\web\CLAUDE.md"
+Copy-Item "$repo\.gitignore" ".\.gitignore"                            # skip/merge if one already exists
 ```
 
-**Ubuntu**
+**Ubuntu** (run from your project root)
 ```bash
+REPO="$HOME/claude-md"          # the config repo; RE-SET this in each new shell
 cp "$REPO/CLAUDE.md" ./CLAUDE.md
-cp "$REPO/templates/CLAUDE.package.md" ./apps/web/CLAUDE.md   # repeat per package/area
-cp "$REPO/.gitignore" ./.gitignore                            # or merge into an existing one
+# Per package/area — repeat for each REAL subsystem folder (create it first if needed):
+mkdir -p ./apps/web
+cp "$REPO/templates/CLAUDE.package.md" ./apps/web/CLAUDE.md
+cp "$REPO/.gitignore" ./.gitignore                            # skip/merge if one already exists
 ```
 
 Then fill in `<APP_NAME>`, the repo/package map, and each area's `install / test / lint / build / run` commands.
