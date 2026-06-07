@@ -1,0 +1,34 @@
+# --- Personal / local Claude Code state (never commit) ---
+.claude/settings.local.json
+.claude/*.local.json
+
+# --- Secrets & environment (defense-in-depth; also blocked from agent reads) ---
+.env
+.env.*
+!.env.example
+.envrc
+*.pem
+*.key
+*.pfx
+*.p12
+.git-credentials
+.pgpass
+.my.cnf
+secrets/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+
+# --- Build / dependency output ---
+node_modules/
+vendor/
+dist/
+build/
+target/
+.venv/
+venv/
+__pycache__/
+coverage/
+.next/
+.nuxt/
+.terraform/
