@@ -1,0 +1,9 @@
+{
+  "name": "marketing",
+  "version": "1.0.0",
+  "description": "Marketing & content agent pack for the claude-md config: conversion-copywriter, content-writer, content-editor, email-campaign-writer, growth-strategist, and the two read-only network researchers (content-researcher via Tavily, seo-rank-monitor via DataForSEO). No hooks or scripts — agents only.",
+  "author": {
+    "name": "Cintel-UK-LTD",
+    "url": "https://github.com/Cintel-UK-LTD"
+  }
+}

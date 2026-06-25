@@ -1,0 +1,22 @@
+{
+  "$comment": "Plugin-scope MCP for the marketing pack. Per-subagent inline 'mcpServers' frontmatter is ignored when an agent ships inside a plugin (see council-and-network-config.md §2), so the network researchers' servers are declared here instead. Keys are read from the environment via ${VAR} interpolation — never hardcode them. After installing this plugin, run /mcp to confirm the servers connect and the exact tool names (mcp__tavily__*, mcp__dataforseo__*).",
+  "mcpServers": {
+    "tavily": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "tavily-mcp@latest"],
+      "env": {
+        "TAVILY_API_KEY": "${TAVILY_API_KEY}"
+      }
+    },
+    "dataforseo": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "dataforseo-mcp-server"],
+      "env": {
+        "DATAFORSEO_USERNAME": "${DATAFORSEO_USERNAME}",
+        "DATAFORSEO_PASSWORD": "${DATAFORSEO_PASSWORD}"
+      }
+    }
+  }
+}
