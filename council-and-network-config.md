@@ -29,7 +29,7 @@ Live data is granted to **only** `content-researcher` (web, via Tavily) and `seo
 
 ### Why it's safe
 
-- **Per-agent scoping.** Network is never inherited — only the two agents with an inline `mcpServers` block can reach it.
+- **Per-agent scoping via `tools:`.** The Tavily/DataForSEO servers are declared once at plugin scope (`plugins/marketing/.mcp.json`), but only the two agents that list the `mcp__tavily__*` / `mcp__dataforseo__*` tools in their frontmatter `tools:` can actually invoke them — the other five marketing agents and every base/council agent cannot. (Inline per-agent `mcpServers` is ignored inside a plugin, so the `tools:` allowlist is what scopes access. In a manual/classic install, the retained inline `mcpServers` blocks do the same job and network is still never inherited.)
 - **No write + network on one agent.** Both network agents are **read-only** on files; the writing agent (`content-writer`) has **no** network. So no single agent can both read local data and ship it out.
 - **Built-ins denied session-wide.** `settings.json` denies `WebFetch`/`WebSearch` (removes them everywhere), so the scoped MCP is the only sanctioned network path — and `Bash(curl/wget/...)` is already denied, so the allowlist can't be bypassed by a shell.
 - **Secret deny-list still applies.** The session-wide `Read(...)` denies (`.env`, keys, `secrets/`, etc.) mean a network agent literally cannot read the crown-jewel secrets to exfiltrate them.

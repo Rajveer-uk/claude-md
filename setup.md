@@ -19,7 +19,7 @@ This config is **stack-agnostic and OS-agnostic**. The files are identical on ev
 
 Replace `<repo>` below with the path where this config repo lives on the machine you're installing on.
 
-> **Install in two parts:** (1) the **security baseline** — `settings.json` (+ optional hooks and managed policy) — installs the classic way below (§A/§B, §E); it is *not* plugin-able. (2) the **agent team** — `base` plus the optional `marketing`/`council` addons — installs from the **plugin marketplace** (§G).
+> **Install in two parts:** (1) the **security baseline** — `settings.json` (+ optional hooks and managed policy) — installs the classic way below (§A/§B, §E); it is *not* plugin-able. (2) the **agent team** — `base` plus the optional `marketing`/`council` addons — installs from the **plugin marketplace** (§G), or by a **manual copy** into `~/.claude/` if you'd rather not use plugins (§H).
 
 ---
 
@@ -234,3 +234,31 @@ The agent team ships as Claude Code **plugins**, listed in `.claude-plugin/marke
 - **`marketing`** adds the 7 marketing/content agents. Two are network-enabled (`content-researcher` via Tavily, `seo-rank-monitor` via DataForSEO). Their MCP servers are declared at **plugin scope** in `plugins/marketing/.mcp.json`, because per-subagent inline `mcpServers` is ignored inside a plugin. Set `TAVILY_API_KEY` / `DATAFORSEO_USERNAME` / `DATAFORSEO_PASSWORD` in your environment first, then run `/mcp` to confirm the servers connect and the exact tool names. Full security model: [`council-and-network-config.md`](council-and-network-config.md). If your build doesn't pick up the plugin-scope `.mcp.json`, move those two servers into your global `~/.claude.json` instead.
 - **`council`** adds the 6 reasoning seats and the `/council` skill — pure reasoners, no network, no scripts.
 - Both packs are **agents/skills only — no hooks** — so they keep the core's least-privilege posture. Disable or remove a pack anytime from `/plugin` (or `/plugin marketplace remove`).
+
+---
+
+## H. Manual install (no plugins)
+
+Prefer not to use the plugin system? The agents and skills are plain files — copy them straight into `~/.claude/` and skip plugins entirely. The `settings.json` security baseline (§A/§B) still applies either way. Replace `<repo>` with this config repo's path.
+
+**Windows (PowerShell)**
+```powershell
+$repo = "<repo>"; $dest = "$env:USERPROFILE\.claude"
+New-Item -ItemType Directory -Force "$dest\agents","$dest\skills" | Out-Null
+Copy-Item "$repo\plugins\*\agents\*.md"          "$dest\agents\" -Force            # all 36 (use \base\ for just the 23)
+Copy-Item "$repo\plugins\base\skills\caveman"    "$dest\skills\caveman"  -Recurse -Force
+Copy-Item "$repo\plugins\council\skills\council" "$dest\skills\council"  -Recurse -Force
+```
+
+**Ubuntu / macOS (bash)**
+```bash
+repo="<repo>"; dest="$HOME/.claude"
+mkdir -p "$dest/agents" "$dest/skills"
+cp "$repo"/plugins/*/agents/*.md "$dest/agents/"                  # all 36 (use plugins/base/ for just the 23)
+cp -r "$repo/plugins/base/skills/caveman"    "$dest/skills/caveman"
+cp -r "$repo/plugins/council/skills/council" "$dest/skills/council"
+```
+
+- For just the base team, copy from `plugins/base/agents/` instead of `plugins/*/agents/`.
+- The two `marketing` network agents keep their inline `mcpServers` blocks, so they work in a manual install once `TAVILY_API_KEY` / `DATAFORSEO_USERNAME` / `DATAFORSEO_PASSWORD` are set — inline MCP is ignored only *inside* a plugin. Verify with `/mcp`.
+- No marketplace step is needed: the copied agents show up in `/agents` immediately.
