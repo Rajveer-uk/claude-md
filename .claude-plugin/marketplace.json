@@ -3,8 +3,8 @@
   "name": "claude-md-packs",
   "description": "The claude-md configuration as plugins: install the base engineering team, then add the marketing and council packs per project as needed. The security baseline (settings.json) is a separate classic install — see setup.md.",
   "owner": {
-    "name": "Rajveer",
-    "url": "https://github.com/Rajveer-uk"
+    "name": "Cintel-UK-LTD",
+    "url": "https://github.com/Cintel-UK-LTD"
   },
   "plugins": [
     {

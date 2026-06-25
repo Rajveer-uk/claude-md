@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "The core engineering team for the claude-md config: 23 least-privilege agents (planning, review, implementation, debugging, testing, devops, docs, and curated stack experts) plus the /caveman terse-output skill. All zero-network, agents/skills only — no hooks or scripts. Install the security baseline (settings.json) separately; see setup.md.",
   "author": {
-    "name": "Rajveer",
-    "url": "https://github.com/Rajveer-uk"
+    "name": "Cintel-UK-LTD",
+    "url": "https://github.com/Cintel-UK-LTD"
   }
 }

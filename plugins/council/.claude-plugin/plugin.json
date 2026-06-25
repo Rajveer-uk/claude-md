@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Six-seat decision council + /council skill for the claude-md config. Pure reasoners (Read/Grep/Glob only, no network, no Agent tool); the main session fans a question to the seats and the chair synthesizes a verdict. No hooks or scripts — agents and one skill only.",
   "author": {
-    "name": "Rajveer",
-    "url": "https://github.com/Rajveer-uk"
+    "name": "Cintel-UK-LTD",
+    "url": "https://github.com/Cintel-UK-LTD"
   }
 }
