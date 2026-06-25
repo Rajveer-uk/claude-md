@@ -1,0 +1,29 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "claude-md-packs",
+  "description": "The claude-md configuration as plugins: install the base engineering team, then add the marketing and council packs per project as needed. The security baseline (settings.json) is a separate classic install — see setup.md.",
+  "owner": {
+    "name": "Rajveer",
+    "url": "https://github.com/Rajveer-uk"
+  },
+  "plugins": [
+    {
+      "name": "base",
+      "description": "Core engineering team — 23 least-privilege, zero-network agents (planning, review, implementation, debugging, testing, devops, docs, curated stack experts) plus the /caveman terse-output skill. The main install; pair it with the settings.json security baseline (see setup.md).",
+      "source": "./plugins/base",
+      "category": "productivity"
+    },
+    {
+      "name": "marketing",
+      "description": "7 marketing & content agents — conversion-copywriter, content-writer, content-editor, email-campaign-writer, growth-strategist, and the config's only two network-enabled agents: content-researcher (Tavily search) and seo-rank-monitor (DataForSEO), both read-only on files.",
+      "source": "./plugins/marketing",
+      "category": "productivity"
+    },
+    {
+      "name": "council",
+      "description": "The 6-seat decision council (optimist, pessimist, out-of-the-box, skeptic, pragmatist, chair) plus the /council skill that fans a question to the seats and synthesizes a verdict. Pure reasoners — no network, no file writes.",
+      "source": "./plugins/council",
+      "category": "productivity"
+    }
+  ]
+}

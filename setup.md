@@ -6,8 +6,9 @@ This config is **stack-agnostic and OS-agnostic**. The files are identical on ev
 
 | Piece | Scope | Location | Why |
 |------|-------|----------|-----|
-| 22 agents (`.claude/agents/*.md`) | **Global / user** | `~/.claude/agents/` | Reused across every project (universal + curated stack experts) |
-| `settings.json` (deny-list + modes) | **Global / user** | `~/.claude/settings.json` | The secret/egress protection must travel with the global agents |
+| `base` plugin — 23 agents + `/caveman` skill | **Plugin** | via `/plugin` | The main team — install from the marketplace (see §G) |
+| Addons: `marketing` (7), `council` (6) | **Plugin** | via `/plugin` | Opt-in add-ons — install from the marketplace (see §G) |
+| `settings.json` (deny-list + modes) | **Global / user** | `~/.claude/settings.json` | The security baseline — **not** plugin-able; install it before the plugins |
 | Hooks `guard`/`format`/`verify` (`.ps1`+`.sh`, optional) | **Global / user** | `~/.claude/hooks/` | guard = enforce no-secret-read/egress + safe agent-gen; format = auto-format edited file; verify = run project checks before finishing |
 | `managed-settings.json` (optional) | **Machine policy** | OS policy dir (see §E) | Unbreakable: locks bypass-disable + crown-jewel secret denies |
 | `CLAUDE.md` | **Per project** | `<project>/CLAUDE.md` | Project description, package map, conventions |
@@ -18,30 +19,28 @@ This config is **stack-agnostic and OS-agnostic**. The files are identical on ev
 
 Replace `<repo>` below with the path where this config repo lives on the machine you're installing on.
 
+> **Install in two parts:** (1) the **security baseline** — `settings.json` (+ optional hooks and managed policy) — installs the classic way below (§A/§B, §E); it is *not* plugin-able. (2) the **agent team** — `base` plus the optional `marketing`/`council` addons — installs from the **plugin marketplace** (§G).
+
 ---
 
-## A. Windows (PowerShell)
+## A. Windows (PowerShell) — security baseline + hooks
 
 ```powershell
 # --- paths ---
 $repo = "D:\Github\claude-md\claude md"      # this config repo
 $dest = "$env:USERPROFILE\.claude"
 
-# 1. Global directories
-New-Item -ItemType Directory -Force "$dest\agents", "$dest\hooks" | Out-Null
+# 1. Hooks directory
+New-Item -ItemType Directory -Force "$dest\hooks" | Out-Null
 
-# 2. Install the 35 agents globally (reused everywhere)
-Copy-Item "$repo\.claude\agents\*.md" "$dest\agents\" -Force
-
-# 3. Install the security baseline at USER scope (covers every project)
+# 2. Install the security baseline at USER scope (covers every project)
 Copy-Item "$repo\.claude\settings.json" "$dest\settings.json" -Force
 #   If you already have ~/.claude/settings.json, merge the "permissions" block by hand.
 
-# 4. (Optional) Install the hooks: guard (security) + format/verify (convenience)
+# 3. (Optional) Install the hooks: guard (security) + format/verify (convenience)
 Copy-Item "$repo\.claude\hooks\*.ps1" "$dest\hooks\" -Force
 
-# 5. (Optional) Install the /council skill (see council-and-network-config.md for the network connector)
-Copy-Item "$repo\.claude\skills" "$dest\skills" -Recurse -Force
+# The agents + /caveman skill are NOT copied here — they install as the `base` plugin (see §G).
 ```
 
 Then, **only if you installed the hook**, add this to `~/.claude/settings.json` next to `permissions`:
@@ -64,14 +63,15 @@ Then, **only if you installed the hook**, add this to `~/.claude/settings.json` 
 **Verify (PowerShell):**
 ```powershell
 Get-Content "$env:USERPROFILE\.claude\settings.json" -Raw | ConvertFrom-Json | Out-Null; "settings OK"
-# then inside Claude Code:
-#   /agents   -> lists all 35 agents with tools + model
+# then inside Claude Code (after installing the base plugin — see §G):
+#   /plugin   -> shows installed plugins (base / marketing / council)
+#   /agents   -> lists the base team (23) plus any addon plugins, with tools + model
 #   /memory   -> shows which CLAUDE.md files are loaded
 ```
 
 ---
 
-## B. Ubuntu / Linux (bash)
+## B. Ubuntu / Linux (bash) — security baseline + hooks
 
 The hook port (`guard.sh`) needs **jq**:
 ```bash
@@ -83,22 +83,18 @@ sudo apt-get update && sudo apt-get install -y jq
 REPO="$HOME/claude-md"          # path where you cloned this config repo
 DEST="$HOME/.claude"
 
-# 1. Global directories
-mkdir -p "$DEST/agents" "$DEST/hooks"
+# 1. Hooks directory
+mkdir -p "$DEST/hooks"
 
-# 2. Install the 35 agents globally (reused everywhere)
-cp "$REPO"/.claude/agents/*.md "$DEST/agents/"
-
-# 3. Install the security baseline at USER scope (covers every project)
+# 2. Install the security baseline at USER scope (covers every project)
 cp "$REPO/.claude/settings.json" "$DEST/settings.json"
 #   If you already have ~/.claude/settings.json, merge the "permissions" block by hand.
 
-# 4. (Optional) Install the hooks: guard (security) + format/verify (convenience)
+# 3. (Optional) Install the hooks: guard (security) + format/verify (convenience)
 cp "$REPO"/.claude/hooks/*.sh "$DEST/hooks/"
 chmod +x "$DEST"/hooks/*.sh
 
-# 5. (Optional) Install the /council skill (see council-and-network-config.md for the network connector)
-cp -r "$REPO/.claude/skills" "$DEST/skills"
+# The agents + /caveman skill are NOT copied here — they install as the `base` plugin (see §G).
 ```
 
 Then, **only if you installed the hook**, add this to `~/.claude/settings.json` next to `permissions`:
@@ -121,9 +117,9 @@ Then, **only if you installed the hook**, add this to `~/.claude/settings.json` 
 **Verify (bash):**
 ```bash
 jq . "$HOME/.claude/settings.json" >/dev/null && echo "settings OK"
-ls "$HOME/.claude/agents" | wc -l        # expect 35
-# then inside Claude Code:
-#   /agents   -> lists all 35 agents with tools + model
+# then inside Claude Code (after installing the base plugin — see §G):
+#   /plugin   -> shows installed plugins (base / marketing / council)
+#   /agents   -> lists the base team (23) plus any addon plugins, with tools + model
 #   /memory   -> shows which CLAUDE.md files are loaded
 ```
 
@@ -217,3 +213,24 @@ sudo cp "$REPO/managed/managed-settings.json" "/Library/Application Support/Clau
 - **Unbreakable enforcement** of bypass-disable + core secret denies is the managed policy in §E (highest tier, admin-owned, cannot be overridden).
 - **The optional `format`/`verify` hooks run outside the permission system** — plan-mode, the deny-list, and bypass-disable do not constrain hook-spawned processes. `verify` only runs a project's checks when that project's path is on your `~/.claude/verify-allowed.txt` allowlist (so a cloned repo can't auto-run code); `format` runs only formatters already installed in the project. Enable both only on repos you trust. `guard` is the only hook that hardens posture and is safe on any repo.
 - Every file is identical across Windows/macOS/Linux — only paths and the hook script (`guard.ps1` vs `guard.sh`) differ.
+
+---
+
+## G. Install the team — plugin marketplace (base + addons)
+
+The agent team ships as Claude Code **plugins**, listed in `.claude-plugin/marketplace.json`: install **`base`** (the main 23-agent team + `/caveman`), then add the **`marketing`** and **`council`** addons per project as needed. Nothing under `plugins/` loads until you install it. Same flow on every OS:
+
+```text
+# 1. add this repo as a plugin marketplace (local path works; or <owner>/claude-md once it's pushed to GitHub)
+/plugin marketplace add <path-to-this-repo>
+
+# 2. install the base team, then whichever addons you want — toggle any of them anytime from /plugin
+/plugin install base@claude-md-packs         # MAIN: 23 engineering agents + the /caveman skill
+/plugin install marketing@claude-md-packs    # addon: 7 marketing/content agents + Tavily/DataForSEO researchers
+/plugin install council@claude-md-packs      # addon: 6 council seats + the /council skill
+```
+
+- **`base`** is the main install — the 23 zero-network engineering agents plus the `/caveman` skill. Pair it with the `settings.json` security baseline (§A/§B), which is required and is not part of any plugin.
+- **`marketing`** adds the 7 marketing/content agents. Two are network-enabled (`content-researcher` via Tavily, `seo-rank-monitor` via DataForSEO). Their MCP servers are declared at **plugin scope** in `plugins/marketing/.mcp.json`, because per-subagent inline `mcpServers` is ignored inside a plugin. Set `TAVILY_API_KEY` / `DATAFORSEO_USERNAME` / `DATAFORSEO_PASSWORD` in your environment first, then run `/mcp` to confirm the servers connect and the exact tool names. Full security model: [`council-and-network-config.md`](council-and-network-config.md). If your build doesn't pick up the plugin-scope `.mcp.json`, move those two servers into your global `~/.claude.json` instead.
+- **`council`** adds the 6 reasoning seats and the `/council` skill — pure reasoners, no network, no scripts.
+- Both packs are **agents/skills only — no hooks** — so they keep the core's least-privilege posture. Disable or remove a pack anytime from `/plugin` (or `/plugin marketplace remove`).
