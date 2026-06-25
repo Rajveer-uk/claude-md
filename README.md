@@ -2,7 +2,9 @@
 
 A lean, layered, **stack- and OS-agnostic** configuration for [Claude Code](https://claude.com/claude-code): a global agent team plus per-project memory that adapts to whatever language, framework, package manager, and build tool a project actually uses. The agents install once and are reused across every project; each project gets its own `CLAUDE.md`.
 
-Every file in this repo was produced through a full multi-dimension security audit (prompt-injection, permissions/blast-radius, secret exposure, context leakage, network/exfiltration, supply chain, provenance, and cross-file combination risks) with each finding independently verified. See [`setup.md`](setup.md) to install.
+Every file in this repo was produced through a full multi-dimension security audit (prompt-injection, permissions/blast-radius, secret exposure, context leakage, network/exfiltration, supply chain, provenance, and cross-file combination risks) with each finding independently verified.
+
+**Contents:** [What's inside](#whats-inside) · [Design principles](#design-principles) · [The agent team](#the-agent-team-36) · [Skills](#skills) · [Install](#install) · [Security posture](#security-posture) · [Further reading](#further-reading)
 
 ## What's inside
 
@@ -43,7 +45,9 @@ Every file in this repo was produced through a full multi-dimension security aud
 - **Least privilege, zero network by default.** Every agent declares an explicit minimal `tools` list. **The `base` plugin's 23 agents are all air-gapped — zero network tools.** The only two network-capable agents (`content-researcher`, `seo-rank-monitor`) ship in the optional `marketing` addon, so a base-only install has no network surface at all; across the full 36-agent roster, 34 have zero network. Network is opt-in, per-agent, and never inherited (see the connector below).
 - **OS-agnostic, layered & lean, self-improving.** Identical files across Windows/macOS/Linux; a small root `CLAUDE.md` points to on-demand per-package files; agents update `CLAUDE.md` when corrected.
 
-## The agent team (36 — `base` plugin: 23, plus 13 in two addon plugins)
+## The agent team (36)
+
+**36 agents — 23 in the `base` plugin, 7 in `marketing`, 6 in `council`.**
 
 **Engineering (23) — the `base` plugin.** Planning/review on `opus` (`tech-lead-orchestrator`, `api-architect`, `security-auditor`, `code-reviewer`, `ponytail` — an over-engineering reviewer that lists what to delete); execution/analysis on `sonnet` (`project-analyst`, `team-configurator`, `backend-developer`, `frontend-developer`, `database-expert`, `ui-ux-designer`, `test-engineer`, `debugger`, `devops-troubleshooter`, `performance-optimizer`, `dependency-manager`, `deployment-engineer`, `code-archaeologist`); curated stack experts (`laravel-expert`, `react-tailwind-expert`, `frappe-expert`, `n8n-expert`); docs on `haiku` (`documentation-specialist`). All zero-network.
 
@@ -56,18 +60,50 @@ Every file in this repo was produced through a full multi-dimension security aud
 - **`/caveman [lite|full|ultra]`** (in the `base` plugin) — ultra-terse output mode that cuts ~65% of response tokens while keeping code, errors, and technical facts exact; auto-reverts to full prose for security warnings and irreversible-action confirmations. The prose counterpart to the `ponytail` reviewer (which strips *code* to the minimal version that works).
 - **`/council <question>`** (in the `council` plugin) — convene the 6-seat decision council and return a synthesized verdict.
 
-## Install (plugin marketplace)
+## Install
 
-The whole team ships as plugins. **First** install the security baseline the classic way — `settings.json` (the deny-list + plan mode) is *not* plugin-able, so it must be copied to `~/.claude/` separately (see [`setup.md`](setup.md)); the optional hooks and managed policy are classic too. **Then** add the marketplace and install the plugins you want — toggle any of them anytime from `/plugin`:
+Two steps. **Step 1** is the same either way; for **Step 2**, pick plugins (recommended) **or** a manual copy.
+
+### Step 1 — Security baseline (required, both methods)
+
+`settings.json` (the deny-list + plan mode) is *not* plugin-able, so copy it to `~/.claude/` the classic way — full Windows/Ubuntu commands in [`setup.md`](setup.md) §A/§B. The optional hooks and managed policy install the same way. Skip this and the agents still run, but **without** the security guarantees.
+
+### Step 2 · Option A — Plugin marketplace (recommended)
+
+Add the marketplace once, then install the `base` team plus any addons; toggle them anytime from `/plugin`:
 
 ```text
-/plugin marketplace add .                         # local path to this repo's root (or <owner>/claude-md once pushed)
-/plugin install base@claude-md-packs              # MAIN: 23 engineering agents + /caveman skill
-/plugin install marketing@claude-md-packs         # addon: 7 marketing/content agents (+ Tavily/DataForSEO)
-/plugin install council@claude-md-packs           # addon: 6 council seats + /council skill
+/plugin marketplace add .                    # local path to this repo's root (or <owner>/claude-md once pushed)
+/plugin install base@claude-md-packs         # MAIN:  23 engineering agents + /caveman skill
+/plugin install marketing@claude-md-packs    # addon: 7 marketing/content agents (+ Tavily/DataForSEO)
+/plugin install council@claude-md-packs      # addon: 6 council seats + /council skill
 ```
 
-Every plugin is **agents/skills only — no hooks or scripts** — so they keep the least-privilege posture. Nothing under `plugins/` loads until you install it, so a base-only setup stays lean and network-free. The `marketing` addon declares its two MCP servers at plugin scope (`plugins/marketing/.mcp.json`) because per-subagent inline `mcpServers` is ignored inside a plugin; set the `TAVILY_API_KEY` / `DATAFORSEO_*` env vars and verify with `/mcp` (details in [`council-and-network-config.md`](council-and-network-config.md)).
+Nothing under `plugins/` loads until you install it, so a base-only setup stays lean and network-free. The `marketing` addon declares its MCP servers at plugin scope (`plugins/marketing/.mcp.json`) because per-subagent inline `mcpServers` is ignored inside a plugin; set the `TAVILY_API_KEY` / `DATAFORSEO_*` env vars and verify with `/mcp`.
+
+### Step 2 · Option B — Manual install (no plugins)
+
+The agents and skills are plain files — copy them straight into `~/.claude/` and skip the plugin system entirely. Replace `<repo>` with this repo's path.
+
+**Windows (PowerShell)**
+```powershell
+$repo = "<repo>"; $dest = "$env:USERPROFILE\.claude"
+New-Item -ItemType Directory -Force "$dest\agents","$dest\skills" | Out-Null
+Copy-Item "$repo\plugins\*\agents\*.md"          "$dest\agents\" -Force            # all 36 (use \base\ for just the 23)
+Copy-Item "$repo\plugins\base\skills\caveman"    "$dest\skills\caveman"  -Recurse -Force
+Copy-Item "$repo\plugins\council\skills\council" "$dest\skills\council"  -Recurse -Force
+```
+
+**Ubuntu / macOS (bash)**
+```bash
+repo="<repo>"; dest="$HOME/.claude"
+mkdir -p "$dest/agents" "$dest/skills"
+cp "$repo"/plugins/*/agents/*.md "$dest/agents/"                  # all 36 (use plugins/base/ for just the 23)
+cp -r "$repo/plugins/base/skills/caveman"    "$dest/skills/caveman"
+cp -r "$repo/plugins/council/skills/council" "$dest/skills/council"
+```
+
+For just the base team, copy from `plugins/base/agents/` instead of `plugins/*/agents/`. The two `marketing` network agents keep their inline `mcpServers` blocks, so they work in a manual install once `TAVILY_API_KEY` / `DATAFORSEO_*` are set (inline MCP is ignored only *inside* a plugin).
 
 ## Security posture
 
