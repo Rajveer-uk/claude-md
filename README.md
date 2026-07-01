@@ -4,7 +4,40 @@ A lean, layered, **stack- and OS-agnostic** configuration for [Claude Code](http
 
 Every file in this repo was produced through a full multi-dimension security audit (prompt-injection, permissions/blast-radius, secret exposure, context leakage, network/exfiltration, supply chain, provenance, and cross-file combination risks) with each finding independently verified.
 
-**Contents:** [What's inside](#whats-inside) · [Design principles](#design-principles) · [The agent team](#the-agent-team-36) · [Skills](#skills) · [Install](#install) · [Security posture](#security-posture) · [Further reading](#further-reading)
+**Contents:** [This repo vs vanilla Claude Code](#this-repo-vs-vanilla-claude-code) · [What's inside](#whats-inside) · [Design principles](#design-principles) · [The agent team](#the-agent-team-36) · [Skills](#skills) · [Install](#install) · [Security posture](#security-posture) · [Further reading](#further-reading)
+
+## This repo vs vanilla Claude Code
+
+Vanilla Claude Code is a blank, capable agent: you drive every task in one context window, in full prose, with only the built-in tools. This repo turns that into a **standing engineering org** — a security baseline, a 36-agent specialist team, 100+ concrete skill playbooks, and terse/delegation modes — installed once and reused across every project.
+
+### Token utilization
+
+Bodies of agents/skills/commands load **on demand**, not up front — so the comparison isn't "190 extra files in every prompt":
+
+| | Vanilla Claude Code | This repo |
+|---|---|---|
+| **Always-on overhead** | ~none | **Bounded** — Claude Code caps the agent/skill *listing* to ~1% of the context window (`skillListingBudgetFraction`), so 190+ installed items add a small, fixed cost — not 190 full files |
+| **Response prose** | full verbosity | **`/caveman` cuts ~65%** of prose tokens (its design target) while keeping code, errors, and paths verbatim |
+| **Large multi-file tasks** | all grows in one window | **delegated to subagents** whose exploration / review / audit runs in *separate* context windows — the main thread stays lean |
+| **Generated code** | as written | **`ponytail`** strips it to the minimal version that works |
+
+**Net:** a slightly higher *fixed* baseline (the bounded listing) buys **materially lower token growth on real, multi-step work** — the long sessions where cost actually accumulates. On a big review or refactor, the heavy reading happens inside subagent contexts and the answer comes back terse, instead of inflating the single window you pay for. On a one-line question, the overhead is the bounded listing and nothing else.
+
+> Figures are mechanism-based estimates and documented design targets (e.g. caveman's ~65%), **not audited benchmarks** — real savings depend on task shape.
+
+### Quality improvements
+
+Structural, not cosmetic:
+
+- **Right specialist, least privilege.** 36 role-scoped agents (plus curated stack experts and on-demand `<framework>-expert` generation) instead of one generalist — each with an explicit minimal tool set.
+- **A real merge gate.** `code-reviewer` (correctness/security) + `ponytail` (over-engineering) + `security-auditor` run before code lands, catching what a single pass misses.
+- **Playbooks, not guesses.** 100+ skills carry concrete patterns, checklists, and anti-patterns (testing/TDD, architecture, per-stack idioms, performance, accessibility), so output follows known-good practice.
+- **Better decisions.** The 6-seat `/council` stress-tests ambiguous or high-stakes calls from independent angles before you commit.
+- **Safety by default.** Plan-mode-first, a deny-list (no secret reads, no `WebFetch`/`WebSearch`, no destructive Bash) and no-bypass mode mean fewer costly mistakes and zero accidental exfiltration — every file was security-audited with findings independently verified.
+- **Proactive by default.** A standing `UserPromptSubmit` hook makes the team delegate and use skills without being asked, scaled to task size.
+
+The payoff is fewer wrong turns, less rework, tighter diffs, and a documented security posture — quality wins that outweigh raw token math on anything beyond a one-liner.
+
 
 ## What's inside
 
@@ -17,7 +50,7 @@ Every file in this repo was produced through a full multi-dimension security aud
 ├── templates/CLAUDE.package.md   # per-package / per-subsystem template (loads on demand)
 ├── managed/managed-settings.json # optional admin policy — unbreakable bypass-disable + core secret denies
 ├── .claude-plugin/
-│   └── marketplace.json          # marketplace listing the three plugins below
+│   └── marketplace.json          # marketplace listing the four plugins below
 ├── plugins/                      # the team — installed via /plugin (nothing loads until installed)
 │   ├── base/                     # MAIN: 23 zero-network engineering agents + /caveman skill + 1 static prompt hook
 │   │   ├── .claude-plugin/plugin.json
@@ -27,10 +60,14 @@ Every file in this repo was produced through a full multi-dimension security aud
 │   │   ├── .claude-plugin/plugin.json
 │   │   ├── .mcp.json             # plugin-scope MCP (Tavily + DataForSEO) — keys from env
 │   │   └── agents/*.md
-│   └── council/                  # ADDON: 6 council seats + the /council skill
+│   ├── council/                  # ADDON: 6 council seats + the /council skill
+│   │   ├── .claude-plugin/plugin.json
+│   │   ├── agents/*.md
+│   │   └── skills/council/SKILL.md
+│   └── ecc/                      # ADDON: curated + audited ECC vendoring — 42 agents, 117 skills, 34 commands
 │       ├── .claude-plugin/plugin.json
-│       ├── agents/*.md
-│       └── skills/council/SKILL.md
+│       ├── agents/*.md · skills/*/SKILL.md · commands/*.md
+│       └── ATTRIBUTION.md         # provenance + MIT license + every audit edit
 └── .claude/                      # SECURITY BASELINE (classic install — not plugin-able)
     ├── settings.json             # deny-list + plan mode — install at USER scope (~/.claude/)
     └── hooks/                    # optional enforcement / convenience hooks
