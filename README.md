@@ -1,5 +1,13 @@
 # Claude Code Configuration — polyglot, security-vetted
 
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin%20marketplace-6f42c1)
+![Packs](https://img.shields.io/badge/packs-4-1f6feb)
+![Agents](https://img.shields.io/badge/agents-78-1f6feb)
+![Skills](https://img.shields.io/badge/skills-119-1f6feb)
+![Security](https://img.shields.io/badge/security-audited-2ea44f)
+![OS](https://img.shields.io/badge/OS-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
+
 A lean, layered, **stack- and OS-agnostic** configuration for [Claude Code](https://claude.com/claude-code): a global agent team plus per-project memory that adapts to whatever language, framework, package manager, and build tool a project actually uses. The agents install once and are reused across every project; each project gets its own `CLAUDE.md`.
 
 Every file in this repo was produced through a full multi-dimension security audit (prompt-injection, permissions/blast-radius, secret exposure, context leakage, network/exfiltration, supply chain, provenance, and cross-file combination risks) with each finding independently verified.
@@ -24,6 +32,18 @@ Bodies of agents/skills/commands load **on demand**, not up front — so the com
 **Net:** a slightly higher *fixed* baseline (the bounded listing) buys **materially lower token growth on real, multi-step work** — the long sessions where cost actually accumulates. On a big review or refactor, the heavy reading happens inside subagent contexts and the answer comes back terse, instead of inflating the single window you pay for. On a one-line question, the overhead is the bounded listing and nothing else.
 
 > Figures are mechanism-based estimates and documented design targets (e.g. caveman's ~65%), **not audited benchmarks** — real savings depend on task shape.
+
+### Worked example — reviewing a 6-file change
+
+*Task: review a ~1,500-line change across 6 files, apply fixes, then ~10 follow-up turns.* Modeled from **real constants** (caveman's ~65% target, the ~1%-capped listing, the ~2.7K-token median skill body measured in this repo) with the task assumptions stated — **not an instrumented benchmark**.
+
+| Cost driver | Vanilla Claude Code | This repo | Why |
+|---|---|---|---|
+| **Reading the change** (~30K tokens) | lands in the one window and is **re-sent every turn** → ~300K carried over ~10 turns | read inside the **`code-reviewer` subagent**; only a ~1K findings summary returns → ~10K carried | delegation keeps heavy reads out of the persistent context |
+| **Review + fix prose** (~8K) | full verbosity | **~2.8K** under `/caveman` | ~65% prose reduction |
+| **Always-on overhead** | none | **bounded** — ~1% of context (the listing) | capped by `skillListingBudgetFraction` |
+
+**Result for this scenario: ≈80–85% less main-context token growth and ≈65% smaller responses**, for a bounded fixed listing cost and a *similar one-shot read* (the subagent still reads the code once — it just doesn't carry it forward across turns). The saving scales with session length (how long the heavy context would otherwise be re-sent) and baseline verbosity; a **one-line question** sees mostly the ~65% shorter answer plus the small listing overhead.
 
 ### Quality improvements
 
