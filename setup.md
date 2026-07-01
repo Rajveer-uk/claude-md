@@ -27,7 +27,7 @@ Replace `<repo>` below with the path where this config repo lives on the machine
 
 ```powershell
 # --- paths ---
-$repo = "D:\Github\claude-md\claude md"      # this config repo
+$repo = ""      # this config repo on the local
 $dest = "$env:USERPROFILE\.claude"
 
 # 1. Hooks directory
@@ -131,7 +131,7 @@ From inside each project root:
 
 **Windows** (run in PowerShell — not cmd — from your project root)
 ```powershell
-$repo = "D:\Github\claude-md\claude md"     # the config repo; RE-SET this in each new terminal
+$repo = ""     # the config repo; RE-SET this in each new terminal(claude md repo on local)
 Copy-Item "$repo\CLAUDE.md" ".\CLAUDE.md"
 # Per package/area — repeat for each REAL subsystem folder (create it first if needed):
 New-Item -ItemType Directory -Force ".\apps\web" | Out-Null
