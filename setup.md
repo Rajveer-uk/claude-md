@@ -264,3 +264,29 @@ cp -r "$repo/plugins/council/skills/council" "$dest/skills/council"
 - For just the base team, copy from `plugins/base/agents/` instead of `plugins/*/agents/`.
 - The two `marketing` network agents keep their inline `mcpServers` blocks, so they work in a manual install once `TAVILY_API_KEY` / `DATAFORSEO_USERNAME` / `DATAFORSEO_PASSWORD` are set — inline MCP is ignored only *inside* a plugin. Verify with `/mcp`.
 - No marketplace step is needed: the copied agents show up in `/agents` immediately.
+
+---
+
+## I. Updating an existing install
+
+Updates flow from the **marketplace source** (the GitHub repo you added), so the new version must have been pushed there first.
+
+**Plugin installs (§G):**
+```text
+# 1. refresh the marketplace manifest from its source
+/plugin marketplace update claude-md-packs
+
+# 2. update the packs you already have (or use the /plugin menu -> Update)
+/plugin install base@claude-md-packs          # e.g. picks up base v1.1.0 — adds the auto-delegation hook
+
+# 3. install any pack added since you set up (new packs do not appear on their own)
+/plugin install ecc@claude-md-packs           # 42 agents + 117 skills + 34 commands
+```
+- If prompted to **trust `base`'s new `UserPromptSubmit` hook**, accept it, then confirm with `/hooks` (open `/hooks` once to reload if it does not fire).
+- Plugin updates do **not** touch the `settings.json` security baseline (§A/§B) — no re-copy needed unless a release note says otherwise.
+- Toggle or remove a pack anytime from `/plugin` (or `/plugin marketplace remove`).
+
+**Manual installs (§H):** `git pull` this repo, then re-run the §H copy commands (they overwrite in place). Delete any files removed upstream if you want an exact mirror.
+
+> Tip: to auto-update on startup, set `"autoUpdate": true` on the `claude-md-packs` entry under `extraKnownMarketplaces` in `~/.claude/settings.json`.
+> The interactive `/plugin` menu is the reliable path — it surfaces update/install actions directly.
