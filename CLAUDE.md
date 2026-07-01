@@ -33,6 +33,7 @@
 - **Keep the permission gate on.** Never run with `--dangerously-skip-permissions` or bypass-permissions mode with this agent set — the default "ask" gate is what surfaces each `Bash` command and file write for approval.
 - **Self-improvement:** when I correct you, update the relevant `CLAUDE.md` (this file or the area's) so the same mistake isn't repeated — then keep these files trimmed. Pointers, not prose.
 - **Routing:** for multi-step work, ask `tech-lead-orchestrator` for a plan and task→agent map; let `project-analyst` detect the stack; specialists do the work; `code-reviewer` runs last.
+- **Proactive delegation:** for substantive tasks, delegate to subagents or a workflow and auto-invoke relevant skills without being asked; scale to task size — answer trivial/conversational prompts inline. Prefer parallel subagents for multi-file work and verify findings before finalizing.
 
 ## Agent safety rules
 

@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "base",
-      "description": "Core engineering team — 23 least-privilege, zero-network agents (planning, review, implementation, debugging, testing, devops, docs, curated stack experts) plus the /caveman terse-output skill. The main install; pair it with the settings.json security baseline (see setup.md).",
+      "description": "Core engineering team — 23 least-privilege, zero-network agents (planning, review, implementation, debugging, testing, devops, docs, curated stack experts) plus the /caveman terse-output skill. The main install; pair it with the settings.json security baseline (see setup.md). Ships one static, no-network auto-delegation prompt hook.",
       "source": "./plugins/base",
       "category": "productivity"
     },
@@ -23,6 +23,12 @@
       "name": "council",
       "description": "The 6-seat decision council (optimist, pessimist, out-of-the-box, skeptic, pragmatist, chair) plus the /council skill that fans a question to the seats and synthesizes a verdict. Pure reasoners — no network, no file writes.",
       "source": "./plugins/council",
+      "category": "productivity"
+    },
+    {
+      "name": "ecc",
+      "description": "A curated, security-audited subset of ECC (affaan-m/ECC, MIT): 42 agents (per-language reviewers and build-error resolvers for Go, Rust, Java, Kotlin, Swift, C#, C++, Dart/Flutter, Python, TypeScript, React, Vue, Django, FastAPI, PHP, plus TDD, refactor, accessibility, and open-source release agents), 117 engineering skills, and 34 slash-commands — an engineering core plus 10 ECC agent-engineering knowledge skills (the broader ECC harness/command machinery was trimmed for token economy). Namespaced separately from base so nothing collides; pure markdown — no scripts, hooks, or installers. Network stays governed by the settings.json baseline. See plugins/ecc/ATTRIBUTION.md.",
+      "source": "./plugins/ecc",
       "category": "productivity"
     }
   ]

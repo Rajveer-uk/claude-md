@@ -19,7 +19,7 @@ Every file in this repo was produced through a full multi-dimension security aud
 ├── .claude-plugin/
 │   └── marketplace.json          # marketplace listing the three plugins below
 ├── plugins/                      # the team — installed via /plugin (nothing loads until installed)
-│   ├── base/                     # MAIN: 23 zero-network engineering agents + /caveman skill
+│   ├── base/                     # MAIN: 23 zero-network engineering agents + /caveman skill + 1 static prompt hook
 │   │   ├── .claude-plugin/plugin.json
 │   │   ├── agents/*.md
 │   │   └── skills/caveman/SKILL.md
@@ -49,16 +49,19 @@ Every file in this repo was produced through a full multi-dimension security aud
 
 **36 agents — 23 in the `base` plugin, 7 in `marketing`, 6 in `council`.**
 
-**Engineering (23) — the `base` plugin.** Planning/review on `opus` (`tech-lead-orchestrator`, `api-architect`, `security-auditor`, `code-reviewer`, `ponytail` — an over-engineering reviewer that lists what to delete); execution/analysis on `sonnet` (`project-analyst`, `team-configurator`, `backend-developer`, `frontend-developer`, `database-expert`, `ui-ux-designer`, `test-engineer`, `debugger`, `devops-troubleshooter`, `performance-optimizer`, `dependency-manager`, `deployment-engineer`, `code-archaeologist`); curated stack experts (`laravel-expert`, `react-tailwind-expert`, `frappe-expert`, `n8n-expert`); docs on `haiku` (`documentation-specialist`). All zero-network.
+**Engineering (23) — the `base` plugin.** Planning/review on `opus` (`tech-lead-orchestrator`, `api-architect`, `security-auditor`, `code-reviewer`, `ponytail` — an over-engineering reviewer that lists what to delete); execution/analysis on `sonnet` (`project-analyst`, `team-configurator`, `backend-developer`, `frontend-developer`, `database-expert`, `ui-ux-designer`, `test-engineer`, `debugger`, `devops-troubleshooter`, `performance-optimizer`, `dependency-manager`, `deployment-engineer`, `code-archaeologist`); curated stack experts (`laravel-expert`, `react-tailwind-expert`, `frappe-expert`, `n8n-expert`); docs on `haiku` (`documentation-specialist`). All zero-network. Plus one static, no-network auto-delegation prompt hook (see setup.md).
 
 **Marketing & content (7) — `marketing` plugin.** Draft/strategy, no network: `conversion-copywriter`, `content-writer`, `content-editor` (haiku), `email-campaign-writer`, `growth-strategist` (opus). 🌐 **Network-enabled (read-only):** `content-researcher` (Tavily web search) and `seo-rank-monitor` (DataForSEO SEO metrics) — the **only** two agents with any network access. Install only if you do marketing work: `/plugin install marketing@claude-md-packs`.
 
 **Decision council (6) — `council` plugin.** Pure reasoners (no network, no `Agent` tool): `council-optimist`, `council-pessimist`, `council-out-of-the-box` (opus), `council-skeptic`, `council-pragmatist`, `council-chair` (opus). Bundles the **`/council <question>`** skill (the main session fans the seats out and synthesizes via the chair). Install: `/plugin install council@claude-md-packs`. Pattern adapted from Karpathy's `llm-council` + persona councils.
 
+**ECC extras (42 agents + 117 skills + 34 commands) — optional `ecc` plugin.** Includes 10 ECC agent-engineering knowledge skills (agent architecture, autonomous loops, eval-driven dev); the broader ECC harness/command machinery was trimmed for token economy. A curated, security-audited subset of [ECC](https://github.com/affaan-m/ECC) (MIT): per-language reviewers and build-error resolvers (Go, Rust, Java, Kotlin, Swift, C#, C++, Dart/Flutter, Python, TS, React, Vue, Django, FastAPI, PHP…), plus TDD, refactor, accessibility, type-design, and open-source-release agents, and a large engineering-skills library. **Namespaced separately** so nothing collides with `base`; **pure markdown** (no scripts/hooks/installers); network stays governed by `settings.json`. Install: `/plugin install ecc@claude-md-packs`. Provenance and the exact audit edits: [`plugins/ecc/ATTRIBUTION.md`](plugins/ecc/ATTRIBUTION.md).
+
 ## Skills
 
 - **`/caveman [lite|full|ultra]`** (in the `base` plugin) — ultra-terse output mode that cuts ~65% of response tokens while keeping code, errors, and technical facts exact; auto-reverts to full prose for security warnings and irreversible-action confirmations. The prose counterpart to the `ponytail` reviewer (which strips *code* to the minimal version that works).
 - **`/council <question>`** (in the `council` plugin) — convene the 6-seat decision council and return a synthesized verdict.
+- **117 ECC skills** (in the optional `ecc` plugin) — per-stack patterns, testing/TDD, architecture, performance, accessibility, code-tour, and more; surfaced on demand or via `/ecc:<skill>`.
 
 ## Install
 
@@ -77,6 +80,7 @@ Add the marketplace once, then install the `base` team plus any addons; toggle t
 /plugin install base@claude-md-packs         # MAIN:  23 engineering agents + /caveman skill
 /plugin install marketing@claude-md-packs    # addon: 7 marketing/content agents (+ Tavily/DataForSEO)
 /plugin install council@claude-md-packs      # addon: 6 council seats + /council skill
+/plugin install ecc@claude-md-packs          # addon: 42 ECC agents + 117 skills + 34 commands
 ```
 
 Nothing under `plugins/` loads until you install it, so a base-only setup stays lean and network-free. The `marketing` addon declares its MCP servers at plugin scope (`plugins/marketing/.mcp.json`) because per-subagent inline `mcpServers` is ignored inside a plugin; set the `TAVILY_API_KEY` / `DATAFORSEO_*` env vars and verify with `/mcp`.
