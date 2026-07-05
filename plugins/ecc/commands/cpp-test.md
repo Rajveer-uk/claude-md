@@ -1,5 +1,6 @@
 ---
-description: Enforce TDD workflow for C++. Write GoogleTest tests first, then implement. Verify coverage with gcov/lcov.
+description: Enforce TDD for C++. Write GoogleTest tests first, then implement. Verify coverage with gcov/lcov.
+allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 ---
 
 # C++ TDD Command
@@ -243,9 +244,9 @@ genhtml coverage.info --output-directory coverage_html
 
 - `/cpp-build` - Fix build errors
 - `/cpp-review` - Review code after implementation
-- `verification-loop` skill - Run full verification loop
+- `eval-harness` skill - Run full verification loop
 
 ## Related
 
-- Skill: `skills/cpp-testing/`
-- Skill: `skills/tdd-workflow/`
+- Skill: cpp-testing
+- Skill: tdd-workflow

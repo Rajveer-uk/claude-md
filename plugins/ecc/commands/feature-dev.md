@@ -1,5 +1,6 @@
 ---
 description: Guided feature development with codebase understanding and architecture focus
+allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 ---
 
 A structured feature-development workflow that emphasizes understanding existing code before writing new code.

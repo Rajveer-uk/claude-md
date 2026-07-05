@@ -1,6 +1,6 @@
 ---
 name: agentic-engineering
-description: Operate as an agentic engineer using eval-first execution, decomposition, and cost-aware model routing.
+description: Use when running an AI-agent-driven engineering workflow — eval-first execution, task decomposition into agent-sized units, and cost-aware model routing while humans hold the quality gates.
 metadata:
   origin: ECC
 ---

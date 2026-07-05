@@ -1,6 +1,6 @@
 ---
 name: django-patterns
-description: Django architecture patterns, REST API design with DRF, ORM best practices, caching, signals, middleware, and production-grade Django apps.
+description: Use when building production Django apps — architecture patterns, DRF REST API design, ORM best practices, caching, signals, and middleware.
 metadata:
   origin: ECC
 ---

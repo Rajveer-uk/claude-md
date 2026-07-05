@@ -1,6 +1,6 @@
 ---
 name: code-architect
-description: Designs feature architectures by analyzing existing codebase patterns and conventions, then providing implementation blueprints with concrete files, interfaces, data flow, and build order.
+description: Use before implementing a new feature or subsystem to get an architecture plan. Designs feature architectures by analyzing existing codebase patterns and conventions, delivering implementation blueprints with concrete files, interfaces, data flow, and build order.
 model: sonnet
 tools: ["Read", "Grep", "Glob", "Bash"]
 ---

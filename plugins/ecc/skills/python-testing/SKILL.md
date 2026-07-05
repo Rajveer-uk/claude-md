@@ -1,13 +1,11 @@
 ---
 name: python-testing
-description: Python testing strategies using pytest, TDD methodology, fixtures, mocking, parametrization, and coverage requirements.
+description: Python testing with pytest — TDD, fixtures, mocking, parametrization, and coverage. Use when writing or reviewing Python tests.
 metadata:
   origin: ECC
 ---
 
 # Python Testing Patterns
-
-Comprehensive testing strategies for Python applications using pytest, TDD methodology, and best practices.
 
 ## When to Activate
 

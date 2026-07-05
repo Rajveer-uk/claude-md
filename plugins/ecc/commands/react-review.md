@@ -1,5 +1,6 @@
 ---
-description: Comprehensive React/JSX code review for hook correctness, render performance, server/client component boundaries, accessibility, and React-specific security. Invokes the react-reviewer agent (and typescript-reviewer alongside on TSX/JSX changes).
+description: React/JSX code review for hook correctness, render performance, server/client boundaries, accessibility, and React-specific security. Invokes the react-reviewer agent (and typescript-reviewer alongside on TSX/JSX changes).
+allowed-tools: Read, Grep, Glob, Bash, Task
 ---
 
 # React Code Review
@@ -164,7 +165,7 @@ Recommendation: FAIL: Block merge until CRITICAL issue is fixed
 
 ## Related
 
-- Agent: `agents/react-reviewer.md`
-- Companion agent: `agents/typescript-reviewer.md` (run alongside for TSX/JSX PRs)
-- Skills: `skills/react-patterns/`, `skills/react-testing/`, `skills/accessibility/`
+- Agent: react-reviewer
+- Companion agent: typescript-reviewer (run alongside for TSX/JSX PRs)
+- Skills: react-patterns, react-testing, accessibility
 - Rules: `rules/react/`

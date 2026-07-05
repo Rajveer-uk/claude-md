@@ -312,7 +312,7 @@ bun test --coverage   # coverage report
 ```
 
 - Mock modules with `mock.module(...)` / `mock(...)` from `bun:test` instead of `jest.mock(...)`.
-- Configure coverage thresholds in `bunfig.toml` under `[test]` (e.g. `coverageThreshold`) rather than the Jest `coverageThresholds` config block.
+- Configure coverage thresholds in `bunfig.toml` under `[test]` (e.g. `coverageThreshold`) rather than the Jest `coverageThreshold` config block.
 
 ### API Integration Test Pattern
 ```typescript
@@ -469,7 +469,7 @@ jest.mock('@/lib/openai', () => ({
 ```json
 {
   "jest": {
-    "coverageThresholds": {
+    "coverageThreshold": {
       "global": {
         "branches": 80,
         "functions": 80,
@@ -483,39 +483,39 @@ jest.mock('@/lib/openai', () => ({
 
 ## Common Testing Mistakes to Avoid
 
-### FAIL: WRONG: Testing Implementation Details
+### Wrong: Testing Implementation Details
 ```typescript
 // Don't test internal state
 expect(component.state.count).toBe(5)
 ```
 
-### PASS: CORRECT: Test User-Visible Behavior
+### Correct: Test User-Visible Behavior
 ```typescript
 // Test what users see
 expect(screen.getByText('Count: 5')).toBeInTheDocument()
 ```
 
-### FAIL: WRONG: Brittle Selectors
+### Wrong: Brittle Selectors
 ```typescript
 // Breaks easily
 await page.click('.css-class-xyz')
 ```
 
-### PASS: CORRECT: Semantic Selectors
+### Correct: Semantic Selectors
 ```typescript
 // Resilient to changes
 await page.click('button:has-text("Submit")')
 await page.click('[data-testid="submit-button"]')
 ```
 
-### FAIL: WRONG: No Test Isolation
+### Wrong: No Test Isolation
 ```typescript
 // Tests depend on each other
 test('creates user', () => { /* ... */ })
 test('updates same user', () => { /* depends on previous test */ })
 ```
 
-### PASS: CORRECT: Independent Tests
+### Correct: Independent Tests
 ```typescript
 // Each test sets up its own data
 test('creates user', () => {
@@ -549,7 +549,7 @@ test('updates user', () => {
 - name: Run Tests
   run: <coverage>
 - name: Upload Coverage
-  uses: codecov/codecov-action@v3
+  uses: codecov/codecov-action@v4
 ```
 
 ## Best Practices

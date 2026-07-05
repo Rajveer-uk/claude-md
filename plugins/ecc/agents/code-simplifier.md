@@ -1,6 +1,6 @@
 ---
 name: code-simplifier
-description: Simplifies and refines code for clarity, consistency, and maintainability while preserving behavior. Focus on recently modified code unless instructed otherwise.
+description: Use proactively after code works but reads awkwardly, to improve clarity without changing behavior. Simplifies and refines code for readability, consistency, and maintainability while preserving behavior; targets recently modified code unless told otherwise. Boundary: behavior-preserving readability only — for dead-code and duplication removal use `refactor-cleaner`.
 model: sonnet
 tools: ["Read", "Write", "Edit", "Bash", "Grep", "Glob"]
 ---

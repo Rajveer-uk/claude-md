@@ -1,6 +1,6 @@
 ---
 name: agent-harness-construction
-description: Design and optimize AI agent action spaces, tool definitions, and observation formatting for higher completion rates.
+description: Use when building or improving an LLM agent's harness — designing its action space, tool definitions, observation formatting, and error-recovery contracts for higher completion rates.
 metadata:
   origin: ECC
 ---

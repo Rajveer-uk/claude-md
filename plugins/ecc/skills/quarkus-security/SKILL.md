@@ -1,6 +1,6 @@
 ---
 name: quarkus-security
-description: Quarkus Security best practices for authentication, authorization, JWT/OIDC, RBAC, input validation, CSRF, secrets management, and dependency security.
+description: Quarkus Security for authentication, authorization, JWT/OIDC, RBAC, input validation, CSRF, secrets, and dependency security. Use when writing or reviewing Quarkus security code.
 metadata:
   origin: ECC
 ---

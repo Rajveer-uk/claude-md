@@ -1,5 +1,6 @@
 ---
-description: Comprehensive C++ code review for memory safety, modern C++ idioms, concurrency, and security. Invokes the cpp-reviewer agent.
+description: C++ code review for memory safety, modern C++ idioms, concurrency, and security. Invokes the cpp-reviewer agent.
+allowed-tools: Read, Grep, Glob, Bash, Task
 ---
 
 # C++ Code Review
@@ -128,5 +129,5 @@ Recommendation: FAIL: Block merge until CRITICAL issue is fixed
 
 ## Related
 
-- Agent: `agents/cpp-reviewer.md`
-- Skills: `skills/cpp-coding-standards/`, `skills/cpp-testing/`
+- Agent: cpp-reviewer
+- Skills: cpp-coding-standards, cpp-testing

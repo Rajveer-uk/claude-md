@@ -1,5 +1,6 @@
 ---
-description: Comprehensive Kotlin code review for idiomatic patterns, null safety, coroutine safety, and security. Invokes the kotlin-reviewer agent.
+description: Kotlin code review for idiomatic patterns, null safety, coroutine safety, and security. Invokes the kotlin-reviewer agent.
+allowed-tools: Read, Grep, Glob, Bash, Task
 ---
 
 # Kotlin Code Review
@@ -136,5 +137,5 @@ Recommendation: FAIL: Block merge until CRITICAL issue is fixed
 
 ## Related
 
-- Agent: `agents/kotlin-reviewer.md`
-- Skills: `skills/kotlin-patterns/`, `skills/kotlin-testing/`
+- Agent: kotlin-reviewer
+- Skills: kotlin-patterns, kotlin-testing

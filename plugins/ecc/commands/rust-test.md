@@ -1,5 +1,6 @@
 ---
-description: Enforce TDD workflow for Rust. Write tests first, then implement. Verify 80%+ coverage with cargo-llvm-cov.
+description: Enforce TDD for Rust. Write tests first, then implement. Verify 80%+ coverage with cargo-llvm-cov.
+allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 ---
 
 # Rust TDD Command
@@ -300,9 +301,9 @@ cargo test --no-fail-fast
 
 - `/rust-build` - Fix build errors
 - `/rust-review` - Review code after implementation
-- `verification-loop` skill - Run full verification loop
+- `eval-harness` skill - Run full verification loop
 
 ## Related
 
-- Skill: `skills/rust-testing/`
-- Skill: `skills/rust-patterns/`
+- Skill: rust-testing
+- Skill: rust-patterns

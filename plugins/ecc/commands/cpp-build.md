@@ -1,5 +1,6 @@
 ---
-description: Fix C++ build errors, CMake issues, and linker problems incrementally. Invokes the cpp-build-resolver agent for minimal, surgical fixes.
+description: Fix C++ build, CMake, and linker errors incrementally via the cpp-build-resolver agent for minimal, surgical fixes.
+allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 ---
 
 # C++ Build and Fix
@@ -165,9 +166,9 @@ The agent will stop and report if:
 
 - `/cpp-test` - Run tests after build succeeds
 - `/cpp-review` - Review code quality
-- `verification-loop` skill - Full verification loop
+- `eval-harness` skill - Full verification loop
 
 ## Related
 
-- Agent: `agents/cpp-build-resolver.md`
-- Skill: `skills/cpp-coding-standards/`
+- Agent: cpp-build-resolver
+- Skill: cpp-coding-standards

@@ -1,6 +1,6 @@
 ---
 name: coding-standards
-description: Baseline cross-project coding conventions for naming, readability, immutability, and code-quality review. Use detailed frontend or backend skills for framework-specific patterns.
+description: Use when writing or reviewing code for baseline conventions — naming, readability, immutability, code quality; use the frontend or backend skills for framework-specific patterns.
 metadata:
   origin: ECC
 ---

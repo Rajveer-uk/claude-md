@@ -1,6 +1,6 @@
 ---
 name: pr-test-analyzer
-description: Review pull request test coverage quality and completeness, with emphasis on behavioral coverage and real bug prevention.
+description: Use when reviewing a pull request's tests before merge. Reviews PR test coverage quality and completeness, emphasizing behavioral coverage and real bug prevention.
 model: sonnet
 tools: ["Read", "Grep", "Glob", "Bash"]
 ---

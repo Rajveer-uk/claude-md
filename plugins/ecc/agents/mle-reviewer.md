@@ -1,6 +1,6 @@
 ---
 name: mle-reviewer
-description: Production machine-learning engineering reviewer for data contracts, feature pipelines, training reproducibility, offline/online evaluation, model serving, monitoring, and rollback. Use when ML, MLOps, model training, inference, feature store, or evaluation code changes.
+description: Production ML engineering reviewer for data contracts, feature pipelines, training reproducibility, offline/online evaluation, model serving, monitoring, and rollback. MUST BE USED when ML, MLOps, training, inference, feature-store, or evaluation code changes. Focuses on ML-specific correctness; the holistic pre-merge review is the `code-reviewer` agent.
 tools: ["Read", "Grep", "Glob", "Bash"]
 model: sonnet
 ---

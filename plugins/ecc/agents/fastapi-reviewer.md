@@ -1,6 +1,6 @@
 ---
 name: fastapi-reviewer
-description: Reviews FastAPI applications for async correctness, dependency injection, Pydantic schemas, security, OpenAPI quality, testing, and production readiness.
+description: Reviews FastAPI apps for async correctness, dependency injection, Pydantic schemas, security, OpenAPI quality, testing, and production readiness. MUST BE USED for FastAPI code changes. Focuses on FastAPI-specific correctness; the holistic pre-merge review is the `code-reviewer` agent.
 tools: ["Read", "Grep", "Glob", "Bash"]
 model: sonnet
 ---

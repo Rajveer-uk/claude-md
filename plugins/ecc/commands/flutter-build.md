@@ -1,5 +1,6 @@
 ---
-description: Fix Dart analyzer errors and Flutter build failures incrementally. Invokes the dart-build-resolver agent for minimal, surgical fixes.
+description: Fix Dart analyzer and Flutter build errors incrementally via the dart-build-resolver agent for minimal, surgical fixes.
+allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 ---
 
 # Flutter Build and Fix
@@ -156,9 +157,9 @@ The agent will stop and report if:
 
 - `/flutter-test` — Run tests after build succeeds
 - `/flutter-review` — Review code quality
-- `verification-loop` skill — Full verification loop
+- `eval-harness` skill — Full verification loop
 
 ## Related
 
-- Agent: `agents/dart-build-resolver.md`
-- Skill: `skills/flutter-dart-code-review/`
+- Agent: dart-build-resolver
+- Skill: flutter-dart-code-review

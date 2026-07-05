@@ -1,6 +1,6 @@
 ---
 name: agent-introspection-debugging
-description: Structured self-debugging workflow for AI agent failures using capture, diagnosis, contained recovery, and introspection reports.
+description: Use when an agent run is looping, stalling, or burning tokens without progress — a structured self-debug loop of failure capture, root-cause diagnosis, contained recovery, and an introspection report.
 metadata:
   origin: ECC
 ---
@@ -30,7 +30,7 @@ Activate this skill for:
 - producing a structured human-readable debug report
 
 Do not use this skill as the primary source for:
-- feature verification after code changes; use `verification-loop`
+- feature verification after code changes; use `eval-harness`
 - framework-specific debugging when a narrower ECC skill already exists
 - runtime promises the current harness cannot enforce automatically
 
@@ -140,7 +140,7 @@ Good pattern:
 
 ## Integration with ECC
 
-- Use `verification-loop` after recovery if code was changed.
+- Use `eval-harness` after recovery if code was changed.
 - Use `continuous-learning-v2` when the failure pattern is worth turning into an instinct or later skill.
 - Use `council` when the issue is not technical failure but decision ambiguity.
 - Use `workspace-surface-audit` if the failure came from conflicting local state or repo drift.

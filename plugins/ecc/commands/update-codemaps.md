@@ -1,5 +1,6 @@
 ---
 description: Scan project structure and generate token-lean architecture codemaps.
+allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 ---
 
 # Update Codemaps

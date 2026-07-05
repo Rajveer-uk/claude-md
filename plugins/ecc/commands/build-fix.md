@@ -1,5 +1,6 @@
 ---
 description: Detect the project build system and incrementally fix build/type errors with minimal safe changes.
+allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 ---
 
 # Build and Fix

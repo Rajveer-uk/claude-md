@@ -1,6 +1,6 @@
 ---
 name: search-first
-description: Research-before-coding workflow. Search for existing tools, libraries, and patterns before writing custom code.
+description: Research-before-coding workflow. Use when starting a feature, adding a dependency, or before writing a new utility — search existing tools, libraries, and patterns first.
 metadata:
   origin: ECC
 ---

@@ -1,5 +1,6 @@
 ---
-description: Enforce TDD workflow for React. Write React Testing Library tests first (behavior-focused, accessibility-first), then implement components. Detects Vitest or Jest and verifies coverage targets.
+description: Enforce TDD for React. Write React Testing Library tests first (behavior- and accessibility-focused), then implement. Detects Vitest or Jest and verifies coverage.
+allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 ---
 
 # React TDD Command
@@ -256,10 +257,10 @@ CI=true vitest run --coverage
 
 - `/react-build` — fix build errors before running tests
 - `/react-review` — review after implementation
-- `verification-loop` skill — full verification loop
+- `eval-harness` skill — full verification loop
 
 ## Related
 
-- Skills: `skills/react-testing/`, `skills/tdd-workflow/`, `skills/accessibility/`, `skills/e2e-testing/`
+- Skills: react-testing, tdd-workflow, accessibility, e2e-testing
 - Rules: `rules/react/testing.md`
 - Agents: `react-reviewer` (reviews test quality), `tdd-guide` (enforces TDD process)

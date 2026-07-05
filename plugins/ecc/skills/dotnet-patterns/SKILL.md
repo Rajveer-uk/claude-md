@@ -1,6 +1,6 @@
 ---
 name: dotnet-patterns
-description: Idiomatic C# and .NET patterns, conventions, dependency injection, async/await, and best practices for building robust, maintainable .NET applications.
+description: Idiomatic C# and .NET patterns — conventions, dependency injection, async/await, and best practices. Use when writing or reviewing C#/.NET code.
 metadata:
   origin: ECC
 ---

@@ -1,5 +1,6 @@
 ---
 description: Sync documentation from source-of-truth files such as scripts, schemas, routes, and exports.
+allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 ---
 
 # Update Documentation

@@ -1,6 +1,6 @@
 ---
 name: agent-architecture-audit
-description: Full-stack diagnostic for agent and LLM applications. Audits the 12-layer agent stack for wrapper regression, memory pollution, tool discipline failures, hidden repair loops, and rendering corruption. Produces severity-ranked findings with code-first fixes. Essential for developers building agent applications, autonomous loops, or any LLM-powered feature.
+description: Use when an agent or LLM app regresses inside its wrapper — same model works in the playground but breaks in your harness. Diagnoses the 12-layer agent stack (wrapper regression, memory pollution, tool-discipline failures, hidden repair loops, rendering corruption) and produces severity-ranked, code-first fixes.
 metadata:
   origin: oh-my-agent-check
 tools: Read, Write, Edit, Bash, Grep, Glob

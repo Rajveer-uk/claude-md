@@ -1,5 +1,6 @@
 ---
-description: Comprehensive Vue.js code review for Composition API correctness, reactivity, composable patterns, template security, accessibility, and Vue-specific performance. Invokes the vue-reviewer agent (and typescript-reviewer alongside on .vue/.ts changes).
+description: Vue.js code review for Composition API correctness, reactivity, composables, template security, accessibility, and Vue-specific performance. Invokes the vue-reviewer agent (and typescript-reviewer alongside on .vue/.ts changes).
+allowed-tools: Read, Grep, Glob, Bash, Task
 ---
 
 # Vue Code Review
@@ -168,7 +169,7 @@ Recommendation: FAIL: Block merge until CRITICAL issue is fixed
 
 ## Related
 
-- Agent: `agents/vue-reviewer.md`
-- Companion agent: `agents/typescript-reviewer.md` (run alongside for Vue-related TS/JS)
-- Skills: `skills/vue-patterns/`
+- Agent: vue-reviewer
+- Companion agent: typescript-reviewer (run alongside for Vue-related TS/JS)
+- Skills: vue-patterns
 - Rules: `rules/vue/`

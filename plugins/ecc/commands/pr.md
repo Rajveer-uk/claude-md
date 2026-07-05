@@ -1,6 +1,7 @@
 ---
 description: "Create a GitHub PR from current branch with unpushed commits — discovers templates, analyzes changes, pushes"
 argument-hint: "[base-branch] (default: main)"
+allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 ---
 
 # Create Pull Request

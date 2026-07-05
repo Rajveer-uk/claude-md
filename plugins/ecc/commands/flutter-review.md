@@ -1,5 +1,6 @@
 ---
-description: Review Flutter/Dart code for idiomatic patterns, widget best practices, state management, performance, accessibility, and security. Invokes the flutter-reviewer agent.
+description: Review Flutter/Dart code for idiomatic patterns, state management, performance, accessibility, and security. Invokes the flutter-reviewer agent.
+allowed-tools: Read, Grep, Glob, Bash, Task
 ---
 
 # Flutter Code Review
@@ -111,6 +112,6 @@ Verdict: BLOCK — HIGH issues must be fixed before merge.
 
 ## Related
 
-- Agent: `agents/flutter-reviewer.md`
-- Skill: `skills/flutter-dart-code-review/`
+- Agent: flutter-reviewer
+- Skill: flutter-dart-code-review
 - Rules: `rules/dart/`

@@ -1,6 +1,6 @@
 ---
 name: fsharp-testing
-description: F# testing patterns with xUnit, FsUnit, Unquote, FsCheck property-based testing, integration tests, and test organization best practices.
+description: F# testing patterns with xUnit, FsUnit, Unquote, FsCheck property-based testing, integration tests, and test organization. Use when writing or reviewing F# tests.
 metadata:
   origin: ECC
 ---

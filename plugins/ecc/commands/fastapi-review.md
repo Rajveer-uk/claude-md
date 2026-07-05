@@ -1,5 +1,7 @@
 ---
-description: Review a FastAPI application for architecture, async correctness, dependency injection, Pydantic schemas, security, performance, and testability.
+description: Review a FastAPI app for architecture, async correctness, dependency injection, Pydantic schemas, security, and performance.
+allowed-tools: Read, Grep, Glob, Bash, Task
+argument-hint: "[file-or-directory]"
 ---
 
 # FastAPI Review

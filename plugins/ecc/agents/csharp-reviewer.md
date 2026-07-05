@@ -1,6 +1,6 @@
 ---
 name: csharp-reviewer
-description: Expert C# code reviewer specializing in .NET conventions, async patterns, security, nullable reference types, and performance. Use for all C# code changes. MUST BE USED for C# projects.
+description: Expert C# reviewer for .NET conventions, async patterns, security, nullable reference types, and performance. MUST BE USED for C# code changes. Focuses on C#-specific correctness; the holistic pre-merge review is the `code-reviewer` agent.
 tools: ["Read", "Grep", "Glob", "Bash"]
 model: sonnet
 ---

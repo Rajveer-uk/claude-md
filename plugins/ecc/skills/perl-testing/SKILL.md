@@ -1,13 +1,11 @@
 ---
 name: perl-testing
-description: Perl testing patterns using Test2::V0, Test::More, prove runner, mocking, coverage with Devel::Cover, and TDD methodology.
+description: Perl testing with Test2::V0, Test::More, prove, mocking, and Devel::Cover coverage, following TDD. Use when writing or reviewing Perl tests.
 metadata:
   origin: ECC
 ---
 
 # Perl Testing Patterns
-
-Comprehensive testing strategies for Perl applications using Test2::V0, Test::More, prove, and TDD methodology.
 
 ## When to Activate
 

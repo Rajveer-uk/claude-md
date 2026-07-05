@@ -1,6 +1,7 @@
 ---
 description: "Quick commit with natural language file targeting — describe what to commit in plain English"
 argument-hint: "[target description] (blank = all changes)"
+allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 ---
 
 # Smart Commit

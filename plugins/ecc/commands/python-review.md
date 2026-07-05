@@ -1,5 +1,6 @@
 ---
-description: Comprehensive Python code review for PEP 8 compliance, type hints, security, and Pythonic idioms. Invokes the python-reviewer agent.
+description: Python code review for PEP 8 compliance, type hints, security, and Pythonic idioms. Invokes the python-reviewer agent.
+allowed-tools: Read, Grep, Glob, Bash, Task
 ---
 
 # Python Code Review
@@ -202,8 +203,8 @@ The reviewer checks for:
 
 ## Related
 
-- Agent: `agents/python-reviewer.md`
-- Skills: `skills/python-patterns/`, `skills/python-testing/`
+- Agent: python-reviewer
+- Skills: python-patterns, python-testing
 
 ## Common Fixes
 

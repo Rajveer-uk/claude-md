@@ -1,5 +1,6 @@
 ---
-description: Run Flutter/Dart tests, report failures, and incrementally fix test issues. Covers unit, widget, golden, and integration tests.
+description: Run Flutter/Dart tests, report failures, and incrementally fix them. Covers unit, widget, golden, and integration tests.
+allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 ---
 
 # Flutter Test
@@ -138,7 +139,7 @@ Test Status: PASS ✓
 
 ## Related
 
-- Agent: `agents/flutter-reviewer.md`
-- Agent: `agents/dart-build-resolver.md`
-- Skill: `skills/flutter-dart-code-review/`
+- Agent: flutter-reviewer
+- Agent: dart-build-resolver
+- Skill: flutter-dart-code-review
 - Rules: `rules/dart/testing.md`

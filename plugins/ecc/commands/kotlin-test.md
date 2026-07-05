@@ -1,5 +1,6 @@
 ---
-description: Enforce TDD workflow for Kotlin. Write Kotest tests first, then implement. Verify 80%+ coverage with Kover.
+description: Enforce TDD for Kotlin. Write Kotest tests first, then implement. Verify 80%+ coverage with Kover.
+allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 ---
 
 # Kotlin TDD Command
@@ -304,9 +305,9 @@ open build/reports/kover/html/index.html
 
 - `/kotlin-build` - Fix build errors
 - `/kotlin-review` - Review code after implementation
-- `verification-loop` skill - Run full verification loop
+- `eval-harness` skill - Run full verification loop
 
 ## Related
 
-- Skill: `skills/kotlin-testing/`
-- Skill: `skills/tdd-workflow/`
+- Skill: kotlin-testing
+- Skill: tdd-workflow

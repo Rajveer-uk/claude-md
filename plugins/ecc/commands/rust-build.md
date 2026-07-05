@@ -1,5 +1,6 @@
 ---
-description: Fix Rust build errors, borrow checker issues, and dependency problems incrementally. Invokes the rust-build-resolver agent for minimal, surgical fixes.
+description: Fix Rust build, borrow checker, and dependency errors incrementally via the rust-build-resolver agent for minimal, surgical fixes.
+allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 ---
 
 # Rust Build and Fix
@@ -179,9 +180,9 @@ The agent will stop and report if:
 
 - `/rust-test` - Run tests after build succeeds
 - `/rust-review` - Review code quality
-- `verification-loop` skill - Full verification loop
+- `eval-harness` skill - Full verification loop
 
 ## Related
 
-- Agent: `agents/rust-build-resolver.md`
-- Skill: `skills/rust-patterns/`
+- Agent: rust-build-resolver
+- Skill: rust-patterns

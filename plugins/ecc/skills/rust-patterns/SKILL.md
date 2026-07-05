@@ -1,13 +1,11 @@
 ---
 name: rust-patterns
-description: Idiomatic Rust patterns, ownership, error handling, traits, concurrency, and best practices for building safe, performant applications.
+description: Idiomatic Rust patterns for ownership, error handling, traits, and concurrency. Use when writing or reviewing Rust code.
 metadata:
   origin: ECC
 ---
 
 # Rust Development Patterns
-
-Idiomatic Rust patterns and best practices for building safe, performant, and maintainable applications.
 
 ## When to Use
 

@@ -1,6 +1,6 @@
 ---
 name: silent-failure-hunter
-description: Review code for silent failures, swallowed errors, bad fallbacks, and missing error propagation.
+description: Use proactively after writing error-handling / try-catch / fallback logic, or when reviewing code that swallows errors. Reviews code for silent failures, swallowed errors, bad fallbacks, and missing error propagation.
 model: sonnet
 tools: ["Read", "Grep", "Glob"]
 ---

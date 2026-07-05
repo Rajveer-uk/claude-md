@@ -1,5 +1,6 @@
 ---
-description: Fix Kotlin/Gradle build errors, compiler warnings, and dependency issues incrementally. Invokes the kotlin-build-resolver agent for minimal, surgical fixes.
+description: Fix Kotlin/Gradle build, compiler, and dependency errors incrementally via the kotlin-build-resolver agent for minimal, surgical fixes.
+allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 ---
 
 # Kotlin Build and Fix
@@ -166,9 +167,9 @@ The agent will stop and report if:
 
 - `/kotlin-test` - Run tests after build succeeds
 - `/kotlin-review` - Review code quality
-- `verification-loop` skill - Full verification loop
+- `eval-harness` skill - Full verification loop
 
 ## Related
 
-- Agent: `agents/kotlin-build-resolver.md`
-- Skill: `skills/kotlin-patterns/`
+- Agent: kotlin-build-resolver
+- Skill: kotlin-patterns

@@ -1,6 +1,6 @@
 ---
 name: benchmark
-description: Use this skill to measure performance baselines, detect regressions before/after PRs, and compare stack alternatives.
+description: Use to measure a performance baseline, detect regressions before/after a PR, and compare stack alternatives — a one-shot measurement; for a recursive optimize-and-remeasure loop use benchmark-optimization-loop.
 metadata:
   origin: ECC
 ---

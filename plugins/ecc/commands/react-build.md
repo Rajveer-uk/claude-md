@@ -1,5 +1,6 @@
 ---
-description: Fix React build failures (Vite, webpack, Next.js, CRA, Parcel, esbuild, Bun) incrementally — JSX/TSX compile errors, hydration mismatches, server/client component boundary failures, missing types. Invokes the react-build-resolver agent for minimal, surgical fixes.
+description: Fix React build failures (Vite, webpack, Next.js, CRA, Parcel, esbuild, Bun) incrementally — JSX/TSX compile errors, hydration mismatches, server/client boundary failures, missing types. Invokes the react-build-resolver agent.
+allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 ---
 
 # React Build and Fix
@@ -178,10 +179,10 @@ The agent will stop and report if:
 - `/react-test` — run tests after the build is green
 - `/react-review` — review code quality after the build succeeds
 - `/build-fix` — generic build fixer (non-React)
-- `verification-loop` skill — full verification loop
+- `eval-harness` skill — full verification loop
 
 ## Related
 
-- Agent: `agents/react-build-resolver.md`
-- Skills: `skills/react-patterns/`, `skills/frontend-patterns/`
+- Agent: react-build-resolver
+- Skills: react-patterns, frontend-patterns
 - Rules: `rules/react/coding-style.md`, `rules/react/patterns.md`

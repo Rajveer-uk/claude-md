@@ -1,14 +1,14 @@
 ---
 name: accessibility
-description: Design, implement, and audit inclusive digital products using WCAG 2.2 Level AA
-  standards. Use this skill to generate semantic ARIA for Web and accessibility traits for Web and Native platforms (iOS/Android).
+description: Use when auditing or remediating against WCAG 2.2 AA success criteria across Web,
+  iOS, and Android (semantic ARIA, accessibility traits); framework-agnostic — for React component-level a11y use frontend-a11y.
 metadata:
   origin: ECC
 ---
 
 # Accessibility (WCAG 2.2)
 
-This skill ensures that digital interfaces are Perceivable, Operable, Understandable, and Robust (POUR) for all users, including those using screen readers, switch controls, or keyboard navigation. It focuses on the technical implementation of WCAG 2.2 success criteria.
+Covers the technical implementation of WCAG 2.2 success criteria so interfaces are Perceivable, Operable, Understandable, and Robust (POUR) for all users, including those using screen readers, switch controls, or keyboard navigation.
 
 ## When to Use
 

@@ -1,5 +1,6 @@
 ---
 description: Fix Gradle build errors for Android and KMP projects
+allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 ---
 
 # Gradle Build Fix

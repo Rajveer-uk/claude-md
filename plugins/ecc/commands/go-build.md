@@ -1,5 +1,6 @@
 ---
-description: Fix Go build errors, go vet warnings, and linter issues incrementally. Invokes the go-build-resolver agent for minimal, surgical fixes.
+description: Fix Go build, vet, and lint errors incrementally via the go-build-resolver agent for minimal, surgical fixes.
+allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 ---
 
 # Go Build and Fix
@@ -175,9 +176,9 @@ The agent will stop and report if:
 
 - `/go-test` - Run tests after build succeeds
 - `/go-review` - Review code quality
-- `verification-loop` skill - Full verification loop
+- `eval-harness` skill - Full verification loop
 
 ## Related
 
-- Agent: `agents/go-build-resolver.md`
-- Skill: `skills/golang-patterns/`
+- Agent: go-build-resolver
+- Skill: golang-patterns

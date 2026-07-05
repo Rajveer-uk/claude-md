@@ -1,6 +1,6 @@
 ---
 name: type-design-analyzer
-description: Analyze type design for encapsulation, invariant expression, usefulness, and enforcement.
+description: Use when designing or reviewing types, data models, or interfaces. Analyzes type design for encapsulation, invariant expression, usefulness, and enforcement.
 model: sonnet
 tools: ["Read", "Grep", "Glob"]
 ---

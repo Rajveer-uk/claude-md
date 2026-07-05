@@ -1,6 +1,6 @@
 ---
 name: react-reviewer
-description: Expert React/JSX code reviewer specializing in hook correctness, render performance, server/client component boundaries, accessibility, and React-specific security. Use for any change touching .tsx/.jsx files or React component logic. MUST BE USED for React projects.
+description: Expert React/JSX reviewer for hook correctness, render performance, server/client boundaries, accessibility, and React-specific security. MUST BE USED for changes to .tsx/.jsx files or React component logic. Focuses on React-specific correctness; the holistic pre-merge review is the `code-reviewer` agent.
 tools: ["Read", "Grep", "Glob", "Bash"]
 model: sonnet
 ---

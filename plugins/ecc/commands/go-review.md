@@ -1,5 +1,6 @@
 ---
-description: Comprehensive Go code review for idiomatic patterns, concurrency safety, error handling, and security. Invokes the go-reviewer agent.
+description: Go code review for idiomatic patterns, concurrency safety, error handling, and security. Invokes the go-reviewer agent.
+allowed-tools: Read, Grep, Glob, Bash, Task
 ---
 
 # Go Code Review
@@ -144,5 +145,5 @@ Recommendation: FAIL: Block merge until CRITICAL issue is fixed
 
 ## Related
 
-- Agent: `agents/go-reviewer.md`
-- Skills: `skills/golang-patterns/`, `skills/golang-testing/`
+- Agent: go-reviewer
+- Skills: golang-patterns, golang-testing

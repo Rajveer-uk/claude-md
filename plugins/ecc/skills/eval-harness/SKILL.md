@@ -1,6 +1,6 @@
 ---
 name: eval-harness
-description: Formal evaluation framework for Claude Code sessions implementing eval-driven development (EDD) principles
+description: Formal evaluation framework for Claude Code sessions implementing eval-driven development (EDD). Use when defining pass/fail criteria, building regression eval suites, or measuring agent reliability (pass@k) for prompt or agent changes.
 metadata:
   origin: ECC
 tools: Read, Write, Edit, Bash, Grep, Glob

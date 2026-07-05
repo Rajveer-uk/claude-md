@@ -1,5 +1,6 @@
 ---
-description: Comprehensive Rust code review for ownership, lifetimes, error handling, unsafe usage, and idiomatic patterns. Invokes the rust-reviewer agent.
+description: Rust code review for ownership, lifetimes, error handling, unsafe usage, and idiomatic patterns. Invokes the rust-reviewer agent.
+allowed-tools: Read, Grep, Glob, Bash, Task
 ---
 
 # Rust Code Review
@@ -138,5 +139,5 @@ Recommendation: Block merge until CRITICAL issue is fixed
 
 ## Related
 
-- Agent: `agents/rust-reviewer.md`
-- Skills: `skills/rust-patterns/`, `skills/rust-testing/`
+- Agent: rust-reviewer
+- Skills: rust-patterns, rust-testing
