@@ -26,4 +26,4 @@
 - `<Non-obvious traps specific to this area. Delete stale entries.>`
 
 ---
-_This file loads automatically when files in this directory are edited. Keep it short — stack commands and local rules only. The same shape works for any language: Node, Python, PHP, Go, Rust, Java/Kotlin, .NET, Ruby, etc._
+_Loads automatically when files in this directory are edited. Keep it short — stack commands and local rules only. The same shape works for any language (Node, Python, PHP, Go, Rust, Java/Kotlin, .NET, Ruby, …)._
