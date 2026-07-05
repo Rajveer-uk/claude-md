@@ -150,7 +150,7 @@ The agents and skills are plain files — copy them straight into `~/.claude/` a
 ```powershell
 $repo = "<repo>"; $dest = "$env:USERPROFILE\.claude"
 New-Item -ItemType Directory -Force "$dest\agents","$dest\skills" | Out-Null
-Copy-Item "$repo\plugins\*\agents\*.md"          "$dest\agents\" -Force            # all 36 (use \base\ for just the 23)
+Copy-Item "$repo\plugins\*\agents\*.md"          "$dest\agents\" -Force            # all 78 across packs (use \base\ for just the 23; ecc's skills/commands are NOT copied here)
 Copy-Item "$repo\plugins\base\skills\caveman"    "$dest\skills\caveman"  -Recurse -Force
 Copy-Item "$repo\plugins\council\skills\council" "$dest\skills\council"  -Recurse -Force
 ```
@@ -159,7 +159,7 @@ Copy-Item "$repo\plugins\council\skills\council" "$dest\skills\council"  -Recurs
 ```bash
 repo="<repo>"; dest="$HOME/.claude"
 mkdir -p "$dest/agents" "$dest/skills"
-cp "$repo"/plugins/*/agents/*.md "$dest/agents/"                  # all 36 (use plugins/base/ for just the 23)
+cp "$repo"/plugins/*/agents/*.md "$dest/agents/"                  # all 78 across packs (use plugins/base/ for just the 23; ecc's skills/commands are NOT copied here)
 cp -r "$repo/plugins/base/skills/caveman"    "$dest/skills/caveman"
 cp -r "$repo/plugins/council/skills/council" "$dest/skills/council"
 ```

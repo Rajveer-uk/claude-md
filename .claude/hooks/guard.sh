@@ -31,13 +31,14 @@ if [ "$tool" = "Bash" ]; then
   [ -z "$cmd" ] && exit 0
   lc="$(printf '%s' "$cmd" | tr '[:upper:]' '[:lower:]')"
 
-  for p in 'curl' 'wget' 'invoke-webrequest' '\biwr\b' 'invoke-restmethod' '\birm\b' 'bitsadmin' 'ncat' 'telnet' '\bnc\b' '\bscp\b' '\bsftp\b' '\bftp\b'; do
+  for p in 'curl' 'wget' 'invoke-webrequest' '\biwr\b' 'invoke-restmethod' '\birm\b' 'bitsadmin' 'ncat' 'telnet' '\bnc\b' '\bscp\b' '\bsftp\b' '\bftp\b' '\bssh\b' '\brsync\b'; do
     if printf '%s' "$lc" | grep -Eq "$p"; then
       decide "ask" "Possible network egress detected - confirm this does not move data off the machine."
     fi
   done
 
-  readers='get-content|\bgc\b|\bcat\b|\btype\b|\bsls\b|select-string|\bmore\b|\bhead\b|\btail\b|\bcp\b|\bmv\b'
+  # NOTE: this catches command *names*; it cannot see shell input redirection (e.g. `<.env`, `. .env`).
+  readers='get-content|\bgc\b|\bcat\b|\btype\b|\bsls\b|select-string|\bmore\b|\bless\b|\bhead\b|\btail\b|\bnl\b|\bcut\b|\bgrep\b|\begrep\b|\bsed\b|\bawk\b|\bbase64\b|\bxxd\b|\bod\b|\bstrings\b|\bdd\b|\btar\b|\brsync\b|\bcp\b|\bmv\b'
   if printf '%s' "$lc" | grep -Eq "$readers"; then
     for s in '\.env\b' '\.envrc' '\.ssh' '\.aws' '\.azure' 'gcloud' 'secrets/' '\.git-credentials' '\.pgpass' '\.my\.cnf' '\.tfstate' '\.tfvars' 'id_rsa' 'id_ed25519' '\.pem\b' '\.pfx\b' '\.p12\b' '\.key\b'; do
       if printf '%s' "$lc" | grep -Eq "$s"; then

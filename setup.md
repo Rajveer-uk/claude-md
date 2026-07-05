@@ -247,7 +247,7 @@ Prefer not to use the plugin system? The agents and skills are plain files — c
 ```powershell
 $repo = "<repo>"; $dest = "$env:USERPROFILE\.claude"
 New-Item -ItemType Directory -Force "$dest\agents","$dest\skills" | Out-Null
-Copy-Item "$repo\plugins\*\agents\*.md"          "$dest\agents\" -Force            # all 36 (use \base\ for just the 23)
+Copy-Item "$repo\plugins\*\agents\*.md"          "$dest\agents\" -Force            # all 78 across packs (use \base\ for just the 23; ecc's skills/commands are NOT copied here)
 Copy-Item "$repo\plugins\base\skills\caveman"    "$dest\skills\caveman"  -Recurse -Force
 Copy-Item "$repo\plugins\council\skills\council" "$dest\skills\council"  -Recurse -Force
 ```
@@ -256,7 +256,7 @@ Copy-Item "$repo\plugins\council\skills\council" "$dest\skills\council"  -Recurs
 ```bash
 repo="<repo>"; dest="$HOME/.claude"
 mkdir -p "$dest/agents" "$dest/skills"
-cp "$repo"/plugins/*/agents/*.md "$dest/agents/"                  # all 36 (use plugins/base/ for just the 23)
+cp "$repo"/plugins/*/agents/*.md "$dest/agents/"                  # all 78 across packs (use plugins/base/ for just the 23; ecc's skills/commands are NOT copied here)
 cp -r "$repo/plugins/base/skills/caveman"    "$dest/skills/caveman"
 cp -r "$repo/plugins/council/skills/council" "$dest/skills/council"
 ```
@@ -277,7 +277,7 @@ Updates flow from the **marketplace source** (the GitHub repo you added), so the
 /plugin marketplace update claude-md-packs
 
 # 2. update the packs you already have (or use the /plugin menu -> Update)
-/plugin install base@claude-md-packs          # e.g. picks up base v1.1.0 — adds the auto-delegation hook
+/plugin install base@claude-md-packs          # e.g. picks up base v1.1.1 — adds the auto-delegation hook
 
 # 3. install any pack added since you set up (new packs do not appear on their own)
 /plugin install ecc@claude-md-packs           # 42 agents + 117 skills + 34 commands

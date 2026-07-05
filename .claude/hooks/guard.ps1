@@ -38,12 +38,13 @@ if ($tool -eq 'Bash') {
     if (-not $cmd) { exit 0 }
     $lc = $cmd.ToLowerInvariant()
 
-    $egress = @('curl','wget','invoke-webrequest','\biwr\b','invoke-restmethod','\birm\b','bitsadmin','ncat','telnet','\bnc\b','\bscp\b','\bsftp\b','\bftp\b')
+    $egress = @('curl','wget','invoke-webrequest','\biwr\b','invoke-restmethod','\birm\b','bitsadmin','ncat','telnet','\bnc\b','\bscp\b','\bsftp\b','\bftp\b','\bssh\b','\brsync\b')
     foreach ($p in $egress) {
         if ($lc -match $p) { Decide 'ask' "Possible network egress detected - confirm this does not move data off the machine." }
     }
 
-    $readers = @('get-content','\bgc\b','\bcat\b','\btype\b','\bsls\b','select-string','\bmore\b','copy-item','\bcp\b','move-item','\bmv\b','out-file','set-content')
+    # NOTE: matches command *names*; it cannot see shell input redirection (e.g. `<.env`, `. .env`).
+    $readers = @('get-content','\bgc\b','\bcat\b','\btype\b','\bsls\b','select-string','\bmore\b','\bless\b','\bhead\b','\btail\b','\bnl\b','\bcut\b','\bgrep\b','\begrep\b','\bsed\b','\bawk\b','\bbase64\b','\bxxd\b','\bod\b','\bstrings\b','\bdd\b','\btar\b','\brsync\b','format-hex','copy-item','\bcp\b','move-item','\bmv\b','out-file','set-content')
     $secrets = @('\.env\b','\.envrc','\.ssh','\.aws','\.azure','gcloud','secrets[\\/]','\.git-credentials','\.pgpass','\.my\.cnf','\.tfstate','\.tfvars','id_rsa','id_ed25519','\.pem\b','\.pfx\b','\.p12\b','\.key\b')
     $isRead = $false
     foreach ($r in $readers) { if ($lc -match $r) { $isRead = $true; break } }

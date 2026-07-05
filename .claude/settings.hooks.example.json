@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "_comment": "OPTIONAL hooks registration to merge into ~/.claude/settings.json (user scope), next to the permissions block from settings.json. Copy the hooks key into your settings.json. Use ABSOLUTE paths: user-scope hooks do not get $CLAUDE_PROJECT_DIR, and some builds do not expand $HOME/%USERPROFILE% inside hook commands. Replace the ABSOLUTE_HOME placeholder with your real home path (e.g. /home/you or C:/Users/you). guard = recommended security hook; format/verify = convenience (allowlist-gated) — delete the blocks you do not want. For Windows, swap each command for: powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"C:\\Users\\you\\.claude\\hooks\\guard.ps1\".",
+  "hooks": {
+    "PreToolUse": [
+      { "matcher": "Bash|Write|Edit", "hooks": [ { "type": "command", "command": "ABSOLUTE_HOME/.claude/hooks/guard.sh" } ] }
+    ],
+    "PostToolUse": [
+      { "matcher": "Edit|Write", "hooks": [ { "type": "command", "command": "ABSOLUTE_HOME/.claude/hooks/format.sh" } ] }
+    ],
+    "Stop": [
+      { "hooks": [ { "type": "command", "command": "ABSOLUTE_HOME/.claude/hooks/verify.sh" } ] }
+    ]
+  }
+}
