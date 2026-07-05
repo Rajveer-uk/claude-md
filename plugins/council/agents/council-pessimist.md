@@ -1,6 +1,6 @@
 ---
 name: council-pessimist
-description: Council seat — the Pessimist. Argues the failure modes, tail risks, and why a plan breaks, with mitigations. Use when convening the decision council (via the /council skill or the orchestrator).
+description: Council seat — the Pessimist. Argues failure modes, tail risks, and why a plan breaks — with mitigations. Use when convening the decision council (via the /council skill or the orchestrator).
 tools: Read, Grep, Glob
 model: sonnet
 ---

@@ -1,6 +1,6 @@
 ---
 name: react-tailwind-expert
-description: Build React 19 + TypeScript + Tailwind CSS v4 + shadcn/ui interfaces — components, variants (cva), theming, accessibility, RSC. Use proactively for React/Tailwind/shadcn component, styling, or UI feature work in a TS/React codebase.
+description: Build React 19 + TypeScript + Tailwind v4 + shadcn/ui interfaces — components, variants (cva), theming, accessibility, RSC. Use proactively for React/Tailwind/shadcn component, styling, or UI feature work in a TS/React codebase.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 ---

@@ -1,6 +1,6 @@
 ---
 name: caveman
-description: Ultra-terse output mode — cuts ~65% of response tokens by dropping articles, filler, and pleasantries while keeping every technical fact, code block, and error string exact. Levels: lite, full (default), ultra. Use when the user says "caveman", "caveman mode", "be terse", "fewer tokens", or invokes /caveman; drop it automatically for security warnings and irreversible-action confirmations.
+description: Ultra-terse output mode — cuts ~65% of response tokens by dropping articles, filler, and pleasantries but keeps every technical fact, code block, and error string exact. Levels: lite, full (default), ultra. Use when the user says "caveman", "caveman mode", "be terse", "fewer tokens", or invokes /caveman; drop it automatically for security warnings and irreversible-action confirmations.
 ---
 
 # Caveman

@@ -1,6 +1,6 @@
 ---
 name: seo-rank-monitor
-description: Monitor keyword rankings and SERP positions using live SEO data (DataForSEO). Read-only — reports metrics, never edits files. Network-enabled via an opt-in MCP connector.
+description: Monitor keyword rankings and SERP positions from live SEO data (DataForSEO). Read-only — reports metrics, never edits files. Network-enabled via an opt-in MCP connector.
 tools: Read, Grep, Glob, mcp__dataforseo__serp_organic_live, mcp__dataforseo__keywords_data, mcp__dataforseo__dataforseo_labs
 model: sonnet
 mcpServers:

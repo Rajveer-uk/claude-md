@@ -1,6 +1,6 @@
 ---
 name: growth-strategist
-description: Design acquisition/activation/retention/referral loops, viral mechanics, and prioritized experiment roadmaps (AARRR) with A/B hypotheses from supplied product/market context. Use for growth strategy and experiment planning.
+description: Design acquisition/activation/retention/referral loops, viral mechanics, and prioritized experiment roadmaps (AARRR) with A/B hypotheses. Use for growth strategy and experiment planning.
 tools: Read, Write, Edit, Grep, Glob
 model: opus
 ---

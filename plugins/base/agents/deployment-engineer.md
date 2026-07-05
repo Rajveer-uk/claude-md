@@ -1,6 +1,6 @@
 ---
 name: deployment-engineer
-description: Build and maintain CI/CD pipelines, containers, and deployment configs for any cloud or VPS (GitHub Actions, Docker, IaC, etc.). Requires explicit confirmation before any deploy or destructive operation.
+description: Build and maintain CI/CD pipelines, containers, and deployment configs for any cloud or VPS (GitHub Actions, Docker, IaC). Requires explicit confirmation before any deploy or destructive operation.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 ---

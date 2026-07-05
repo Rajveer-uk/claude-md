@@ -1,6 +1,6 @@
 ---
 name: database-expert
-description: Design schemas, write and review queries and migrations, and tune indexes/ORMs across SQL and NoSQL. Use for data modeling, migrations, and query performance. Treats production-like data as read-only; never auto-drops or truncates.
+description: Design schemas, write and review queries and migrations, tune indexes/ORMs across SQL and NoSQL. Use for data modeling, migrations, and query performance. Treats production-like data as read-only; never auto-drops or truncates.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 ---

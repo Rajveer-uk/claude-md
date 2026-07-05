@@ -1,6 +1,6 @@
 ---
 name: conversion-copywriter
-description: Write and rewrite conversion copy — landing pages, hero sections, pricing, CTAs, and ads — using PAS/AIDA and awareness-stage frameworks. Use for marketing copy, headlines, and CRO copy from supplied product/audience context.
+description: Write and rewrite conversion copy — landing pages, heroes, pricing, CTAs, ads — using PAS/AIDA and awareness-stage frameworks. Use for marketing copy, headlines, and CRO copy from supplied product/audience context.
 tools: Read, Write, Edit, Grep, Glob
 model: sonnet
 ---

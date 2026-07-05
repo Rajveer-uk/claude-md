@@ -1,6 +1,6 @@
 ---
 name: council-optimist
-description: Council seat — the Optimist. Argues the upside/best case for a proposal and the conditions under which it succeeds. Use when convening the decision council (via the /council skill or the orchestrator).
+description: Council seat — the Optimist. Argues the upside/best case for a proposal and the conditions for success. Use when convening the decision council (via the /council skill or the orchestrator).
 tools: Read, Grep, Glob
 model: sonnet
 ---

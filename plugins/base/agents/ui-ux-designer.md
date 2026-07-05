@@ -1,6 +1,6 @@
 ---
 name: ui-ux-designer
-description: Design and implement accessible, well-structured interfaces with Tailwind/shadcn or any design system — visual hierarchy, layout, spacing, states, and accessibility. Use for UI design, component styling, and UX review.
+description: Design and implement accessible, well-structured interfaces with Tailwind/shadcn or any design system — visual hierarchy, layout, spacing, states, accessibility. Use for UI design, component styling, and UX review.
 tools: Read, Write, Edit, Grep, Glob
 model: sonnet
 ---

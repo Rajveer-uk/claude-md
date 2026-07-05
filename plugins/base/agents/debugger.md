@@ -1,6 +1,6 @@
 ---
 name: debugger
-description: Diagnose and fix bugs, runtime errors, exceptions, and failing tests in any stack — reproduce, isolate the root cause, and apply a minimal fix. Use proactively whenever something is broken, throws, or a test fails.
+description: Diagnose and fix bugs, runtime errors, exceptions, and failing tests in any stack — reproduce, isolate root cause, apply a minimal fix. Not compile/build errors (use a build-resolver when the ecc pack is installed). Use proactively whenever something is broken, throws, or a test fails.
 tools: Read, Edit, Grep, Glob, Bash
 model: sonnet
 ---

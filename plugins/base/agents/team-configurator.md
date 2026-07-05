@@ -1,6 +1,6 @@
 ---
 name: team-configurator
-description: Write the "AI Team Configuration" table into CLAUDE.md, mapping the detected stack to specialist agents. Prefers a framework-specific agent, falls back to a universal one, and generates a new <framework>-expert agent when the stack clearly warrants it. Use after project-analyst, or when the stack changes.
+description: Write the "AI Team Configuration" table in CLAUDE.md, mapping the detected stack to specialist agents — framework-specific where one exists, else universal, generating a <framework>-expert when warranted. Use after project-analyst, or when the stack changes.
 tools: Read, Grep, Glob, Write, Edit
 model: sonnet
 ---

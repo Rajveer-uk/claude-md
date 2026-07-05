@@ -1,6 +1,6 @@
 ---
 name: content-writer
-description: Draft long-form blog posts, articles, and SEO body copy from a brief and target keywords you supply. Use for content drafting, outlines, and article writing.
+description: Draft long-form blog posts, articles, and SEO body copy from a brief and target keywords you supply. Use for content drafting and outlines.
 tools: Read, Write, Edit, Grep, Glob
 model: sonnet
 ---

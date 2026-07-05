@@ -1,6 +1,6 @@
 ---
 name: project-analyst
-description: Detect the languages, frameworks, package managers, build tools, and test runners a project actually uses. Use at the start of work in an unfamiliar repo to inform routing and command choices. Read-only.
+description: Detect the languages, frameworks, package managers, build tools, and test runners a project actually uses. Use at the start of work in an unfamiliar repo to inform routing and commands. Read-only.
 tools: Read, Grep, Glob
 model: sonnet
 ---

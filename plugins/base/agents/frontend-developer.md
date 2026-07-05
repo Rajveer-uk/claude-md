@@ -1,6 +1,6 @@
 ---
 name: frontend-developer
-description: Build client-side features and components in any frontend framework — React, Vue, Svelte, Angular, or vanilla — with state, data fetching, and routing. Use for UI feature work, refactors, and frontend bug fixes.
+description: Build client-side features and components in any framework (React, Vue, Svelte, Angular, vanilla) — state, data fetching, routing. Use for UI feature work, refactors, and frontend bug fixes.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 ---

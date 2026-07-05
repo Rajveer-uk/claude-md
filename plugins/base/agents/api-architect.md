@@ -1,6 +1,6 @@
 ---
 name: api-architect
-description: Design API contracts — REST, GraphQL, or gRPC — including resources, schemas, versioning, auth, pagination, and error models. Framework-agnostic. Use when defining or evolving an API surface, before implementation.
+description: Design API contracts (REST, GraphQL, gRPC) — resources, schemas, versioning, auth, pagination, error models. Framework-agnostic. Use when defining or evolving an API surface, before implementation.
 tools: Read, Write, Edit, Grep, Glob
 model: opus
 ---

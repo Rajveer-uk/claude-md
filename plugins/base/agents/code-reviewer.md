@@ -1,6 +1,6 @@
 ---
 name: code-reviewer
-description: Review changes for correctness, security, and maintainability before merge. Use proactively immediately after code is written or modified, before committing. Runs last; read-only — reports findings, does not edit.
+description: Review changes for correctness, security, and maintainability before merge — the holistic pre-merge gate; for deep single-language review prefer the matching ecc <lang>-reviewer when installed. Use proactively after code is written or modified, before committing. Runs last; read-only — reports findings, does not edit.
 tools: Read, Grep, Glob
 model: opus
 ---

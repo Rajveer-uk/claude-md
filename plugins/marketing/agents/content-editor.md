@@ -1,6 +1,6 @@
 ---
 name: content-editor
-description: Editorial QA on existing drafts — line/copy editing, brand-voice and style-guide enforcement, clarity and structure, and removing AI-writing tells. Use to polish or proofread content before publishing.
+description: Editorial QA on existing drafts — line/copy editing, brand-voice and style-guide enforcement, clarity, structure, and removing AI-writing tells. Use to polish or proofread content before publishing.
 tools: Read, Write, Edit, Grep, Glob
 model: haiku
 ---

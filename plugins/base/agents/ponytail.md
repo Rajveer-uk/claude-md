@@ -1,6 +1,6 @@
 ---
 name: ponytail
-description: Review changes for over-engineering — reinvented standard library, needless dependencies, speculative abstractions, dead flexibility. Read-only; reports what to delete with a net line-count, complementing code-reviewer (correctness/security). Use proactively when asked to simplify, cut bloat, or check whether something is over-built.
+description: Flag over-engineering — reinvented stdlib, needless deps, speculative abstractions, dead flexibility. Read-only; lists what to delete with a net line-count, complements code-reviewer. Use proactively when asked to simplify, cut bloat, or check whether something is over-built.
 tools: Read, Grep, Glob
 model: opus
 ---

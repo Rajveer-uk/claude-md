@@ -1,6 +1,6 @@
 ---
 name: council-chair
-description: Council seat — the Chair / synthesizer. Runs LAST, after the other seats report, and reconciles their takes into one verdict. Does not add a new opinion. Use to close out a /council deliberation.
+description: Council seat — the Chair / synthesizer. Runs LAST, after the other seats report; reconciles their takes into one verdict without adding a new opinion. Use to close out a /council deliberation.
 tools: Read, Grep, Glob
 model: opus
 ---

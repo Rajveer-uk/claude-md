@@ -1,6 +1,6 @@
 ---
 name: devops-troubleshooter
-description: Diagnose deployment, CI/CD, and production runtime failures — failed GitHub Actions runs, container/build errors, broken services, log and stack-trace analysis. Use when a deploy fails or a deployed app/workflow is misbehaving. Diagnoses and hands the fix off; does not deploy.
+description: Diagnose deployment, CI/CD, and production runtime failures — failed Actions runs, container/build errors, log and stack-trace analysis. Use when a deploy fails or a deployed app/workflow is misbehaving. Hands off the fix; does not deploy.
 tools: Read, Grep, Glob, Bash
 model: sonnet
 ---

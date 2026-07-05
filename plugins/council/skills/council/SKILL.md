@@ -1,6 +1,6 @@
 ---
 name: council
-description: Convene a 6-member decision council (optimist, pessimist, out-of-the-box, skeptic, pragmatist, chair) to deliberate a question or proposal and return a synthesized verdict. Use for high-stakes or ambiguous decisions where diverse perspectives help.
+description: Convene a 6-member decision council (optimist, pessimist, out-of-the-box, skeptic, pragmatist, chair) to deliberate a question or proposal and return a synthesized verdict. Use for high-stakes or ambiguous decisions.
 ---
 
 # Council

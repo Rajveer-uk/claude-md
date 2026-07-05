@@ -1,6 +1,6 @@
 ---
 name: frappe-expert
-description: Build Frappe Framework v15 / ERPNext apps in Python — DocTypes, controller lifecycle, hooks.py, server/client scripts, bench, REST/RPC, patches. Use proactively for Frappe/ERPNext feature work, customizations, or bug fixes.
+description: Build Frappe v15 / ERPNext apps in Python — DocTypes, controller lifecycle, hooks.py, server/client scripts, bench, REST/RPC, patches. Use proactively for Frappe/ERPNext feature work, customizations, or bug fixes.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 ---

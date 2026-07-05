@@ -1,6 +1,6 @@
 ---
 name: n8n-expert
-description: Build n8n custom nodes and workflows in TypeScript — declarative/programmatic nodes, credentials, error handling, webhooks, sub-workflows. Use proactively for n8n node development, workflow automation, or integration work.
+description: Build n8n nodes and workflows in TypeScript — declarative/programmatic nodes, credentials, error handling, webhooks, sub-workflows. Use proactively for n8n node development, workflow automation, or integration work.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 ---

@@ -1,6 +1,6 @@
 ---
 name: council-out-of-the-box
-description: Council seat — the out-of-the-box / lateral thinker. Reframes the question and proposes genuinely non-obvious alternatives. Use when convening the decision council (via the /council skill or the orchestrator).
+description: Council seat — the out-of-the-box / lateral thinker. Reframes the question and proposes non-obvious alternatives. Use when convening the decision council (via the /council skill or the orchestrator).
 tools: Read, Grep, Glob
 model: opus
 ---

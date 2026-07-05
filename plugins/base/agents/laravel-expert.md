@@ -1,6 +1,6 @@
 ---
 name: laravel-expert
-description: Build and refactor Laravel 11/12 (PHP 8.2+) apps — Eloquent models, Form Requests, Policies, queued jobs, Artisan, migrations, API resources. Use proactively for PHP/Laravel feature work, bug fixes, or refactors in a Laravel codebase.
+description: Build and refactor Laravel 11/12 (PHP 8.2+) apps — Eloquent, Form Requests, Policies, queued jobs, Artisan, migrations, API resources. Use proactively for PHP/Laravel feature work, bug fixes, or refactors in a Laravel codebase.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 ---

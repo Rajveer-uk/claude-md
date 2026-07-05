@@ -1,6 +1,6 @@
 ---
 name: email-campaign-writer
-description: Design lifecycle/drip email flows and write the emails — welcome, nurture, cart-abandon, win-back — with subject lines, body copy, and CTAs from supplied audience/offer context. Use for email marketing campaigns and sequences.
+description: Design lifecycle/drip email flows and write the emails — welcome, nurture, cart-abandon, win-back — with subject lines, body copy, and CTAs. Use for email marketing campaigns and sequences.
 tools: Read, Write, Edit, Grep, Glob
 model: sonnet
 ---

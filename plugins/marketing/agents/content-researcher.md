@@ -1,6 +1,6 @@
 ---
 name: content-researcher
-description: Research a topic with live web search (Tavily) and return findings, sources, and competitor/SERP angles for content-writer to use. READ-ONLY on files — never writes. Network-enabled via an opt-in MCP connector.
+description: Research a topic with live web search (Tavily) and return findings, sources, and competitor/SERP angles for content-writer. READ-ONLY on files — never writes. Network-enabled via an opt-in MCP connector.
 tools: Read, Grep, Glob, mcp__tavily__tavily_search
 model: sonnet
 mcpServers:

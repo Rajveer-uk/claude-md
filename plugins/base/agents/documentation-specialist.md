@@ -1,6 +1,6 @@
 ---
 name: documentation-specialist
-description: Write and maintain READMEs, guides, usage docs, and changelogs in clear prose. Use to document a feature, write setup instructions, or improve existing docs. Cheapest model.
+description: Write and maintain READMEs, guides, usage docs, and changelogs. Use to document a feature, write setup instructions, or improve existing docs. Cheapest model.
 tools: Read, Write, Edit, Grep, Glob
 model: haiku
 ---

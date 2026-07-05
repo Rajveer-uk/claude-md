@@ -1,6 +1,6 @@
 ---
 name: test-engineer
-description: Write and improve unit, integration, and e2e tests across any test framework, and diagnose failing ones. Use proactively after implementing a feature or fixing a bug to add or update tests, and to stabilize a flaky suite.
+description: Write and improve unit, integration, and e2e tests on existing code across any framework, and diagnose failing ones; for greenfield red-green TDD use the tdd-guide agent when installed. Use proactively after implementing a feature or fixing a bug to add or update tests, and to stabilize a flaky suite.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 ---

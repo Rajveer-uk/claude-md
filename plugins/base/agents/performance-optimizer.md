@@ -1,6 +1,6 @@
 ---
 name: performance-optimizer
-description: Find and fix performance bottlenecks in any stack — slow queries, N+1, hot code paths, memory growth, oversized bundles. Use when something is measurably slow or before scaling up.
+description: Find and fix performance bottlenecks in any stack — slow queries, N+1, hot paths, memory growth, oversized bundles. Use when something is measurably slow or before scaling up.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 ---

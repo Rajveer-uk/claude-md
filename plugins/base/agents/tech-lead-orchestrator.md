@@ -1,6 +1,6 @@
 ---
 name: tech-lead-orchestrator
-description: Plan multi-step engineering work and route each task to the right specialist agent. Use for any non-trivial, multi-file, or cross-cutting request before coding starts. Produces an ordered plan and a task→agent map; never writes code itself.
+description: Plan and route multi-step engineering work to the right specialists. Use for any non-trivial, multi-file, or cross-cutting request before coding starts. Returns an ordered plan and task→agent map; never writes code itself.
 tools: Read, Grep, Glob
 model: opus
 ---

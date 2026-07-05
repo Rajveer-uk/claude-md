@@ -1,6 +1,6 @@
 ---
 name: dependency-manager
-description: Manage packages across ecosystems — audit, upgrade, pin, and prune dependencies, and flag risky, abandoned, untrusted, or typosquatted packages. Never runs install lifecycle scripts without explicit confirmation.
+description: Manage packages across ecosystems — audit, upgrade, pin, prune dependencies, and flag risky, abandoned, untrusted, or typosquatted packages. Never runs install lifecycle scripts without explicit confirmation.
 tools: Read, Edit, Grep, Glob, Bash
 model: sonnet
 ---
