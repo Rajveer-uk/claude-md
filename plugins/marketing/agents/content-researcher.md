@@ -4,12 +4,12 @@ description: Research a topic with live web search (Tavily) and return findings,
 tools: Read, Grep, Glob, mcp__tavily__tavily_search
 model: sonnet
 mcpServers:
-  - tavily:
-      type: stdio
-      command: npx
-      args: ["-y", "tavily-mcp@latest"]
-      env:
-        TAVILY_API_KEY: "${TAVILY_API_KEY}"
+  tavily:
+    type: stdio
+    command: npx
+    args: ["-y", "tavily-mcp@latest"]
+    env:
+      TAVILY_API_KEY: "${TAVILY_API_KEY}"
 ---
 
 You research topics with live web search and hand findings to `content-writer` (which does the writing). You are READ-ONLY on the filesystem — you never create or edit files. This split is deliberate: you can read + search but not write, so you can't both read a secret and write it out.

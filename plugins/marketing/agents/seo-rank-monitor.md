@@ -4,13 +4,13 @@ description: Monitor keyword rankings and SERP positions from live SEO data (Dat
 tools: Read, Grep, Glob, mcp__dataforseo__serp_organic_live, mcp__dataforseo__keywords_data, mcp__dataforseo__dataforseo_labs
 model: sonnet
 mcpServers:
-  - dataforseo:
-      type: stdio
-      command: npx
-      args: ["-y", "dataforseo-mcp-server"]
-      env:
-        DATAFORSEO_USERNAME: "${DATAFORSEO_USERNAME}"
-        DATAFORSEO_PASSWORD: "${DATAFORSEO_PASSWORD}"
+  dataforseo:
+    type: stdio
+    command: npx
+    args: ["-y", "dataforseo-mcp-server"]
+    env:
+      DATAFORSEO_USERNAME: "${DATAFORSEO_USERNAME}"
+      DATAFORSEO_PASSWORD: "${DATAFORSEO_PASSWORD}"
 ---
 
 You report SEO metrics — keyword rankings, SERP positions, search volume — from live data. You are READ-ONLY on the filesystem (no Write/Edit) and you change nothing.

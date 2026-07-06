@@ -179,7 +179,7 @@ Review the proposed table — and anything under **"Generated agents — review 
 
 The user-scope `settings.json` can be edited or removed by you (or, in a worst case, by a prompt-injected agent that gets a write approved). For protection that **cannot be overridden by any user/project/local setting or even a CLI flag**, install the managed-policy file. It is the **highest** tier in Claude Code's settings hierarchy.
 
-It locks only the non-negotiables — `disableBypassPermissionsMode` + `disableAutoMode` and a core of crown-jewel secret denies (`.env`, private keys, SSH/cloud/DB creds, `*.tfstate`/`*.tfvars`). The flexible parts (build-dir noise, `.env.*`, the Bash speed-bumps) stay in user scope where you can still tune them per project.
+It locks only the non-negotiables — `disableBypassPermissionsMode` and a core of crown-jewel secret denies (`.env`, private keys, SSH/cloud/DB creds, `*.tfstate`/`*.tfvars`). There is no supported managed key to disable auto-accept (`acceptEdits`) mode — bypass mode is the lock that matters, and the user-scope `defaultMode: "plan"` baseline covers the default. The flexible parts (build-dir noise, `.env.*`, the Bash speed-bumps) stay in user scope where you can still tune them per project.
 
 The master copy is `managed/managed-settings.json` in this repo. Installing it writes to an OS policy directory, which requires **admin/root** — that's the point: you can't casually remove it.
 
