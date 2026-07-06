@@ -9,9 +9,9 @@ metadata:
 
 # Agent Introspection Debugging
 
-Use this skill when an agent run is failing repeatedly, consuming tokens without progress, looping on the same tools, or drifting away from the intended task.
+Use when an agent run fails repeatedly, burns tokens without progress, loops on the same tools, or drifts from the intended task.
 
-This is a workflow skill, not a hidden runtime. It teaches the agent to debug itself systematically before escalating to a human.
+A workflow skill, not a hidden runtime: it teaches the agent to debug itself systematically before escalating to a human.
 
 ## When to Activate
 

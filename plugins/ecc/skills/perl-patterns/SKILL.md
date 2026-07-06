@@ -17,13 +17,13 @@ metadata:
 
 ## How It Works
 
-Apply these patterns as a bias toward modern Perl 5.36+ defaults: signatures, explicit modules, focused error handling, and testable boundaries. The examples below are meant to be copied as starting points, then tightened for the actual app, dependency stack, and deployment model in front of you.
+Bias toward modern Perl 5.36+ defaults: signatures, explicit modules, focused error handling, testable boundaries. Copy the examples as starting points, then tighten for the actual app, dependency stack, and deployment model.
 
 ## Core Principles
 
 ### 1. Use `v5.36` Pragma
 
-A single `use v5.36` replaces the old boilerplate and enables strict, warnings, and subroutine signatures.
+One `use v5.36` replaces the old boilerplate: strict, warnings, and subroutine signatures.
 
 ```perl
 # Good: Modern preamble
@@ -77,7 +77,7 @@ sub connect_db {
 
 ### 3. Context Sensitivity
 
-Understand scalar vs list context — a core Perl concept.
+Understand scalar vs list context.
 
 ```perl
 use v5.36;
@@ -91,7 +91,7 @@ say "Items: " . scalar @items; # Force scalar context
 
 ### 4. Postfix Dereferencing
 
-Use postfix dereference syntax for readability with nested structures.
+Postfix dereference reads better with nested structures.
 
 ```perl
 use v5.36;
@@ -500,4 +500,4 @@ use Module::Runtime 'require_module';    # Good: safe module loading
 require_module($module);
 ```
 
-**Remember**: Modern Perl is clean, readable, and safe. Let `use v5.36` handle the boilerplate, use Moo for objects, and prefer CPAN's battle-tested modules over hand-rolled solutions.
+**Remember**: Let `use v5.36` handle the boilerplate, use Moo for objects, and prefer battle-tested CPAN modules over hand-rolled solutions.

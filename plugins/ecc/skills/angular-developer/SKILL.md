@@ -19,11 +19,11 @@ metadata:
 - Writing or debugging Angular-specific tests (unit, component harness, E2E)
 - Configuring Angular CLI tooling or the Angular MCP server
 
-1. Always analyze the project's Angular version before providing guidance, as best practices and available features can vary significantly between versions. If creating a new project with Angular CLI, do not specify a version unless prompted by the user.
+1. Always analyze the project's Angular version before providing guidance — best practices and available features vary significantly between versions. When creating a new project with Angular CLI, do not specify a version unless prompted by the user.
 
-2. When generating code, follow Angular's style guide and best practices for maintainability and performance. Use the Angular CLI for scaffolding components, services, directives, pipes, and routes to ensure consistency.
+2. Follow Angular's style guide and best practices for maintainability and performance. Scaffold components, services, directives, pipes, and routes with the Angular CLI for consistency.
 
-3. Once you finish generating code, run `ng build` to ensure there are no build errors. If there are errors, analyze the error messages and fix them before proceeding. Do not skip this step, as it is critical for ensuring the generated code is correct and functional.
+3. After generating code, run `ng build`; analyze and fix any errors before proceeding. Do not skip this step — it verifies the generated code is correct and functional.
 
 ## Creating New Projects
 
@@ -33,7 +33,7 @@ If no guidelines are provided by the user, use these defaults when creating a ne
 2. Prefer Signal Forms for new projects only when the target Angular version supports them. [Find out more](references/signal-forms.md).
 
 **Execution Rules for `ng new`:**
-When asked to create a new Angular project, you must determine the correct execution command by following these strict steps:
+Determine the correct execution command by following these strict steps:
 
 **Step 1: Check for an explicit user version.**
 
@@ -53,18 +53,18 @@ When asked to create a new Angular project, you must determine the correct execu
 
 ## Components
 
-When working with Angular components, consult the following references based on the task:
+Consult these references by task:
 
 - **Fundamentals**: Anatomy, metadata, core concepts, and template control flow (@if, @for, @switch). Read [components.md](references/components.md)
 - **Inputs**: Signal-based inputs, transforms, and model inputs. Read [inputs.md](references/inputs.md)
 - **Outputs**: Signal-based outputs and custom event best practices. Read [outputs.md](references/outputs.md)
 - **Host Elements**: Host bindings and attribute injection. Read [host-elements.md](references/host-elements.md)
 
-If you require deeper documentation not found in the references above, read the documentation at `https://angular.dev/guide/components`.
+For deeper documentation not covered above, read `https://angular.dev/guide/components`.
 
 ## Reactivity and Data Management
 
-When managing state and data reactivity, use Angular Signals and consult the following references:
+Use Angular Signals for state and data reactivity; references:
 
 - **Signals Overview**: Core signal concepts (`signal`, `computed`), reactive contexts, and `untracked`. Read [signals-overview.md](references/signals-overview.md)
 - **Dependent State (`linkedSignal`)**: Creating writable state linked to source signals. Read [linked-signal.md](references/linked-signal.md)
@@ -73,7 +73,7 @@ When managing state and data reactivity, use Angular Signals and consult the fol
 
 ## Forms
 
-In most cases for new apps, **prefer signal forms**. When making a forms decision, analyze the project and consider the following guidelines:
+For new apps, **prefer signal forms** in most cases. When deciding, analyze the project:
 
 - If the application version supports Signal Forms and this is a new form, **prefer signal forms**.
 - For older applications or existing forms, match the application's current form strategy.
@@ -84,7 +84,7 @@ In most cases for new apps, **prefer signal forms**. When making a forms decisio
 
 ## Dependency Injection
 
-When implementing dependency injection in Angular, follow these guidelines:
+References:
 
 - **Fundamentals**: Overview of Dependency Injection, services, and the `inject()` function. Read [di-fundamentals.md](references/di-fundamentals.md)
 - **Creating and Using Services**: Creating services, the `providedIn: 'root'` option, and injecting into components or other services. Read [creating-services.md](references/creating-services.md)

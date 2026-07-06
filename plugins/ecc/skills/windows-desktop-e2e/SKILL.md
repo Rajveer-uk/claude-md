@@ -7,7 +7,7 @@ metadata:
 
 # Windows Desktop E2E Testing
 
-End-to-end testing for Windows native desktop applications using **pywinauto** backed by Windows UI Automation (UIA). Covers WPF, WinForms, Win32/MFC, and Qt (5.x / 6.x) — with Qt-specific guidance as a dedicated section.
+E2E testing for Windows native desktop apps using **pywinauto** on Windows UI Automation (UIA). Covers WPF, WinForms, Win32/MFC, and Qt (5.x / 6.x); Qt has a dedicated section.
 
 ## When to Activate
 
@@ -26,7 +26,7 @@ End-to-end testing for Windows native desktop applications using **pywinauto** b
 
 ## Core Concepts
 
-All Windows desktop automation relies on **UI Automation (UIA)**, a Windows-built-in accessibility API. Every supported framework exposes a tree of UIA elements with properties Claude can read and act on:
+All Windows desktop automation relies on **UI Automation (UIA)**, Windows' built-in accessibility API. Each framework exposes a UIA element tree to read and act on:
 
 ```
 Your test (Python)
@@ -64,11 +64,11 @@ from pywinauto import Desktop
 Desktop(backend="uia").windows()  # lists all top-level windows
 ```
 
-Install **Accessibility Insights for Windows** (free, from Microsoft) — your DevTools equivalent for inspecting the UIA element tree before writing any test.
+Install **Accessibility Insights for Windows** (free, Microsoft) — the DevTools equivalent for inspecting the UIA tree before writing any test.
 
 ## Testability Setup (by Framework)
 
-The single most impactful thing you can do is **give every interactive control a stable AutomationId** before writing tests.
+**Give every interactive control a stable AutomationId** before writing tests — the single highest-impact step.
 
 ### WPF
 
@@ -248,7 +248,7 @@ class LoginPage(BasePage):
 
 ### conftest.py
 
-> For new projects prefer the **Tier 1 sandbox fixture** (see below) — it adds filesystem isolation at zero extra cost. This basic fixture is for minimal/legacy setups only.
+> New projects: prefer the **Tier 1 sandbox fixture** (below) — filesystem isolation at zero extra cost. This basic fixture is for minimal/legacy setups only.
 
 ```python
 import os, pytest
@@ -369,7 +369,7 @@ def stop_recording(proc):
 
 ## Per-Step Trace (opt-in)
 
-The default failure screenshot is often too thin for diagnosing flaky tests. The step-level trace below is **off by default** — enable it only when reproducing a flaky case.
+For flakes the failure screenshot is often too thin; this step-level trace is **off by default** — enable only when reproducing a flaky case.
 
 ### Enable
 
@@ -517,16 +517,14 @@ def pytest_runtest_makereport(item, call):
 
 ### Tier 2 — Windows Job Object (optional: process-lifetime containment)
 
-Attach the process to a Job Object so it is **automatically terminated** when
-the test fixture's job handle is GC'd. Also prevents the app from spawning
-child processes that escape fixture cleanup.
+Attach the process to a Job Object: it is **automatically terminated** when the fixture's job handle is GC'd, and child processes can't escape fixture cleanup.
 
 > **Scope of isolation:** Job Objects do NOT virtualize filesystem access or
 > block network traffic. File-write and network isolation require AppContainer,
 > Windows Firewall rules, or Tier 3 (Windows Sandbox). Use Tier 2 only for
 > process-lifetime and child-process containment.
 
-Requires no extra dependencies.
+No extra dependencies.
 
 ```python
 import ctypes, ctypes.wintypes as wt
@@ -573,9 +571,7 @@ def restrict_process(pid: int):
 
 ### Tier 3 — Windows Sandbox (CI full-OS isolation)
 
-When you need a clean Windows image per run (no leftover registry keys, no
-shared GPU state, true isolation), run the **entire test suite** inside
-[Windows Sandbox](https://learn.microsoft.com/windows/security/application-security/application-isolation/windows-sandbox/windows-sandbox-overview).
+For a clean Windows image per run (no leftover registry keys, no shared GPU state, true isolation), run the **entire test suite** inside [Windows Sandbox](https://learn.microsoft.com/windows/security/application-security/application-isolation/windows-sandbox/windows-sandbox-overview).
 
 **Requirement:** Windows 10/11 Pro or Enterprise, Virtualization enabled.
 
@@ -672,7 +668,7 @@ jobs:
 
 ### Enable UIA in Qt 5.x
 
-Qt 5.x accessibility is disabled by default in some builds (especially 5.7–5.14). Set the environment variable **before** launching. Qt 6.x enables accessibility by default — skip this step for Qt 6.
+Qt 5.x accessibility is disabled by default in some builds (especially 5.7–5.14) — set the env var **before** launching. Qt 6.x enables it by default; skip this step for Qt 6.
 
 ```python
 # conftest.py — add at module top
@@ -785,15 +781,15 @@ def click_image(template_path, confidence=0.85):
 
 Screenshot matching is brutally sensitive to Windows display scaling (100% / 125% / 150%). Three hard rules:
 
-1. **Capture templates at the same scale as the target machine.** Don't try to rescue a mismatch with `PIL.Image.resize` — `cv2.matchTemplate` is very fragile against resampling artefacts.
+1. **Capture templates at the same scale as the target machine.** Don't rescue a mismatch with `PIL.Image.resize` — `cv2.matchTemplate` is fragile against resampling artefacts.
 2. **Pin the CI display scaling.** On `windows-latest` add a step like `Set-DisplayResolution 1920 1080 -Force` and disable per-monitor DPI scaling, so screenshot dimensions are reproducible.
-3. **Record the scale alongside each artefact.** On capture, write `GetDpiForWindow(hwnd) / 96` to `artifacts/<test>/metadata.json` — postmortems become obvious instead of guess-work.
+3. **Record the scale alongside each artefact.** On capture, write `GetDpiForWindow(hwnd) / 96` to `artifacts/<test>/metadata.json` — makes postmortems obvious.
 
 > Process-level DPI awareness (`SetProcessDpiAwarenessContext`) **can conflict with Qt's own DPI handling** when the app under test is Qt-based. Prefer "same-scale templates + CI pin" over flipping process-wide DPI mode in fixtures.
 
 ### Debugging Match Confidence
 
-When tuning the `confidence` threshold, the only sane workflow is to **see** where the match landed. The helper below is diagnosis-only — do not call it from test code.
+Tuning the `confidence` threshold requires **seeing** where the match landed. Diagnosis-only helper — do not call it from test code.
 
 ```python
 def debug_match(template_path, out="artifacts/match_debug.png", confidence=0.85):

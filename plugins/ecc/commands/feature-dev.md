@@ -3,15 +3,14 @@ description: Guided feature development with codebase understanding and architec
 allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 ---
 
-A structured feature-development workflow that emphasizes understanding existing code before writing new code.
+Structured feature development: understand existing code before writing new code.
 
 ## Phases
 
 ### 1. Discovery
 
-- read the feature request carefully
-- identify requirements, constraints, and acceptance criteria
-- ask clarifying questions if the request is ambiguous
+- read the feature request; identify requirements, constraints, acceptance criteria
+- ask clarifying questions if ambiguous
 
 ### 2. Codebase Exploration
 

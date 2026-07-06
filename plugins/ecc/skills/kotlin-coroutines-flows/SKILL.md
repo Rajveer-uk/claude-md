@@ -7,7 +7,7 @@ metadata:
 
 # Kotlin Coroutines & Flows
 
-Patterns for structured concurrency, Flow-based reactive streams, and coroutine testing in Android and Kotlin Multiplatform projects.
+Structured concurrency, Flow-based reactive streams, and coroutine testing for Android and Kotlin Multiplatform.
 
 ## When to Activate
 
@@ -99,7 +99,7 @@ class DashboardViewModel(
 }
 ```
 
-`WhileSubscribed(5_000)` keeps the upstream active for 5 seconds after the last subscriber leaves — survives configuration changes without restarting.
+`WhileSubscribed(5_000)` keeps upstream active for 5 seconds after the last subscriber leaves — survives configuration changes without restarting.
 
 ### Combining Multiple Flows
 
@@ -180,7 +180,7 @@ withContext(Dispatchers.IO) { database.query() }
 withContext(Dispatchers.Main) { updateUi() }
 ```
 
-In KMP, use `Dispatchers.Default` and `Dispatchers.Main` (available on all platforms). `Dispatchers.IO` is JVM/Android only — use `Dispatchers.Default` on other platforms or provide via DI.
+KMP: `Dispatchers.Default` and `Dispatchers.Main` exist on all platforms; `Dispatchers.IO` is JVM/Android only — use `Dispatchers.Default` elsewhere or provide via DI.
 
 ## Cancellation
 

@@ -7,11 +7,10 @@ metadata:
 
 # Production Audit
 
-Use this skill when the user asks whether an application is ready to ship, what
-could break in production, or what must be fixed before a launch. This is a
-maintainer-safe rewrite of the stale community production-audit idea: it keeps
-the useful production-readiness lens and removes unpinned external execution and
-third-party data sharing.
+For "is this ready to ship", "what breaks in prod", and "what must be fixed
+before launch" questions. A maintainer-safe rewrite of the stale community
+production-audit idea: same production-readiness lens, minus unpinned external
+execution and third-party data sharing.
 
 ## When to Use
 
@@ -157,8 +156,7 @@ Then list:
 - `Evidence missing`: what would change confidence if provided.
 - `Next action`: one concrete fix or verification step.
 
-Keep strengths short. The user asked for readiness, so the useful answer is the
-remaining risk and the next action.
+Keep strengths short — the useful answer is remaining risk and next action.
 
 ## Example
 

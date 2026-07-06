@@ -11,9 +11,7 @@ author: jeff
 
 # Motion Advanced
 
-Complex, interactive, and physics-based animation patterns.
-Requires `motion-foundations` to be set up first.
-Use these when `motion-patterns` is not enough.
+Complex, interactive, and physics-based animation patterns. Requires `motion-foundations` set up first; use when `motion-patterns` is not enough.
 
 ## When to Activate
 
@@ -26,8 +24,6 @@ Use these when `motion-patterns` is not enough.
 
 ## Outputs
 
-This skill produces:
-
 - Drag interactions: draggable cards, drag-to-dismiss sheets, `Reorder.Group` lists
 - Gesture hooks: swipe detection, long press, pinch outline
 - Text animation components: word reveal, character typewriter, number counter
@@ -39,20 +35,20 @@ This skill produces:
 ## Principles
 
 - Physics-based motion (`useSpring`, `springs.*`) always feels more natural than duration-based for direct manipulation.
-- `useMotionValue` + `useTransform` computes derived values without triggering re-renders.
-- `useAnimate` sequences are imperative and interrupt-safe — calling `animate()` mid-flight cancels the previous animation automatically.
-- Motion values (`useMotionValue`, `useSpring`) are SSR-safe and do not cause hydration errors.
+- `useMotionValue` + `useTransform` computes derived values without re-renders.
+- `useAnimate` sequences are imperative and interrupt-safe — `animate()` mid-flight cancels the previous animation automatically.
+- Motion values (`useMotionValue`, `useSpring`) are SSR-safe; no hydration errors.
 
 ## Rules
 
-1. **Drag interactions must be tested on touch devices**, not just mouse. `drag` prop works on both but feel and threshold differ.
+1. **Drag interactions must be tested on touch devices**, not just mouse — `drag` works on both, but feel and threshold differ.
 2. **Infinite animations must pause when `document.visibilityState === "hidden"`.** Background tabs must not consume GPU/CPU.
 3. **Swipe threshold must be explicit.** Never infer intent from velocity alone; combine `offset` + `velocity` checks.
-4. **`useAnimate` scope ref must be attached to a mounted DOM element.** Calling `animate()` before mount throws silently.
-5. **Motion values must not be recreated on render.** `useMotionValue(0)` inside a component body is correct; `new MotionValue(0)` in a render is not.
+4. **`useAnimate` scope ref must be attached to a mounted DOM element** — `animate()` before mount throws silently.
+5. **Motion values must not be recreated on render.** `useMotionValue(0)` in a component body is correct; `new MotionValue(0)` in a render is not.
 6. **All token values are imported from `motion-foundations`.** No inline numbers.
 7. **Custom hooks must handle cleanup.** Every `window.addEventListener` needs a matching `removeEventListener` in the `useEffect` return.
-8. **SVG morphing requires equal path command counts.** Paths with different command structures snap instead of interpolating.
+8. **SVG morphing requires equal path command counts** — differing command structures snap instead of interpolating.
 
 ## Decision Guidance
 
@@ -96,8 +92,7 @@ const opacity = useTransform(x, [-200, 0, 200], [0, 1, 0])
 
 ### useAnimate
 
-Returns `[scope, animate]`. The scope ref must be attached to a DOM element.
-`animate()` calls are interrupt-safe — calling mid-flight cancels the previous run.
+Returns `[scope, animate]`. Attach the scope ref to a DOM element. `animate()` calls are interrupt-safe — mid-flight calls cancel the previous run.
 
 ```tsx
 const [scope, animate] = useAnimate()

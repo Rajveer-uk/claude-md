@@ -18,11 +18,11 @@ metadata:
 
 ## How It Works
 
-Start with taint-aware input boundaries, then move outward: validate and untaint inputs, keep filesystem and process execution constrained, and use parameterized DBI queries everywhere. The examples below show the safe defaults this skill expects you to apply before shipping Perl code that touches user input, the shell, or the network.
+Start with taint-aware input boundaries, then move outward: validate and untaint inputs, constrain filesystem and process execution, and use parameterized DBI queries everywhere. The examples are the safe defaults to apply before shipping Perl code that touches user input, the shell, or the network.
 
 ## Taint Mode
 
-Perl's taint mode (`-T`) tracks data from external sources and prevents it from being used in unsafe operations without explicit validation.
+Taint mode (`-T`) tracks data from external sources and blocks its use in unsafe operations until explicitly validated.
 
 ### Enabling Taint Mode
 
@@ -242,7 +242,7 @@ sub bad_search($pattern) {
 my $output = `ls $user_dir`;   # Shell injection risk
 ```
 
-Also use `Capture::Tiny` for capturing stdout/stderr from external commands safely.
+Use `Capture::Tiny` to capture stdout/stderr from external commands safely.
 
 ## SQL Injection Prevention
 
@@ -499,4 +499,4 @@ print "<div>Welcome, $username!</div>";  # XSS
 print $cgi->redirect($user_url);         # Open redirect
 ```
 
-**Remember**: Perl's flexibility is powerful but requires discipline. Use taint mode for web-facing code, validate all input with allowlists, use DBI placeholders for every query, and encode all output for its context. Defense in depth — never rely on a single layer.
+**Remember**: Use taint mode for web-facing code, validate all input with allowlists, use DBI placeholders for every query, and encode all output for its context. Defense in depth — never rely on a single layer.

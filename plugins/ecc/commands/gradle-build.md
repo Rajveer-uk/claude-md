@@ -5,11 +5,11 @@ allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 
 # Gradle Build Fix
 
-Incrementally fix Gradle build and compilation errors for Android and Kotlin Multiplatform projects.
+Fix Gradle build and compilation errors incrementally for Android and Kotlin Multiplatform projects.
 
 ## Step 1: Detect Build Configuration
 
-Identify the project type and run the appropriate build:
+Identify the project type and run the matching build:
 
 | Indicator | Build Command |
 |-----------|---------------|
@@ -22,25 +22,25 @@ Also check `gradle.properties` and `local.properties` for configuration.
 
 ## Step 2: Parse and Group Errors
 
-1. Run the build command and capture output
+1. Run the build; capture output
 2. Separate Kotlin compilation errors from Gradle configuration errors
 3. Group by module and file path
-4. Sort: configuration errors first, then compilation errors by dependency order
+4. Sort: configuration errors first, then compilation errors in dependency order
 
 ## Step 3: Fix Loop
 
 For each error:
 
-1. **Read the file** — Full context around the error line
-2. **Diagnose** — Common categories:
+1. **Read the file** — full context around the error line
+2. **Diagnose** — common categories:
    - Missing import or unresolved reference
    - Type mismatch or incompatible types
    - Missing dependency in `build.gradle.kts`
    - Expect/actual mismatch (KMP)
    - Compose compiler error
-3. **Fix minimally** — Smallest change that resolves the error
-4. **Re-run build** — Verify fix and check for new errors
-5. **Continue** — Move to next error
+3. **Fix minimally** — smallest change that resolves the error
+4. **Re-run build** — verify fix, check for new errors
+5. **Continue** to next error
 
 ## Step 4: Guardrails
 

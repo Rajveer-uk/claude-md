@@ -8,7 +8,7 @@ metadata:
 
 # Test-Driven Development Workflow
 
-This skill ensures all code development follows TDD principles with comprehensive test coverage.
+Enforces TDD with comprehensive test coverage for all code development.
 
 ## When to Activate
 
@@ -87,7 +87,7 @@ ALWAYS write tests first, then implement code to make tests pass.
 
 ### Step 0: Detect the Test Runner
 
-Do not assume `npm test`. The commands in the steps and examples below use `<test>`, `<test-watch>`, and `<coverage>` as placeholders for the project's actual runner. Resolve them once before starting:
+Do not assume `npm test`. Steps and examples below use `<test>`, `<test-watch>`, and `<coverage>` as placeholders for the project's actual runner — resolve them once before starting:
 
 1. **Detect the package manager** by inspecting the project:
 
@@ -221,7 +221,7 @@ Recommended commit message format:
 
 ### Step 8: Write a TDD Evidence Report
 
-After GREEN and coverage are validated, write a short human-readable evidence report. The report is not a replacement for test code; it is an index that explains what the test code proves and preserves that proof across session restarts or squash merges.
+After GREEN and coverage are validated, write a short human-readable evidence report — not a replacement for test code, but an index of what the tests prove, preserving that proof across session restarts or squash merges.
 
 Recommended path:
 
@@ -287,7 +287,7 @@ describe('Button Component', () => {
 
 ### Bun Native Test Pattern (`bun:test`)
 
-When the project uses Bun's built-in runner (see [Step 0](#step-0-detect-the-test-runner)), import from `bun:test` and run with `bun test` — not `bun run test`. The API is Jest-like, so `describe` / `it` / `expect` and most matchers carry over. See the `bun-runtime` skill for runtime, install, and bundler details.
+When the project uses Bun's built-in runner (see [Step 0](#step-0-detect-the-test-runner)), import from `bun:test` and run with `bun test` — not `bun run test`. The API is Jest-like: `describe` / `it` / `expect` and most matchers carry over. See the `bun-runtime` skill for runtime, install, and bundler details.
 
 ```typescript
 import { describe, it, expect, mock } from 'bun:test'
@@ -576,4 +576,4 @@ test('updates user', () => {
 
 ---
 
-**Remember**: Tests are not optional. They are the safety net that enables confident refactoring, rapid development, and production reliability.
+**Remember**: tests are not optional — they are the safety net for confident refactoring, rapid development, and production reliability.

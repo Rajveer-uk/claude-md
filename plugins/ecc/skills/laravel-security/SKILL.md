@@ -7,7 +7,7 @@ metadata:
 
 # Laravel Security Best Practices
 
-Comprehensive security guidelines for Laravel applications to protect against common vulnerabilities.
+Security guidelines protecting Laravel applications against common vulnerabilities.
 
 ## When to Activate
 

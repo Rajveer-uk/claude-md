@@ -7,7 +7,7 @@ metadata:
 
 # GitHub Operations
 
-Manage GitHub repositories with a focus on community health, CI reliability, and contributor experience.
+Manage GitHub repositories: community health, CI reliability, contributor experience.
 
 ## When to Activate
 
@@ -100,7 +100,7 @@ gh run rerun <run-id> --failed
 
 ## Release Management
 
-When preparing a release:
+To prepare a release:
 
 1. Check all CI is green on main
 2. Review unreleased changes: `gh pr list --state merged --base main`

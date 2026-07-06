@@ -7,7 +7,7 @@ metadata:
 
 # Kotlin Exposed Patterns
 
-Comprehensive patterns for database access with JetBrains Exposed ORM, including DSL queries, DAO, transactions, and production-ready configuration.
+Database access with JetBrains Exposed ORM: DSL queries, DAO, transactions, and production-ready configuration.
 
 ## When to Use
 
@@ -20,7 +20,11 @@ Comprehensive patterns for database access with JetBrains Exposed ORM, including
 
 ## How It Works
 
-Exposed provides two query styles: DSL for direct SQL-like expressions and DAO for entity lifecycle management. HikariCP manages a pool of reusable database connections configured via `HikariConfig`. Flyway runs versioned SQL migration scripts at startup to keep the schema in sync. All database operations run inside `newSuspendedTransaction` blocks for coroutine safety and atomicity. The repository pattern wraps Exposed queries behind an interface so business logic stays decoupled from the data layer and tests can use an in-memory H2 database.
+- Two query styles: DSL for direct SQL-like expressions, DAO for entity lifecycle management.
+- HikariCP pools reusable connections, configured via `HikariConfig`.
+- Flyway runs versioned SQL migration scripts at startup to keep the schema in sync.
+- All database operations run inside `newSuspendedTransaction` blocks for coroutine safety and atomicity.
+- The repository pattern wraps Exposed queries behind an interface — business logic stays decoupled from the data layer; tests can use an in-memory H2 database.
 
 ## Examples
 
@@ -717,4 +721,4 @@ dependencies {
 | `orderBy` / `limit` / `offset` | Sort and paginate |
 | `count()` / `sum()` / `avg()` | Aggregation functions |
 
-**Remember**: Use the DSL style for simple queries and the DAO style when you need entity lifecycle management. Always use `newSuspendedTransaction` for coroutine support, and wrap database operations behind a repository interface for testability.
+**Remember**: DSL for simple queries, DAO for entity lifecycle management. Always use `newSuspendedTransaction` for coroutine support; wrap database operations behind a repository interface for testability.

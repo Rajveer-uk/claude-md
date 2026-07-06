@@ -5,20 +5,19 @@ allowed-tools: Read, Grep, Glob, Bash, Task
 
 # C++ Code Review
 
-This command invokes the **cpp-reviewer** agent for comprehensive C++-specific code review.
+Invokes the **cpp-reviewer** agent for C++-specific code review.
 
 ## What This Command Does
 
-1. **Identify C++ Changes**: Find modified `.cpp`, `.hpp`, `.cc`, `.h` files via `git diff`
-2. **Run Static Analysis**: Execute `clang-tidy` and `cppcheck`
-3. **Memory Safety Scan**: Check for raw new/delete, buffer overflows, use-after-free
-4. **Concurrency Review**: Analyze thread safety, mutex usage, data races
-5. **Modern C++ Check**: Verify code follows C++17/20 conventions and best practices
-6. **Generate Report**: Categorize issues by severity
+1. **Identify C++ Changes**: modified `.cpp`, `.hpp`, `.cc`, `.h` files via `git diff`
+2. **Run Static Analysis**: `clang-tidy` and `cppcheck`
+3. **Memory Safety Scan**: raw new/delete, buffer overflows, use-after-free
+4. **Concurrency Review**: thread safety, mutex usage, data races
+5. **Modern C++ Check**: C++17/20 conventions and best practices
+6. **Generate Report**: issues categorized by severity
 
 ## When to Use
 
-Use `/cpp-review` when:
 - After writing or modifying C++ code
 - Before committing C++ changes
 - Reviewing pull requests with C++ code
@@ -122,10 +121,10 @@ Recommendation: FAIL: Block merge until CRITICAL issue is fixed
 
 ## Integration with Other Commands
 
-- Use `/cpp-test` first to ensure tests pass
-- Use `/cpp-build` if build errors occur
-- Use `/cpp-review` before committing
-- Use `/code-review` for non-C++ specific concerns
+- `/cpp-test` first to ensure tests pass
+- `/cpp-build` if build errors occur
+- `/cpp-review` before committing
+- `/code-review` for non-C++ concerns
 
 ## Related
 

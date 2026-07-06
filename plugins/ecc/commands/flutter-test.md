@@ -5,22 +5,21 @@ allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 
 # Flutter Test
 
-This command runs the Flutter test suite and reports results. When failures occur, it diagnoses and fixes issues incrementally.
+Runs the Flutter test suite; on failures, diagnoses and fixes incrementally.
 
 ## What This Command Does
 
-1. **Run Tests**: Execute `flutter test` (or scope to changed files)
-2. **Parse Failures**: Identify failing tests by type and cause
-3. **Fix Incrementally**: One failure at a time where possible
-4. **Verify**: Re-run after each fix
-5. **Report**: Show coverage summary and remaining failures
+1. **Run Tests**: `flutter test` (or scope to changed files)
+2. **Parse Failures**: identify failing tests by type and cause
+3. **Fix Incrementally**: one failure at a time where possible
+4. **Verify**: re-run after each fix
+5. **Report**: coverage summary and remaining failures
 
 ## When to Use
 
-Use `/flutter-test` when:
-- After implementing a feature to verify nothing broke
-- After running `/flutter-build` to ensure tests pass
-- To check test coverage on new code
+- After implementing a feature, to verify nothing broke
+- After `/flutter-build`, to ensure tests pass
+- Checking test coverage on new code
 - When a specific test file is failing
 - Before submitting a PR
 

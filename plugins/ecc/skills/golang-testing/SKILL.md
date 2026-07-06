@@ -7,7 +7,7 @@ metadata:
 
 # Go Testing Patterns
 
-Comprehensive Go testing patterns for writing reliable, maintainable tests following TDD methodology.
+Go testing patterns for reliable, maintainable tests following TDD.
 
 ## When to Activate
 
@@ -72,7 +72,7 @@ func Add(a, b int) int {
 
 ## Table-Driven Tests
 
-The standard pattern for Go tests. Enables comprehensive coverage with minimal code.
+The standard Go test pattern — comprehensive coverage with minimal code.
 
 ```go
 func TestAdd(t *testing.T) {
@@ -288,7 +288,7 @@ func TestFileProcessing(t *testing.T) {
 
 ## Golden Files
 
-Testing against expected output files stored in `testdata/`.
+Test against expected output files stored in `testdata/`.
 
 ```go
 var update = flag.Bool("update", false, "update golden files")
@@ -718,4 +718,4 @@ test:
         awk -F'%' '{if ($1 < 80) exit 1}'
 ```
 
-**Remember**: Tests are documentation. They show how your code is meant to be used. Write them clearly and keep them up to date.
+**Remember**: Tests are documentation — they show how your code is meant to be used. Write them clearly and keep them up to date.

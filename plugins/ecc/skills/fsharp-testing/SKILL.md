@@ -7,7 +7,7 @@ metadata:
 
 # F# Testing Patterns
 
-Comprehensive testing patterns for F# applications using xUnit, FsUnit, Unquote, FsCheck, and modern .NET testing practices.
+Testing patterns for F# applications using xUnit, FsUnit, Unquote, and FsCheck.
 
 ## When to Activate
 
@@ -52,7 +52,7 @@ let ``confirm changes status to Confirmed`` () =
 
 ### Assertions with Unquote
 
-Unquote uses F# quotations so failure messages show the full expression that failed, not just "expected X got Y".
+Unquote's F# quotations make failures show the full failed expression, not just "expected X got Y".
 
 ```fsharp
 module OrderValidationTests

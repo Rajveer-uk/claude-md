@@ -7,7 +7,7 @@ metadata:
 
 # Git Workflow Patterns
 
-Best practices for Git version control, branching strategies, and collaborative development.
+Git best practices: branching strategies, commits, and collaborative development.
 
 ## When to Activate
 
@@ -22,7 +22,7 @@ Best practices for Git version control, branching strategies, and collaborative 
 
 ### GitHub Flow (Simple, Recommended for Most)
 
-Best for continuous deployment and small-to-medium teams.
+For continuous deployment and small-to-medium teams.
 
 ```
 main (protected, always deployable)
@@ -41,7 +41,7 @@ main (protected, always deployable)
 
 ### Trunk-Based Development (High-Velocity Teams)
 
-Best for teams with strong CI/CD and feature flags.
+For teams with strong CI/CD and feature flags.
 
 ```
 main (trunk)
@@ -59,7 +59,7 @@ main (trunk)
 
 ### GitFlow (Complex, Release-Cycle Driven)
 
-Best for scheduled releases and enterprise projects.
+For scheduled releases and enterprise projects.
 
 ```
 main (production releases)

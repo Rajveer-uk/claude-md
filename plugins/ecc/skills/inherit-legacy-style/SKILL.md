@@ -58,7 +58,7 @@ git ls-files | grep -cE '\.(js|ts|jsx|tsx|vue|py|go|rs|java|kt|rb|php|cs|swift|c
 
 **3. Apply signal-threshold noise reduction**
 
-Before interrupting the user, evaluate signal strength:
+Evaluate signal strength before interrupting the user:
 
 - **Weak signal** → auto-suppress: minority <5% AND count <10 → majority wins, minority goes to DONTs
 - **Strong signal** → grill: near-even split, or semantic fork on a core dimension
@@ -99,15 +99,15 @@ Ask the user for enforcement strength (use `AskUserQuestion`):
 
 ### Per-Turn Enforcement
 
-When `.ai-style-rules.md` is in context (loaded via CLAUDE.md), every code-writing task must open with a **compliance declaration** in the reasoning chain, naming the exemplar being followed and the DONTs being avoided.
+When `.ai-style-rules.md` is in context (loaded via CLAUDE.md), every code-writing task must open with a **compliance declaration** in the reasoning chain, naming the exemplar followed and the DONTs avoided.
 
 ## How It Works
 
-This skill auto-detects whether it's a first-time or incremental run via `.ai-style-rules.md` presence:
+Mode auto-detected via `.ai-style-rules.md` presence:
 
-- **First-time (Branch A)** — Measures project scale, scans codebase across 4 meta-architecture dimensions (File Anatomy, State & Control Flow, Infrastructure, Error Handling), applies signal-threshold noise reduction to suppress weak conflicts, resolves strong-signal conflicts one-at-a-time with the user, generates `.ai-style-rules.md` with Golden Files / Naming Rules / DONTs, and offers optional enforcement hooks.
-- **Incremental (Branch B)** — Reads existing rules, checks recent Git diffs for new or conflicting patterns, runs the same one-at-a-time grilling protocol for any conflicts found, and appends evolution logs without overwriting existing rules.
-- **Per-Turn Enforcement** — When hooked via `CLAUDE.md`, every code-writing task opens with a compliance declaration naming the exemplar followed and the DONTs avoided.
+- **First-time (Branch A)** — measure project scale, scan the 4 meta-architecture dimensions (File Anatomy, State & Control Flow, Infrastructure, Error Handling), suppress weak conflicts via signal threshold, resolve strong-signal conflicts one-at-a-time with the user, generate `.ai-style-rules.md` with Golden Files / Naming Rules / DONTs, offer optional enforcement hooks.
+- **Incremental (Branch B)** — read existing rules, check recent Git diffs for new or conflicting patterns, run the same one-at-a-time grilling protocol on conflicts, append evolution logs without overwriting existing rules.
+- **Per-Turn Enforcement** — when hooked via `CLAUDE.md`, every code-writing task opens with a compliance declaration naming the exemplar followed and the DONTs avoided.
 
 ## Output Specification
 

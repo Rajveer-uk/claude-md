@@ -5,19 +5,18 @@ allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 
 # C++ Build and Fix
 
-This command invokes the **cpp-build-resolver** agent to incrementally fix C++ build errors with minimal changes.
+Invokes the **cpp-build-resolver** agent to fix C++ build errors incrementally with minimal changes.
 
 ## What This Command Does
 
-1. **Run Diagnostics**: Execute `cmake --build`, `clang-tidy`, `cppcheck`
-2. **Parse Errors**: Group by file and sort by severity
-3. **Fix Incrementally**: One error at a time
-4. **Verify Each Fix**: Re-run build after each change
-5. **Report Summary**: Show what was fixed and what remains
+1. **Run Diagnostics**: `cmake --build`, `clang-tidy`, `cppcheck`
+2. **Parse Errors**: group by file, sort by severity
+3. **Fix Incrementally**: one error at a time
+4. **Verify Each Fix**: re-run build after each change
+5. **Report Summary**: what was fixed, what remains
 
 ## When to Use
 
-Use `/cpp-build` when:
 - `cmake --build build` fails with errors
 - Linker errors (undefined references, multiple definitions)
 - Template instantiation failures
@@ -148,15 +147,15 @@ Build Status: PASS: SUCCESS
 
 ## Fix Strategy
 
-1. **Compilation errors first** - Code must compile
-2. **Linker errors second** - Resolve undefined references
-3. **Warnings third** - Fix with `-Wall -Wextra`
-4. **One fix at a time** - Verify each change
-5. **Minimal changes** - Don't refactor, just fix
+1. **Compilation errors first** - code must compile
+2. **Linker errors second** - resolve undefined references
+3. **Warnings third** - `-Wall -Wextra`
+4. **One fix at a time** - verify each change
+5. **Minimal changes** - fix, don't refactor
 
 ## Stop Conditions
 
-The agent will stop and report if:
+Stop and report if:
 - Same error persists after 3 attempts
 - Fix introduces more errors
 - Requires architectural changes

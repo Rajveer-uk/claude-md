@@ -7,7 +7,7 @@ metadata:
 
 # Machine Learning Engineering Workflow
 
-Use this skill to turn model work into a production ML system with clear data contracts, repeatable training, measurable quality gates, deployable artifacts, and operational monitoring.
+Turn model work into a production ML system: clear data contracts, repeatable training, measurable quality gates, deployable artifacts, operational monitoring.
 
 ## When to Activate
 
@@ -19,7 +19,7 @@ Use this skill to turn model work into a production ML system with clear data co
 
 ## Scope Calibration
 
-Use only the lanes that fit the system in front of you. This skill is useful for ranking, search, recommendations, classifiers, forecasting, embeddings, LLM workflows, anomaly detection, and batch analytics, but it should not force one architecture onto all of them.
+Use only the lanes that fit the system at hand. Applies to ranking, search, recommendations, classifiers, forecasting, embeddings, LLM workflows, anomaly detection, and batch analytics — without forcing one architecture onto all of them.
 
 - Do not assume every model has supervised labels, online serving, a feature store, PyTorch, GPUs, human review, A/B tests, or real-time feedback.
 - Do not add heavyweight MLOps machinery when a data contract, baseline, eval script, and rollback note would make the change reviewable.
@@ -62,7 +62,7 @@ Do not treat MLE as separate from software engineering. Most SWE workflows apply
 
 ## Ten MLE Task Simulations
 
-Use these simulations as coverage checks when planning or reviewing MLE work. A strong MLE workflow should reduce each task to explicit contracts, reusable SWE surfaces, automated evidence, and a reviewable artifact.
+Coverage checks for planning or reviewing MLE work — each task should reduce to explicit contracts, reusable SWE surfaces, automated evidence, and a reviewable artifact.
 
 | ID | Common MLE task | Streamlined ECC path | Required output | Pipeline lanes covered |
 |----|-----------------|----------------------|-----------------|------------------------|
@@ -79,7 +79,7 @@ Use these simulations as coverage checks when planning or reviewing MLE work. A 
 
 ## Iteration Compact
 
-Before touching model code, compress the work into one reviewable artifact. This should be short enough to fit in a PR description and precise enough that another engineer can challenge the tradeoffs.
+Before touching model code, compress the work into one reviewable artifact — short enough for a PR description, precise enough that another engineer can challenge the tradeoffs.
 
 ```text
 Goal:
@@ -103,7 +103,7 @@ Next experiment:
 Rollback or fallback:
 ```
 
-This compact is the MLE equivalent of a strong SWE design note. It keeps the team from optimizing a metric no one trusts, adding features that do not address the real error mode, or shipping complexity without a rollback.
+The MLE equivalent of a strong SWE design note: it prevents optimizing a metric no one trusts, adding features that miss the real error mode, or shipping complexity without a rollback.
 
 ## Decision Brain
 
@@ -115,7 +115,7 @@ Use this loop whenever the task is ambiguous, high-impact, or metric-heavy:
 4. Research prior art or a nearby known problem before inventing a bespoke system.
 5. Score choices with `(probability, confidence) x (cost, severity, importance, impact)`.
 6. Consider adversarial behavior, incentives, selective disclosure, distribution shift, and feedback loops.
-7. Prefer the simplest change that reduces the most important mistake. Simplicity is not laziness; it is a way to minimize blunders while preserving iteration speed.
+7. Prefer the simplest change that reduces the most important mistake — simplicity minimizes blunders while preserving iteration speed.
 8. Capture the decision, evidence, counterargument, and next reversible step.
 
 ## Metric and Mistake Economics
@@ -181,7 +181,7 @@ Debt created:
 Next iteration:
 ```
 
-Use the ledger to make model work cumulative. The goal is for each iteration to make the next decision easier, not merely to produce another artifact.
+The ledger makes model work cumulative — each iteration should make the next decision easier, not merely produce another artifact.
 
 ## Core Workflow
 
@@ -341,4 +341,4 @@ Every deployment should have a rollback plan that names the previous artifact, c
 
 ## Output Expectations
 
-When using this skill, return concrete artifacts: data contract, promotion gates, pipeline steps, test plan, deployment plan, or review findings. Call out unknowns that block production readiness instead of filling them with assumptions.
+Return concrete artifacts: data contract, promotion gates, pipeline steps, test plan, deployment plan, or review findings. Call out unknowns that block production readiness instead of filling them with assumptions.

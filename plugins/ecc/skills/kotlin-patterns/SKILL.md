@@ -7,7 +7,7 @@ metadata:
 
 # Kotlin Development Patterns
 
-Idiomatic Kotlin patterns and best practices for building robust, efficient, and maintainable applications.
+Idiomatic Kotlin patterns and best practices for robust, efficient, maintainable applications.
 
 ## When to Use
 
@@ -19,7 +19,7 @@ Idiomatic Kotlin patterns and best practices for building robust, efficient, and
 
 ## How It Works
 
-This skill enforces idiomatic Kotlin conventions across seven key areas: null safety using the type system and safe-call operators, immutability via `val` and `copy()` on data classes, sealed classes and interfaces for exhaustive type hierarchies, structured concurrency with coroutines and `Flow`, extension functions for adding behaviour without inheritance, type-safe DSL builders using `@DslMarker` and lambda receivers, and Gradle Kotlin DSL for build configuration.
+Enforces idiomatic Kotlin conventions across seven areas: null safety (type system, safe-call operators), immutability (`val`, `copy()` on data classes), sealed classes/interfaces for exhaustive type hierarchies, structured concurrency (coroutines, `Flow`), extension functions (behaviour without inheritance), type-safe DSL builders (`@DslMarker`, lambda receivers), and Gradle Kotlin DSL for build configuration.
 
 ## Examples
 
@@ -54,7 +54,7 @@ suspend fun fetchUserWithPosts(userId: String): UserProfile =
 
 ### 1. Null Safety
 
-Kotlin's type system distinguishes nullable and non-nullable types. Leverage it fully.
+Leverage the type system's nullable/non-nullable distinction fully.
 
 ```kotlin
 // Good: Use non-nullable types by default
@@ -709,4 +709,4 @@ user?.let { u ->
 user?.address?.city?.let { process(it) }
 ```
 
-**Remember**: Kotlin code should be concise but readable. Leverage the type system for safety, prefer immutability, and use coroutines for concurrency. When in doubt, let the compiler help you.
+**Remember**: Kotlin should be concise but readable — leverage the type system for safety, prefer immutability, use coroutines for concurrency. When in doubt, let the compiler help you.

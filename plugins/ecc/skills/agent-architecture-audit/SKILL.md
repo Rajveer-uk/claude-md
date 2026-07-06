@@ -10,7 +10,7 @@ tools: Read, Write, Edit, Bash, Grep, Glob
 
 # Agent Architecture Audit
 
-A diagnostic workflow for agent systems that hide failures behind wrapper layers, stale memory, retry loops, or transport/rendering mutations.
+Diagnostic workflow for agent systems that hide failures behind wrapper layers, stale memory, retry loops, or transport/rendering mutations.
 
 ## When to Activate
 
@@ -37,7 +37,7 @@ A diagnostic workflow for agent systems that hide failures behind wrapper layers
 
 ## The 12-Layer Stack
 
-Every agent system has these layers. Any of them can corrupt the answer:
+Every agent system has these layers; any can corrupt the answer:
 
 | # | Layer | What Goes Wrong |
 |---|-------|----------------|
@@ -58,7 +58,7 @@ Every agent system has these layers. Any of them can corrupt the answer:
 
 ### 1. Wrapper Regression
 
-The base model produces correct answers, but the wrapper layers make it worse.
+The base model answers correctly; the wrapper layers make it worse.
 
 **Symptoms:**
 - Model works fine in playground or direct API call, breaks in your agent
@@ -78,7 +78,7 @@ Old topics leak into new conversations through history, memory retrieval, or dis
 
 ### 3. Tool Discipline Failure
 
-Tools are declared in the prompt but not enforced in code. The model skips them or hallucinates execution.
+Tools declared in the prompt but not enforced in code — the model skips them or hallucinates execution.
 
 **Symptoms:**
 - "Must use tool X" in prompt, but model answers without calling it
@@ -88,7 +88,7 @@ Tools are declared in the prompt but not enforced in code. The model skips them 
 
 ### 4. Rendering/Transport Corruption
 
-The agent's internal answer is correct, but the platform layer mutates it during delivery.
+The internal answer is correct; the platform layer mutates it during delivery.
 
 **Symptoms:**
 - Logs show correct answer, user sees broken output
@@ -184,7 +184,7 @@ Default fix order (code-first, not prompt-first):
 
 ## Output Format
 
-Present findings to the user in this order:
+Present findings in this order:
 
 1. **Severity-ranked findings** (most critical first)
 2. **Architecture diagnosis** (which layer corrupted what, and why)
@@ -194,7 +194,7 @@ Do not lead with compliments or summaries. If the system is broken, say so direc
 
 ## Quick Diagnostic Questions
 
-When auditing an agent system, answer these:
+Answer these when auditing:
 
 | # | Question | If Yes → |
 |---|----------|----------|
@@ -217,7 +217,7 @@ When auditing an agent system, answer these:
 
 ## Report Schema
 
-Audits should produce structured reports following this shape:
+Audits produce structured reports of this shape:
 
 ```json
 {

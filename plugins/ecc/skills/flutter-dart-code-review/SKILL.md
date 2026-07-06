@@ -7,7 +7,7 @@ metadata:
 
 # Flutter/Dart Code Review Best Practices
 
-Comprehensive, library-agnostic checklist for reviewing Flutter/Dart applications. These principles apply regardless of which state management solution, routing library, or DI framework is used.
+Library-agnostic review checklist for Flutter/Dart applications — applies regardless of state management, routing, or DI framework.
 
 ---
 
@@ -81,7 +81,7 @@ Comprehensive, library-agnostic checklist for reviewing Flutter/Dart application
 
 ## 4. State Management (Library-Agnostic)
 
-These principles apply to all Flutter state management solutions (BLoC, Riverpod, Provider, GetX, MobX, Signals, ValueNotifier, etc.).
+Applies to all solutions (BLoC, Riverpod, Provider, GetX, MobX, Signals, ValueNotifier, etc.).
 
 ### Architecture:
 - [ ] Business logic lives outside the widget layer — in a state management component (BLoC, Notifier, Controller, Store, ViewModel, etc.)
@@ -409,7 +409,7 @@ class UserError extends UserState {
 
 ## State Management Quick Reference
 
-The table below maps universal principles to their implementation in popular solutions. Use this to adapt review rules to whichever solution the project uses.
+Maps universal principles to popular solutions — use to adapt review rules to the project's choice.
 
 | Principle | BLoC/Cubit | Riverpod | Provider | GetX | MobX | Signals | Built-in |
 |-----------|-----------|----------|----------|------|------|---------|----------|

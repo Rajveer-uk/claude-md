@@ -6,15 +6,13 @@ origin: ECC
 
 # React Native / Expo Patterns
 
-Practical patterns for building production React Native apps with Expo. Covers navigation, state, data fetching, lists, styling, and native APIs. Pairs with the `rules/react-native/` ruleset: rules say *what* to enforce, this skill shows *how*.
+Production React Native / Expo patterns: navigation, state, data fetching, lists, styling, native APIs. Pairs with the `rules/react-native/` ruleset: rules say *what* to enforce, this skill shows *how*.
 
-Libraries named below (NativeWind, Zustand/Jotai, TanStack Query) are common, well-established options shown for illustration — the patterns matter more than the specific package, and any equivalent works. Zod is used for validation to stay consistent with ECC's existing `typescript/` rules.
+Named libraries (NativeWind, Zustand/Jotai, TanStack Query) are illustrative — any equivalent works; the pattern matters more than the package. Zod keeps validation consistent with ECC's existing `typescript/` rules.
 
-These patterns assume the managed Expo workflow (Expo Router, EAS, `expo-*` modules) on the New Architecture (the default in recent Expo SDKs, mandatory from SDK 55+). They do NOT assume the browser DOM — React Native has no `<div>`, no URL bar, and no web data-fetching defaults.
+Assumes the managed Expo workflow (Expo Router, EAS, `expo-*` modules) on the New Architecture (default in recent Expo SDKs, mandatory from SDK 55+) — and NOT the browser DOM: React Native has no `<div>`, no URL bar, and no web data-fetching defaults.
 
 ## When to Activate
-
-Use this skill when:
 
 - Building or editing React Native / Expo screens, components, or navigation
 - Setting up routing with Expo Router (file-based `app/` directory)

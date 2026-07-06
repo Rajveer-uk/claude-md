@@ -8,7 +8,7 @@ metadata:
 
 # Accessibility (WCAG 2.2)
 
-Covers the technical implementation of WCAG 2.2 success criteria so interfaces are Perceivable, Operable, Understandable, and Robust (POUR) for all users, including those using screen readers, switch controls, or keyboard navigation.
+Technical implementation of WCAG 2.2 success criteria so interfaces are Perceivable, Operable, Understandable, and Robust (POUR) — including for screen reader, switch control, and keyboard users.
 
 ## When to Use
 
@@ -19,40 +19,40 @@ Covers the technical implementation of WCAG 2.2 success criteria so interfaces a
 
 ## Core Concepts
 
-- **POUR Principles**: The foundation of WCAG (Perceivable, Operable, Understandable, Robust).
-- **Semantic Mapping**: Using native elements over generic containers to provide built-in accessibility.
-- **Accessibility Tree**: The representation of the UI that assistive technologies actually "read."
-- **Focus Management**: Controlling the order and visibility of the keyboard/screen reader cursor.
-- **Labeling & Hints**: Providing context through `aria-label`, `accessibilityLabel`, and `contentDescription`.
+- **POUR Principles**: WCAG's foundation (Perceivable, Operable, Understandable, Robust).
+- **Semantic Mapping**: native elements over generic containers for built-in accessibility.
+- **Accessibility Tree**: the UI representation assistive technologies actually "read."
+- **Focus Management**: order and visibility of the keyboard/screen reader cursor.
+- **Labeling & Hints**: context via `aria-label`, `accessibilityLabel`, `contentDescription`.
 
 ## How It Works
 
 ### Step 1: Identify the Component Role
 
-Determine the functional purpose (e.g., Is this a button, a link, or a tab?). Use the most semantic native element available before resorting to custom roles.
+Determine the functional purpose (button, link, tab?). Prefer the most semantic native element before custom roles.
 
 ### Step 2: Define Perceivable Attributes
 
-- Ensure text contrast meets **4.5:1** (normal) or **3:1** (large/UI).
-- Add text alternatives for non-text content (images, icons).
-- Implement responsive reflow (up to 400% zoom without loss of function).
+- Text contrast **4.5:1** (normal) or **3:1** (large/UI).
+- Text alternatives for non-text content (images, icons).
+- Responsive reflow up to 400% zoom without loss of function.
 
 ### Step 3: Implement Operable Controls
 
-- Ensure a minimum **24x24 CSS pixel** target size (WCAG 2.2 SC 2.5.8).
-- Verify all interactive elements are reachable via keyboard and have a visible focus indicator (SC 2.4.11).
-- Provide single-pointer alternatives for dragging movements.
+- Minimum **24x24 CSS pixel** target size (WCAG 2.2 SC 2.5.8).
+- All interactive elements keyboard-reachable with a visible focus indicator (SC 2.4.11).
+- Single-pointer alternatives for dragging movements.
 
 ### Step 4: Ensure Understandable Logic
 
-- Use consistent navigation patterns.
-- Provide descriptive error messages and suggestions for correction (SC 3.3.3).
-- Implement "Redundant Entry" (SC 3.3.7) to prevent asking for the same data twice.
+- Consistent navigation patterns.
+- Descriptive error messages with correction suggestions (SC 3.3.3).
+- "Redundant Entry" (SC 3.3.7): never ask for the same data twice.
 
 ### Step 5: Verify Robust Compatibility
 
-- Use correct `Name, Role, Value` patterns.
-- Implement `aria-live` or live regions for dynamic status updates.
+- Correct `Name, Role, Value` patterns.
+- `aria-live` or live regions for dynamic status updates.
 
 ## Accessibility Architecture Diagram
 
@@ -116,10 +116,10 @@ Switch(
 
 ## Anti-Patterns to Avoid
 
-- **Div-Buttons**: Using a `<div>` or `<span>` for a click event without adding a role and keyboard support.
-- **Color-Only Meaning**: Indicating an error or status _only_ with a color change (e.g., turning a border red).
-- **Uncontained Modal Focus**: Modals that don't trap focus, allowing keyboard users to navigate background content while the modal is open. Focus must be contained _and_ escapable via the `Escape` key or an explicit close button (WCAG SC 2.1.2).
-- **Redundant Alt Text**: Using "Image of..." or "Picture of..." in alt text (screen readers already announce the role "Image").
+- **Div-Buttons**: `<div>`/`<span>` click handlers without a role and keyboard support.
+- **Color-Only Meaning**: error or status indicated _only_ by a color change (e.g., red border).
+- **Uncontained Modal Focus**: modals that don't trap focus, letting keyboard users reach background content. Focus must be contained _and_ escapable via the `Escape` key or an explicit close button (WCAG SC 2.1.2).
+- **Redundant Alt Text**: "Image of..."/"Picture of..." in alt text — screen readers already announce the role "Image".
 
 ## Best Practices Checklist
 

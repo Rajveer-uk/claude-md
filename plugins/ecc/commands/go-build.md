@@ -5,19 +5,17 @@ allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 
 # Go Build and Fix
 
-This command invokes the **go-build-resolver** agent to incrementally fix Go build errors with minimal changes.
+Invokes the **go-build-resolver** agent to fix Go build errors incrementally with minimal changes.
 
 ## What This Command Does
 
-1. **Run Diagnostics**: Execute `go build`, `go vet`, `staticcheck`
-2. **Parse Errors**: Group by file and sort by severity
-3. **Fix Incrementally**: One error at a time
-4. **Verify Each Fix**: Re-run build after each change
-5. **Report Summary**: Show what was fixed and what remains
+1. **Run Diagnostics**: `go build`, `go vet`, `staticcheck`
+2. **Parse Errors**: group by file, sort by severity
+3. **Fix Incrementally**: one error at a time
+4. **Verify Each Fix**: re-run build after each change
+5. **Report Summary**: what was fixed, what remains
 
 ## When to Use
-
-Use `/go-build` when:
 - `go build ./...` fails with errors
 - `go vet ./...` reports issues
 - `golangci-lint run` shows warnings
@@ -158,15 +156,15 @@ Build Status: PASS: SUCCESS
 
 ## Fix Strategy
 
-1. **Build errors first** - Code must compile
-2. **Vet warnings second** - Fix suspicious constructs
-3. **Lint warnings third** - Style and best practices
-4. **One fix at a time** - Verify each change
-5. **Minimal changes** - Don't refactor, just fix
+1. **Build errors first** - code must compile
+2. **Vet warnings second** - suspicious constructs
+3. **Lint warnings third** - style and best practices
+4. **One fix at a time** - verify each change
+5. **Minimal changes** - fix, don't refactor
 
 ## Stop Conditions
 
-The agent will stop and report if:
+Stop and report if:
 - Same error persists after 3 attempts
 - Fix introduces more errors
 - Requires architectural changes

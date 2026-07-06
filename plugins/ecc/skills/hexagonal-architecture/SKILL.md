@@ -7,7 +7,7 @@ metadata:
 
 # Hexagonal Architecture
 
-Hexagonal architecture (Ports and Adapters) keeps business logic independent from frameworks, transport, and persistence details. The core app depends on abstract ports, and adapters implement those ports at the edges.
+Hexagonal architecture (Ports and Adapters) keeps business logic independent of frameworks, transport, and persistence: the core depends on abstract ports; adapters implement them at the edges.
 
 ## When to Use
 
@@ -16,7 +16,7 @@ Hexagonal architecture (Ports and Adapters) keeps business logic independent fro
 - Supporting multiple interfaces for the same use case (HTTP, CLI, queue workers, cron jobs).
 - Replacing infrastructure (database, external APIs, message bus) without rewriting business rules.
 
-Use this skill when the request involves boundaries, domain-centric design, refactoring tightly coupled services, or decoupling application logic from specific libraries.
+Also: any request involving boundaries, domain-centric design, refactoring tightly coupled services, or decoupling application logic from specific libraries.
 
 ## Core Concepts
 
@@ -27,7 +27,7 @@ Use this skill when the request involves boundaries, domain-centric design, refa
 - **Adapters**: Infrastructure and delivery implementations of ports (HTTP controllers, DB repositories, queue consumers, SDK wrappers).
 - **Composition root**: Single wiring location where concrete adapters are bound to use cases.
 
-Outbound port interfaces usually live in the application layer (or in domain only when the abstraction is truly domain-level), while infrastructure adapters implement them.
+Outbound port interfaces usually live in the application layer (domain only when the abstraction is truly domain-level); infrastructure adapters implement them.
 
 Dependency direction is always inward:
 
@@ -40,7 +40,7 @@ Dependency direction is always inward:
 
 ### Step 1: Model a use case boundary
 
-Define a single use case with a clear input and output DTO. Keep transport details (Express `req`, GraphQL `context`, job payload wrappers) outside this boundary.
+Define a single use case with clear input/output DTOs; keep transport details (Express `req`, GraphQL `context`, job payload wrappers) outside this boundary.
 
 ### Step 2: Define outbound ports first
 
@@ -54,7 +54,7 @@ Ports should model capabilities, not technologies.
 
 ### Step 3: Implement the use case with pure orchestration
 
-Use case class/function receives ports via constructor/arguments. It validates application-level invariants, coordinates domain rules, and returns plain data structures.
+The use case receives ports via constructor/arguments; it validates application-level invariants, coordinates domain rules, and returns plain data structures.
 
 ### Step 4: Build adapters at the edge
 
@@ -64,7 +64,7 @@ Use case class/function receives ports via constructor/arguments. It validates a
 
 ### Step 5: Wire everything in a composition root
 
-Instantiate adapters, then inject them into use cases. Keep this wiring centralized to avoid hidden service-locator behavior.
+Instantiate adapters, then inject them into use cases; keep wiring centralized to avoid hidden service-locator behavior.
 
 ### Step 6: Test per boundary
 

@@ -7,7 +7,7 @@ metadata:
 
 # Go Development Patterns
 
-Idiomatic Go patterns and best practices for building robust, efficient, and maintainable applications.
+Idiomatic Go patterns for robust, efficient, maintainable applications.
 
 ## When to Activate
 
@@ -20,7 +20,7 @@ Idiomatic Go patterns and best practices for building robust, efficient, and mai
 
 ### 1. Simplicity and Clarity
 
-Go favors simplicity over cleverness. Code should be obvious and easy to read.
+Go favors simplicity over cleverness — code should be obvious and easy to read.
 
 ```go
 // Good: Clear and direct
@@ -46,7 +46,7 @@ func GetUser(id string) (*User, error) {
 
 ### 2. Make the Zero Value Useful
 
-Design types so their zero value is immediately usable without initialization.
+Design types whose zero value is usable without initialization.
 
 ```go
 // Good: Zero value is useful
@@ -672,4 +672,4 @@ func (c *Counter) Increment() { c.n++ }        // Pointer receiver
 // Pick one style and be consistent
 ```
 
-**Remember**: Go code should be boring in the best way - predictable, consistent, and easy to understand. When in doubt, keep it simple.
+**Remember**: Go code should be boring in the best way — predictable, consistent, easy to understand. When in doubt, keep it simple.

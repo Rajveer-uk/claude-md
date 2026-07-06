@@ -5,20 +5,19 @@ allowed-tools: Read, Grep, Glob, Bash, Task
 
 # Go Code Review
 
-This command invokes the **go-reviewer** agent for comprehensive Go-specific code review.
+Invokes the **go-reviewer** agent for Go-specific code review.
 
 ## What This Command Does
 
-1. **Identify Go Changes**: Find modified `.go` files via `git diff`
-2. **Run Static Analysis**: Execute `go vet`, `staticcheck`, and `golangci-lint`
-3. **Security Scan**: Check for SQL injection, command injection, race conditions
-4. **Concurrency Review**: Analyze goroutine safety, channel usage, mutex patterns
-5. **Idiomatic Go Check**: Verify code follows Go conventions and best practices
-6. **Generate Report**: Categorize issues by severity
+1. **Identify Go Changes**: modified `.go` files via `git diff`
+2. **Run Static Analysis**: `go vet`, `staticcheck`, `golangci-lint`
+3. **Security Scan**: SQL injection, command injection, race conditions
+4. **Concurrency Review**: goroutine safety, channel usage, mutex patterns
+5. **Idiomatic Go Check**: Go conventions and best practices
+6. **Generate Report**: issues categorized by severity
 
 ## When to Use
 
-Use `/go-review` when:
 - After writing or modifying Go code
 - Before committing Go changes
 - Reviewing pull requests with Go code
@@ -138,10 +137,10 @@ Recommendation: FAIL: Block merge until CRITICAL issue is fixed
 
 ## Integration with Other Commands
 
-- Use `/go-test` first to ensure tests pass
-- Use `/go-build` if build errors occur
-- Use `/go-review` before committing
-- Use `/code-review` for non-Go specific concerns
+- `/go-test` first to ensure tests pass
+- `/go-build` if build errors occur
+- `/go-review` before committing
+- `/code-review` for non-Go concerns
 
 ## Related
 

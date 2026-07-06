@@ -25,7 +25,7 @@ Coding standards for modern C++ (C++17/20/23) derived from the [C++ Core Guideli
 
 ## Cross-Cutting Principles
 
-These themes recur across the entire guidelines and form the foundation:
+Recurring foundational themes:
 
 1. **RAII everywhere** (P.8, R.1, E.6, CP.20): Bind resource lifetime to object lifetime
 2. **Immutability by default** (P.10, Con.1-5, ES.25): Start with `const`/`constexpr`; mutability is the exception

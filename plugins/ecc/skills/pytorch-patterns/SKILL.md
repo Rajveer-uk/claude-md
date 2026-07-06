@@ -19,7 +19,7 @@ metadata:
 
 ### 1. Device-Agnostic Code
 
-Always write code that works on both CPU and GPU without hardcoding devices.
+Code must work on CPU and GPU without hardcoded devices.
 
 ```python
 # Good: Device-agnostic
@@ -392,4 +392,4 @@ torch.save(model, "model.pt")  # Saves entire model (fragile, not portable)
 torch.save(model.state_dict(), "model.pt")
 ```
 
-__Remember__: PyTorch code should be device-agnostic, reproducible, and memory-conscious. When in doubt, profile with `torch.profiler` and check GPU memory with `torch.cuda.memory_summary()`.
+__Remember__: Device-agnostic, reproducible, memory-conscious. When in doubt, profile with `torch.profiler` and check GPU memory with `torch.cuda.memory_summary()`.

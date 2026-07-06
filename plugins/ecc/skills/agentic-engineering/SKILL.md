@@ -9,7 +9,7 @@ metadata:
 
 # Agentic Engineering
 
-Use this skill for engineering workflows where AI agents perform most implementation work and humans enforce quality and risk controls.
+Use for engineering workflows where AI agents do most implementation work and humans enforce quality and risk controls.
 
 ## Operating Principles
 

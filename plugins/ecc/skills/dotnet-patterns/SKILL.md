@@ -7,7 +7,7 @@ metadata:
 
 # .NET Development Patterns
 
-Idiomatic C# and .NET patterns for building robust, performant, and maintainable applications.
+Idiomatic C# and .NET patterns for robust, performant, maintainable applications.
 
 ## When to Activate
 
@@ -20,7 +20,7 @@ Idiomatic C# and .NET patterns for building robust, performant, and maintainable
 
 ### 1. Prefer Immutability
 
-Use records and init-only properties for data models. Mutability should be an explicit, justified choice.
+Use records and init-only properties for data models; mutability must be an explicit, justified choice.
 
 ```csharp
 // Good: Immutable value object

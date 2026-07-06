@@ -7,14 +7,14 @@ metadata:
 
 # Django Verification Loop
 
-Run before PRs, after major changes, and pre-deploy to ensure Django application quality and security.
+Run before PRs, after major changes, and pre-deploy.
 
 ## When to Activate
 
-- Before opening a pull request for a Django project
+- Before opening a Django PR
 - After major model changes, migration updates, or dependency upgrades
-- Pre-deployment verification for staging or production
-- Running full environment → lint → test → security → deploy readiness pipeline
+- Pre-deploy verification for staging or production
+- Running the full environment → lint → test → security → deploy readiness pipeline
 - Validating migration safety and test coverage
 
 ## Phase 1: Environment Check
@@ -467,4 +467,4 @@ jobs:
 | Collectstatic | `python manage.py collectstatic --noinput` |
 | Diff stats | `git diff --stat` |
 
-Remember: Automated verification catches common issues but doesn't replace manual code review and testing in staging environment.
+Automated verification catches common issues but doesn't replace manual code review and staging testing.

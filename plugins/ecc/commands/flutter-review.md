@@ -5,31 +5,29 @@ allowed-tools: Read, Grep, Glob, Bash, Task
 
 # Flutter Code Review
 
-This command invokes the **flutter-reviewer** agent to review Flutter/Dart code changes.
+Invokes the **flutter-reviewer** agent to review Flutter/Dart code changes.
 
 ## What This Command Does
 
-1. **Gather Context**: Review `git diff --staged` and `git diff`
-2. **Inspect Project**: Check `pubspec.yaml`, `analysis_options.yaml`, state management solution
-3. **Security Pre-scan**: Check for hardcoded secrets and critical security issues
-4. **Full Review**: Apply the complete review checklist
-5. **Report Findings**: Output issues grouped by severity with fix guidance
+1. **Gather Context**: `git diff --staged` and `git diff`
+2. **Inspect Project**: `pubspec.yaml`, `analysis_options.yaml`, state management solution
+3. **Security Pre-scan**: hardcoded secrets and critical security issues
+4. **Full Review**: apply the complete review checklist
+5. **Report Findings**: issues grouped by severity with fix guidance
 
 ## Prerequisites
 
-Before running `/flutter-review`, ensure:
 1. **Build passes** — run `/flutter-build` first; a review on broken code is incomplete
 2. **Tests pass** — run `/flutter-test` to confirm no regressions
-3. **No merge conflicts** — resolve all conflicts so the diff reflects only intentional changes
+3. **No merge conflicts** — the diff must reflect only intentional changes
 4. **`flutter analyze` is clean** — fix analyzer warnings before review
 
 ## When to Use
 
-Use `/flutter-review` when:
 - Before submitting a PR with Flutter/Dart changes (after build and tests pass)
-- After implementing a new feature to catch issues early
-- When reviewing someone else's Flutter code
-- To audit a widget, state management component, or service class
+- After implementing a feature, to catch issues early
+- Reviewing someone else's Flutter code
+- Auditing a widget, state management component, or service class
 - Before a production release
 
 ## Review Areas

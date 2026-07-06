@@ -7,7 +7,7 @@ metadata:
 
 # AI Regression Testing
 
-Testing patterns specifically designed for AI-assisted development, where the same model writes code and reviews it — creating systematic blind spots that only automated tests can catch.
+Testing patterns for AI-assisted development, where the same model writes and reviews code — systematic blind spots only automated tests can catch.
 
 ## When to Activate
 
@@ -19,7 +19,7 @@ Testing patterns specifically designed for AI-assisted development, where the sa
 
 ## The Core Problem
 
-When an AI writes code and then reviews its own work, it carries the same assumptions into both steps. This creates a predictable failure pattern:
+An AI reviewing its own code carries the same assumptions into both steps — a predictable failure pattern:
 
 ```
 AI writes fix → AI reviews fix → AI says "looks correct" → Bug still exists
@@ -47,7 +47,7 @@ The pattern: **sandbox/production path inconsistency** is the #1 AI-introduced r
 
 ## Sandbox-Mode API Testing
 
-Most projects with AI-friendly architecture have a sandbox/mock mode. This is the key to fast, DB-free API testing.
+Most AI-friendly projects have a sandbox/mock mode — the key to fast, DB-free API testing.
 
 ### Setup (Vitest + Next.js App Router)
 

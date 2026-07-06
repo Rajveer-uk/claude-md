@@ -7,7 +7,7 @@ metadata:
 
 # Kotlin Testing Patterns
 
-Comprehensive Kotlin testing patterns for writing reliable, maintainable tests following TDD methodology with Kotest and MockK.
+Kotlin testing patterns for reliable, maintainable tests — TDD methodology with Kotest and MockK.
 
 ## When to Use
 
@@ -29,7 +29,7 @@ Comprehensive Kotlin testing patterns for writing reliable, maintainable tests f
 
 ## Examples
 
-The following sections contain detailed, runnable examples for each testing pattern:
+Detailed, runnable examples for each testing pattern:
 
 ### Quick Reference
 
@@ -822,4 +822,4 @@ test:
         token: ${{ secrets.CODECOV_TOKEN }}
 ```
 
-**Remember**: Tests are documentation. They show how your Kotlin code is meant to be used. Use Kotest's expressive matchers to make tests readable and MockK for clean mocking of dependencies.
+**Remember**: Tests are documentation — they show how your Kotlin code is meant to be used. Kotest's expressive matchers keep tests readable; MockK keeps dependency mocking clean.

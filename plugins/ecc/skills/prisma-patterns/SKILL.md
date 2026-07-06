@@ -151,8 +151,7 @@ if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 // export const prisma = globalForPrisma.prisma ?? new PrismaClient({ ... });
 ```
 
-Use Option A if your Prisma install requires an `adapter` argument in the `PrismaClient` constructor.
-Use Option B if `new PrismaClient()` works without arguments. Let the compiler tell you which is correct.
+Option A if your install requires an `adapter` constructor argument; Option B if `new PrismaClient()` works without arguments — let the compiler tell you which.
 
 The `globalThis` pattern prevents duplicate instances during hot reload (Next.js, nodemon, ts-node-dev).
 
@@ -171,7 +170,7 @@ for (const user of users) {
 const users = await prisma.user.findMany({ include: { posts: true } });
 ```
 
-With Prisma 5+ `relationJoins`, the `include` form uses a single JOIN. On large 1:N sets this may increase result set size — benchmark both approaches if the relation can return many rows per parent.
+Prisma 5+ `relationJoins` makes `include` a single JOIN; on relations returning many rows per parent the result set can balloon — benchmark both approaches.
 
 ## Code Examples
 
@@ -196,7 +195,7 @@ async function getPosts(cursor?: string, limit = 20) {
 }
 ```
 
-Fetch `limit + 1` and pop — canonical way to detect `hasNextPage` without an extra count query. Always include a unique field (e.g. `id`) as a secondary `orderBy` to prevent unstable pagination when multiple rows share the same timestamp. Use offset pagination only when users need to jump to arbitrary pages (admin tables).
+Fetch `limit + 1` and pop to detect `hasNextPage` without an extra count query. Always add a unique field (e.g. `id`) as secondary `orderBy` so pagination stays stable on duplicate timestamps. Offset pagination only when users must jump to arbitrary pages (admin tables).
 
 ### Soft Delete
 

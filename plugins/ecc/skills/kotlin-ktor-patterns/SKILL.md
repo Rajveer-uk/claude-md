@@ -7,7 +7,7 @@ metadata:
 
 # Ktor Server Patterns
 
-Comprehensive Ktor patterns for building robust, maintainable HTTP servers with Kotlin coroutines.
+Ktor patterns for robust, maintainable HTTP servers with Kotlin coroutines.
 
 ## When to Activate
 
@@ -687,4 +687,4 @@ fun Application.configureDI() {
 | `by inject<T>()` | Koin dependency injection |
 | `testApplication { }` | Integration testing |
 
-**Remember**: Ktor is designed around Kotlin coroutines and DSLs. Keep routes thin, push logic to services, and use Koin for dependency injection. Test with `testApplication` for full integration coverage.
+**Remember**: Ktor is built on Kotlin coroutines and DSLs — keep routes thin, push logic to services, use Koin for dependency injection, and test with `testApplication` for full integration coverage.

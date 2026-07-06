@@ -29,7 +29,7 @@ TDD guidance for Quarkus 3.x services with 80%+ coverage (unit + integration). O
 
 ## Unit Tests with @Nested Organization
 
-Follow this structured approach for comprehensive, readable tests:
+Structure tests like this:
 
 ```java
 @ExtendWith(MockitoExtension.class)

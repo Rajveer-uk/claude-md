@@ -5,20 +5,19 @@ allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 
 # C++ TDD Command
 
-This command enforces test-driven development methodology for C++ code using GoogleTest/GoogleMock with CMake/CTest.
+Enforces TDD for C++ using GoogleTest/GoogleMock with CMake/CTest.
 
 ## What This Command Does
 
-1. **Define Interfaces**: Scaffold class/function signatures first
-2. **Write Tests**: Create comprehensive GoogleTest test cases (RED)
-3. **Run Tests**: Verify tests fail for the right reason
-4. **Implement Code**: Write minimal code to pass (GREEN)
-5. **Refactor**: Improve while keeping tests green
-6. **Check Coverage**: Ensure 80%+ coverage
+1. **Define Interfaces**: scaffold class/function signatures first
+2. **Write Tests**: comprehensive GoogleTest cases (RED)
+3. **Run Tests**: verify they fail for the right reason
+4. **Implement Code**: minimal code to pass (GREEN)
+5. **Refactor**: improve while tests stay green
+6. **Check Coverage**: ensure 80%+
 
 ## When to Use
 
-Use `/cpp-test` when:
 - Implementing new C++ functions or classes
 - Adding test coverage to existing code
 - Fixing bugs (write failing test first)
@@ -229,9 +228,9 @@ genhtml coverage.info --output-directory coverage_html
 **DO:**
 - Write test FIRST, before any implementation
 - Run tests after each change
-- Use `EXPECT_*` (continues) over `ASSERT_*` (stops) when appropriate
+- Prefer `EXPECT_*` (continues) over `ASSERT_*` (stops) when appropriate
 - Test behavior, not implementation details
-- Include edge cases (empty, null, max values, boundary conditions)
+- Cover edge cases (empty, null, max values, boundaries)
 
 **DON'T:**
 - Write implementation before tests

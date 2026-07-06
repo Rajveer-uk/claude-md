@@ -18,7 +18,7 @@ metadata:
 
 ### 1. Readability Counts
 
-Python prioritizes readability. Code should be obvious and easy to understand.
+Code should be obvious and easy to understand.
 
 ```python
 # Good: Clear and readable
@@ -746,4 +746,4 @@ except SpecificError as e:
     logger.error(f"Operation failed: {e}")
 ```
 
-__Remember__: Python code should be readable, explicit, and follow the principle of least surprise. When in doubt, prioritize clarity over cleverness.
+__Remember__: Readable, explicit, least surprise. When in doubt, prioritize clarity over cleverness.

@@ -9,7 +9,7 @@ metadata:
 
 # Agentic OS
 
-Treat Claude Code as a persistent runtime / operating system rather than a chat session. This skill codifies the architecture used by production agentic setups: a kernel config that routes tasks to specialist agents, persistent file-based memory, scheduled automation, and a JSON/markdown data layer.
+Treat Claude Code as a persistent runtime / operating system rather than a chat session. Codifies the production architecture: a kernel config routing tasks to specialist agents, persistent file-based memory, scheduled automation, and a JSON/markdown data layer.
 
 ## When to Activate
 
@@ -21,7 +21,7 @@ Treat Claude Code as a persistent runtime / operating system rather than a chat 
 
 ## Architecture Overview
 
-The Agentic OS has four layers. Each layer is a directory in your project root.
+The Agentic OS has four layers, each a directory in your project root.
 
 ```
 project-root/
@@ -44,7 +44,7 @@ project-root/
 
 ## The Kernel
 
-`CLAUDE.md` is the kernel. It acts as the COO / orchestrator. Claude reads it at session start and uses it to route work.
+`CLAUDE.md` is the kernel — the COO / orchestrator. Claude reads it at session start to route work.
 
 ### Kernel Structure
 
@@ -80,11 +80,11 @@ You never write code directly. You delegate to the right agent and synthesize re
 
 ### Key Principle
 
-The kernel should be **small and declarative**. Routing logic lives in plain markdown tables, not code. This makes the system inspectable and editable without debugging.
+Keep the kernel **small and declarative**: routing logic in plain markdown tables, not code — inspectable and editable without debugging.
 
 ## Specialist Agents
 
-Each agent is a standalone markdown file in `agents/`. Claude loads the relevant agent file when routing a task.
+Each agent is a standalone markdown file in `agents/`, loaded when routing a task.
 
 ### Agent Definition Format
 
@@ -126,11 +126,11 @@ Kernel routing:
 3. Kernel synthesizes both outputs into a unified response
 ```
 
-For parallel execution, use Claude Code's background task capability or shell scripts that invoke Claude Code with specific agent contexts.
+Parallel execution: use Claude Code's background tasks or shell scripts invoking Claude Code with specific agent contexts.
 
 ## Commands and Daily Workflows
 
-Slash commands are markdown files in `.claude/commands/`. They define reusable workflows.
+Slash commands are markdown files in `.claude/commands/` defining reusable workflows.
 
 ### Command Structure
 
@@ -160,11 +160,11 @@ Run the morning briefing:
 
 ### Activating Commands
 
-Place command files in `.claude/commands/<command-name>.md`. Claude Code auto-discovers them. Users invoke them with `/<command-name>`.
+Command files live at `.claude/commands/<command-name>.md`; Claude Code auto-discovers them and users invoke `/<command-name>`.
 
 ## Persistent Memory
 
-Memory is file-based. No vector DB, no Redis, no PostgreSQL. JSON and markdown files in `data/` are the database.
+Memory is file-based — no vector DB, Redis, or PostgreSQL. JSON and markdown files in `data/` are the database.
 
 ### Memory Directory Structure
 
@@ -209,7 +209,7 @@ At the end of each session, the kernel appends a reflection:
 - What to change: Add `source-tier` field to research notes (A/B/C credibility)
 ```
 
-This creates a feedback loop that improves the system over time without code changes.
+A feedback loop that improves the system over time without code changes.
 
 ## Scheduled Automation
 
@@ -328,7 +328,7 @@ Never rename existing fields. Add new fields and mark old ones deprecated:
 }
 ```
 
-This keeps historical data readable without migration scripts.
+Historical data stays readable without migration scripts.
 
 ## Anti-Patterns
 
@@ -374,7 +374,7 @@ Use JSON/markdown files until you have multiple concurrent users or GBs of data.
 if (intent.includes('deploy')) { agent = opsAgent; }
 ```
 
-Keep routing declarative in `CLAUDE.md` markdown tables. It is inspectable, editable, and debuggable.
+Keep routing declarative in `CLAUDE.md` markdown tables — inspectable, editable, debuggable.
 
 ## Best Practices
 

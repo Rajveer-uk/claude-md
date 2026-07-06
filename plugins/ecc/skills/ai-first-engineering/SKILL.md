@@ -9,7 +9,7 @@ metadata:
 
 # AI-First Engineering
 
-Use this skill when designing process, reviews, and architecture for teams shipping with AI-assisted code generation.
+Use when designing process, reviews, and architecture for teams shipping with AI-assisted code generation.
 
 ## Process Shifts
 

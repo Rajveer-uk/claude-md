@@ -5,20 +5,19 @@ allowed-tools: Read, Grep, Glob, Bash, Task
 
 # Kotlin Code Review
 
-This command invokes the **kotlin-reviewer** agent for comprehensive Kotlin-specific code review.
+Invokes the **kotlin-reviewer** agent for Kotlin-specific code review.
 
 ## What This Command Does
 
-1. **Identify Kotlin Changes**: Find modified `.kt` and `.kts` files via `git diff`
-2. **Run Build & Static Analysis**: Execute `./gradlew build`, `detekt`, `ktlintCheck`
-3. **Security Scan**: Check for SQL injection, command injection, hardcoded secrets
-4. **Null Safety Review**: Analyze `!!` usage, platform type handling, unsafe casts
-5. **Coroutine Review**: Check structured concurrency, dispatcher usage, cancellation
-6. **Generate Report**: Categorize issues by severity
+1. **Identify Kotlin Changes**: modified `.kt` and `.kts` files via `git diff`
+2. **Run Build & Static Analysis**: `./gradlew build`, `detekt`, `ktlintCheck`
+3. **Security Scan**: SQL injection, command injection, hardcoded secrets
+4. **Null Safety Review**: `!!` usage, platform type handling, unsafe casts
+5. **Coroutine Review**: structured concurrency, dispatcher usage, cancellation
+6. **Generate Report**: issues categorized by severity
 
 ## When to Use
 
-Use `/kotlin-review` when:
 - After writing or modifying Kotlin code
 - Before committing Kotlin changes
 - Reviewing pull requests with Kotlin code
@@ -130,10 +129,10 @@ Recommendation: FAIL: Block merge until CRITICAL issue is fixed
 
 ## Integration with Other Commands
 
-- Use `/kotlin-test` first to ensure tests pass
-- Use `/kotlin-build` if build errors occur
-- Use `/kotlin-review` before committing
-- Use `/code-review` for non-Kotlin-specific concerns
+- `/kotlin-test` first to ensure tests pass
+- `/kotlin-build` if build errors occur
+- `/kotlin-review` before committing
+- `/code-review` for non-Kotlin concerns
 
 ## Related
 

@@ -55,7 +55,7 @@ sub add($self, $a, $b) {
 
 ## Test::More Fundamentals
 
-The standard Perl testing module — widely used, ships with core.
+The standard testing module — ships with core.
 
 ### Basic Assertions
 
@@ -118,7 +118,7 @@ done_testing;
 
 ## Test2::V0 Modern Framework
 
-Test2::V0 is the modern replacement for Test::More — richer assertions, better diagnostics, and extensible.
+The modern replacement for Test::More.
 
 ### Why Test2?
 
@@ -471,4 +471,4 @@ Mock the *dependency*, not the code under test. If your test only verifies that 
 
 Use `my` variables inside subtests — never `our` — to prevent state leaking between tests.
 
-**Remember**: Tests are your safety net. Keep them fast, focused, and independent. Use Test2::V0 for new projects, prove for running, and Devel::Cover for accountability.
+**Remember**: Keep tests fast, focused, and independent. Test2::V0 for new projects, prove for running, Devel::Cover for accountability.

@@ -16,21 +16,21 @@ model: sonnet
 
 ## Framework Detection (run first)
 
-Before reviewing any code, determine the framework:
+Determine the framework first:
 
 ```bash
 # Read the build file
 cat pom.xml 2>/dev/null || cat build.gradle 2>/dev/null || cat build.gradle.kts 2>/dev/null
 ```
 
-- If the build file contains `quarkus` → apply **[QUARKUS]** rules
-- If the build file contains `spring-boot` → apply **[SPRING]** rules
-- If both are present (unlikely) → flag as a finding and apply both rulesets
-- If neither is detected → review using general Java rules only and note the ambiguity
+- Build file contains `quarkus` → apply **[QUARKUS]** rules
+- Build file contains `spring-boot` → apply **[SPRING]** rules
+- Both present (unlikely) → flag as a finding and apply both rulesets
+- Neither detected → general Java rules only; note the ambiguity
 
-Then proceed:
-1. Run `git diff -- '*.java'` to see recent Java file changes
-2. Run the appropriate build check:
+Then:
+1. `git diff -- '*.java'` for recent Java changes
+2. Build check:
    - **[SPRING]**: `./mvnw verify -q` or `./gradlew check`
    - **[QUARKUS]**: `./mvnw verify -q` or `./gradlew check`
 3. Focus on modified `.java` files

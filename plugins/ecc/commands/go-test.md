@@ -5,20 +5,19 @@ allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 
 # Go TDD Command
 
-This command enforces test-driven development methodology for Go code using idiomatic Go testing patterns.
+Enforces TDD for Go using idiomatic Go testing patterns.
 
 ## What This Command Does
 
-1. **Define Types/Interfaces**: Scaffold function signatures first
-2. **Write Table-Driven Tests**: Create comprehensive test cases (RED)
-3. **Run Tests**: Verify tests fail for the right reason
-4. **Implement Code**: Write minimal code to pass (GREEN)
-5. **Refactor**: Improve while keeping tests green
-6. **Check Coverage**: Ensure 80%+ coverage
+1. **Define Types/Interfaces**: scaffold function signatures first
+2. **Write Table-Driven Tests**: comprehensive test cases (RED)
+3. **Run Tests**: verify they fail for the right reason
+4. **Implement Code**: minimal code to pass (GREEN)
+5. **Refactor**: improve while tests stay green
+6. **Check Coverage**: ensure 80%+
 
 ## When to Use
 
-Use `/go-test` when:
 - Implementing new Go functions
 - Adding test coverage to existing code
 - Fixing bugs (write failing test first)
@@ -248,7 +247,7 @@ go test -race -cover ./...
 - Run tests after each change
 - Use table-driven tests for comprehensive coverage
 - Test behavior, not implementation details
-- Include edge cases (empty, nil, max values)
+- Cover edge cases (empty, nil, max values)
 
 **DON'T:**
 - Write implementation before tests

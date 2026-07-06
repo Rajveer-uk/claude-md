@@ -5,20 +5,19 @@ allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 
 # Kotlin TDD Command
 
-This command enforces test-driven development methodology for Kotlin code using Kotest, MockK, and Kover.
+Enforces TDD for Kotlin using Kotest, MockK, and Kover.
 
 ## What This Command Does
 
-1. **Define Types/Interfaces**: Scaffold function signatures first
-2. **Write Kotest Tests**: Create comprehensive test specs (RED)
-3. **Run Tests**: Verify tests fail for the right reason
-4. **Implement Code**: Write minimal code to pass (GREEN)
-5. **Refactor**: Improve while keeping tests green
-6. **Check Coverage**: Ensure 80%+ coverage with Kover
+1. **Define Types/Interfaces**: scaffold function signatures first
+2. **Write Kotest Tests**: comprehensive test specs (RED)
+3. **Run Tests**: verify they fail for the right reason
+4. **Implement Code**: minimal code to pass (GREEN)
+5. **Refactor**: improve while tests stay green
+6. **Check Coverage**: ensure 80%+ with Kover
 
 ## When to Use
 
-Use `/kotlin-test` when:
 - Implementing new Kotlin functions or classes
 - Adding test coverage to existing Kotlin code
 - Fixing bugs (write failing test first)
@@ -292,7 +291,7 @@ open build/reports/kover/html/index.html
 - Use Kotest matchers for expressive assertions
 - Use MockK's `coEvery`/`coVerify` for suspend functions
 - Test behavior, not implementation details
-- Include edge cases (empty, null, max values)
+- Cover edge cases (empty, null, max values)
 
 **DON'T:**
 - Write implementation before tests

@@ -9,7 +9,7 @@ metadata:
 
 # Autonomous Loops Skill
 
-Patterns, architectures, and reference implementations for running Claude Code autonomously in loops. Covers everything from simple `claude -p` pipelines to full RFC-driven multi-agent DAG orchestration.
+Patterns and reference implementations for running Claude Code autonomously in loops — from simple `claude -p` pipelines to RFC-driven multi-agent DAG orchestration.
 
 ## When to Use
 
@@ -37,13 +37,13 @@ From simplest to most sophisticated:
 
 ## 1. Sequential Pipeline (`claude -p`)
 
-**The simplest loop.** Break daily development into a sequence of non-interactive `claude -p` calls. Each call is a focused step with a clear prompt.
+**The simplest loop.** Break daily development into a sequence of non-interactive `claude -p` calls, each a focused step with a clear prompt.
 
 ### Core Insight
 
 > If you can't figure out a loop like this, it means you can't even drive the LLM to fix your code in interactive mode.
 
-The `claude -p` flag runs Claude Code non-interactively with a prompt, exits when done. Chain calls to build a pipeline:
+`claude -p` runs Claude Code non-interactively with a prompt and exits when done. Chain calls into a pipeline:
 
 ```bash
 #!/bin/bash
@@ -66,8 +66,8 @@ claude -p "Create a conventional commit for all staged changes. Use 'feat: add O
 
 ### Key Design Principles
 
-1. **Each step is isolated** — A fresh context window per `claude -p` call means no context bleed between steps.
-2. **Order matters** — Steps execute sequentially. Each builds on the filesystem state left by the previous.
+1. **Each step is isolated** — fresh context window per `claude -p` call; no context bleed between steps.
+2. **Order matters** — steps run sequentially, each building on the filesystem state left by the previous.
 3. **Negative instructions are dangerous** — Don't say "don't test type systems." Instead, add a separate cleanup step (see [De-Sloppify Pattern](#5-the-de-sloppify-pattern)).
 4. **Exit codes propagate** — `set -e` stops the pipeline on failure.
 
@@ -139,7 +139,7 @@ See the `/claw` command documentation in upstream ECC for full details.
 
 ## 3. Infinite Agentic Loop
 
-**A two-prompt system** that orchestrates parallel sub-agents for specification-driven generation. Developed by disler (credit: @disler).
+**A two-prompt system** orchestrating parallel sub-agents for specification-driven generation (credit: @disler).
 
 ### Architecture: Two-Prompt System
 
@@ -202,13 +202,13 @@ PHASE 5 (infinite mode): Loop in waves of 3-5 until context is low.
 
 ### Key Insight: Uniqueness via Assignment
 
-Don't rely on agents to self-differentiate. The orchestrator **assigns** each agent a specific creative direction and iteration number. This prevents duplicate concepts across parallel agents.
+Don't rely on agents to self-differentiate — the orchestrator **assigns** each a specific creative direction and iteration number, preventing duplicate concepts across parallel agents.
 
 ---
 
 ## 4. Continuous Claude PR Loop
 
-**A production-grade shell script** that runs Claude Code in a continuous loop, creating PRs, waiting for CI, and merging automatically. Created by AnandChowdhary (credit: @AnandChowdhary).
+**A production-grade shell script** that loops Claude Code: create PR, wait for CI, merge automatically (credit: @AnandChowdhary).
 
 ### Core Loop
 
@@ -274,7 +274,7 @@ The critical innovation: a `SHARED_TASK_NOTES.md` file persists across iteration
 - The mock setup in tests/helpers.ts can be reused
 ```
 
-Claude reads this file at iteration start and updates it at iteration end. This bridges the context gap between independent `claude -p` invocations.
+Claude reads it at iteration start and updates it at iteration end, bridging the context gap between independent `claude -p` invocations.
 
 ### CI Failure Recovery
 
@@ -295,7 +295,7 @@ continuous-claude \
   --completion-threshold 3  # Stops after 3 consecutive signals
 ```
 
-Three consecutive iterations signaling completion stops the loop, preventing wasted runs on finished work.
+Hitting the threshold of consecutive signals stops the loop, preventing wasted runs on finished work.
 
 ### Key Configuration
 
@@ -333,7 +333,7 @@ Adding "don't test type systems" or "don't add unnecessary checks" to the Implem
 
 ### The Solution: Separate Pass
 
-Instead of constraining the Implementer, let it be thorough. Then add a focused cleanup agent:
+Let the Implementer be thorough, then add a focused cleanup agent:
 
 ```bash
 # Step 1: Implement (let it be thorough)
@@ -376,7 +376,7 @@ done
 
 ## 6. Ralphinho / RFC-Driven DAG Orchestration
 
-**The most sophisticated pattern.** An RFC-driven, multi-agent pipeline that decomposes a spec into a dependency DAG, runs each unit through a tiered quality pipeline, and lands them via an agent-driven merge queue. Created by enitrat (credit: @enitrat).
+**The most sophisticated pattern.** RFC-driven multi-agent pipeline: decompose the spec into a dependency DAG, run each unit through a tiered quality pipeline, land via an agent-driven merge queue (credit: @enitrat).
 
 ### Architecture Overview
 
@@ -447,7 +447,7 @@ Different tiers get different pipeline depths:
 | **medium** | research → plan → implement → test → PRD-review + code-review → review-fix |
 | **large** | research → plan → implement → test → PRD-review + code-review → review-fix → final-review |
 
-This prevents expensive operations on simple changes while ensuring architectural changes get thorough scrutiny.
+Simple changes skip expensive operations; architectural changes get full scrutiny.
 
 ### Separate Context Windows (Author-Bias Elimination)
 
@@ -464,7 +464,7 @@ Each stage runs in its own agent process with its own context window:
 | Review Fix | Codex | Address review issues |
 | Final Review | Opus | Quality gate (large tier only) |
 
-**Critical design:** The reviewer never wrote the code it reviews. This eliminates author bias — the most common source of missed issues in self-review.
+**Critical design:** the reviewer never wrote the code it reviews — eliminating author bias, the most common source of missed issues in self-review.
 
 ### Merge Queue with Eviction
 
@@ -568,7 +568,7 @@ These patterns compose well:
 
 3. **Any loop + Verification** — Use upstream ECC's `/verify` command or `verification-loop` skill as a gate before commits.
 
-4. **Ralphinho's tiered approach in simpler loops** — Even in a sequential pipeline, you can route simple tasks to Haiku and complex tasks to Opus:
+4. **Ralphinho's tiered approach in simpler loops** — even in a sequential pipeline, route simple tasks to Haiku and complex tasks to Opus:
    ```bash
    # Simple formatting fix
    claude -p --model haiku "Fix the import ordering in src/utils.ts"

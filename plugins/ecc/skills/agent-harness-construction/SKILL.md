@@ -9,7 +9,7 @@ metadata:
 
 # Agent Harness Construction
 
-Use this skill when you are improving how an agent plans, calls tools, recovers from errors, and converges on completion.
+Use when improving how an agent plans, calls tools, recovers from errors, and converges on completion.
 
 ## Core Model
 
