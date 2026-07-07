@@ -18,10 +18,10 @@ Run before PRs, after major changes, and pre-deploy.
 
 ## How It Works
 
-- Run phases sequentially from environment checks through deployment readiness so each layer builds on the last.
-- Environment and Composer checks gate everything else; stop immediately if they fail.
-- Linting/static analysis should be clean before running full tests and coverage.
-- Security and migration reviews happen after tests so you verify behavior before data or release steps.
+- Run phases sequentially, environment checks through deployment readiness — each layer builds on the last.
+- Environment and Composer checks gate everything else; stop immediately on failure.
+- Linting/static analysis must be clean before full tests and coverage.
+- Security and migration reviews come after tests — verify behavior before data or release steps.
 - Build/deploy readiness and queue/scheduler checks are final gates; any failure blocks release.
 
 ## Phase 1: Environment Checks

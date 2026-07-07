@@ -156,4 +156,4 @@ class MarketBuilder {
 - Maven: `mvn -T 4 test` or `mvn verify`
 - Gradle: `./gradlew test jacocoTestReport`
 
-**Remember**: Keep tests fast, isolated, and deterministic. Test behavior, not implementation details.
+**Remember**: keep tests fast, isolated, and deterministic — test behavior, not implementation details.

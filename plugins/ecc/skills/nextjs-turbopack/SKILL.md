@@ -7,7 +7,7 @@ metadata:
 
 # Next.js and Turbopack
 
-Next.js 16+ uses Turbopack by default for local development: an incremental bundler written in Rust that significantly speeds up dev startup and hot updates.
+Next.js 16+ uses Turbopack by default for local development — a Rust incremental bundler that greatly speeds up dev startup and hot updates.
 
 ## When to Use
 

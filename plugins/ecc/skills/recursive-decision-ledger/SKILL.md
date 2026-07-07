@@ -10,10 +10,10 @@ tools: Read, Write, Edit, Bash, Grep, Glob
 
 # Recursive Decision Ledger
 
-Use this skill when the user is trying to force deeper computation through
-repeated rollouts or "Prime Gauss" style recursive prompting. Preserve the useful
-part: repeated trials, prior memory, fresh information, and explicit marks.
-Remove the unsafe part: pretending the loop proves certainty.
+Use when the user forces deeper computation through repeated rollouts or
+"Prime Gauss" style recursive prompting. Preserve the useful part — repeated
+trials, prior memory, fresh information, explicit marks; remove the unsafe part
+— pretending the loop proves certainty.
 
 ## Ledger Contract
 

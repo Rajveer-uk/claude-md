@@ -8,10 +8,9 @@ tools: ["Read", "Edit", "Bash", "Grep", "Glob"]
 
 # Latency Critical Systems
 
-Use this skill when the user cares about realtime behavior, hot paths, streaming
-freshness, or execution speed. This includes HFT-like infrastructure, but the
-skill is engineering-focused. It does not authorize live trading or financial
-advice.
+Use when the user cares about realtime behavior, hot paths, streaming freshness,
+or execution speed — including HFT-like infrastructure. Engineering-focused; does
+not authorize live trading or financial advice.
 
 ## Split The Metrics
 

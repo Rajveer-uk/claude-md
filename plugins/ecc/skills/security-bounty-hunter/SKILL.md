@@ -8,7 +8,7 @@ version: "1.0.0"
 
 # Security Bounty Hunter
 
-Use this when the goal is practical vulnerability discovery for responsible disclosure or bounty submission, not a broad best-practices review.
+For practical vulnerability discovery aimed at responsible disclosure or bounty submission — not a broad best-practices review.
 
 ## When to Use
 
@@ -22,7 +22,7 @@ Bias toward remotely reachable, user-controlled attack paths and throw away patt
 
 ## In-Scope Patterns
 
-These are the kinds of issues that consistently matter:
+Issues that consistently matter:
 
 | Pattern | CWE | Typical impact |
 | --- | --- | --- |
@@ -36,7 +36,7 @@ These are the kinds of issues that consistently matter:
 
 ## Skip These
 
-These are usually low-signal or out of bounty scope unless the program says otherwise:
+Usually low-signal or out of bounty scope unless the program says otherwise:
 
 - Local-only `pickle.loads`, `torch.load`, or equivalent with no remote path
 - `eval()` or `exec()` in CLI-only tooling
