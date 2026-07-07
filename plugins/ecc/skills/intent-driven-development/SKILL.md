@@ -64,12 +64,11 @@ and silent assumptions, then returns corrected or supplemental criteria without 
 
 1. Inspect the available repository, documentation, issue, design, and test context before
    asking for technical facts that can be discovered locally.
-2. Do not infer product or business constraints from code. Business rules, compliance and
+2. Do not infer product or business constraints from code — business rules, compliance and
    regulatory obligations, contractual SLAs, pricing, data-retention policy, prioritization,
-   and target users cannot be read from a repository. Treat them as unknown until the user
-   supplies them or an authoritative product artifact (PRD, contract, policy document) states
-   them. Record them as assumptions flagged for confirmation, never as discovered facts. The
-   repository tells you how the system behaves today, not what the business requires it to do.
+   and target users cannot be read from a repository. Treat them as unknown until the user or
+   an authoritative product artifact (PRD, contract, policy document) supplies them; record
+   them as assumptions flagged for confirmation, never as discovered facts.
 3. Ask only questions whose answers are required and cannot be safely inferred. Group short,
    related questions when that saves unnecessary turns.
 4. Do not block implementation by default. When the user has asked to implement a sufficiently
@@ -155,11 +154,9 @@ When local or connected artifacts are available, inspect only what is needed:
 Record discovered facts separately from user-provided assumptions. If context cannot be
 inspected, say what is unknown and ask focused questions.
 
-The repository reveals technical facts — how the system behaves today, its conventions, and
-its contracts. It does not reveal product or business constraints: business rules, compliance
-and regulatory obligations, contractual SLAs, pricing, data-retention policy, prioritization,
-and target users. Never reconstruct these from code or naming. Capture them only from the user
-or an authoritative product artifact, and list them as assumptions to confirm until then.
+The repository reveals technical facts only — never reconstruct product/business constraints
+from code or naming (operating rule 2); capture them from the user or an authoritative product
+artifact and list them as assumptions until confirmed.
 
 ### 3. Define Scope
 
@@ -303,9 +300,8 @@ Use these to judge whether the skill actually produced a verifiable brief, not p
 AC-001: The export works correctly and is secure.
 ```
 
-Fails — "works correctly" and "secure" are not observable, there is no scenario, trigger,
-expected result, or verification method, and nothing states what must not happen. A reader
-cannot tell whether the implementation satisfied it.
+Fails — "works correctly"/"secure" are not observable; no scenario, trigger, expected result,
+verification method, or prohibited side effect.
 
 **A passing acceptance criterion**
 
@@ -319,8 +315,7 @@ AC-001: Export generates file with correct headers
 - Priority: Required
 ```
 
-Passes — a concrete observable outcome, a prohibited side effect, and a named verification
-method. Two people would agree on whether it was met.
+Passes — concrete observable outcome, prohibited side effect, named verification method.
 
 **A failing context entry**
 
@@ -328,9 +323,8 @@ method. Two people would agree on whether it was met.
 Discovered facts: Users on the free tier are limited to 100 exports per month.
 ```
 
-Fails — a per-tier limit is a business rule. It must not appear under discovered facts inferred
-from code; it belongs under Product/business constraints, supplied by the user, or be listed as
-an assumption to confirm.
+Fails — a per-tier limit is a business rule: it belongs under Product/business constraints
+(user-supplied) or assumptions, never under discovered facts.
 
 ### Pass/Fail Rubric
 
@@ -357,6 +351,5 @@ Before returning the brief, check:
 
 ## Handoff
 
-When another planning or implementation workflow is available, pass the acceptance brief or
-criterion IDs to it. When no dedicated workflow exists, provide the brief directly as the
-implementation reference. Do not assume any named skill or tool is installed.
+Pass the brief or criterion IDs to an available planning/implementation workflow, else provide
+it directly as the implementation reference. Do not assume any named skill or tool is installed.
