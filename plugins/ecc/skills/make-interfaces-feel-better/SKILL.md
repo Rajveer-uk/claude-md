@@ -7,8 +7,7 @@ metadata:
 
 # Make Interfaces Feel Better
 
-Use this skill for the small design-engineering details that compound into a
-more polished interface.
+Small design-engineering details that compound into a more polished interface.
 
 Source: salvaged from stale community PR #1659 by `linus707`.
 
@@ -31,13 +30,13 @@ outer radius = inner radius + padding
 ```
 
 If padding is large, treat layers as separate surfaces instead of forcing the
-math. The point is optical coherence, not formula worship.
+math — the point is optical coherence, not formula worship.
 
 ### Optical Alignment
 
-Geometric centering is not always visual centering. Icon buttons, play
-triangles, arrows, stars, and asymmetric icons often need a small offset. Fix the
-SVG when possible; otherwise adjust with a pixel-level margin or padding change.
+Geometric centering is not always visual centering: icon buttons, play
+triangles, arrows, stars, and asymmetric icons often need a small offset. Fix
+the SVG when possible; otherwise adjust with a pixel-level margin or padding.
 
 ### Shadows And Borders
 

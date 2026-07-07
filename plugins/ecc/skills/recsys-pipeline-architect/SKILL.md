@@ -7,7 +7,7 @@ metadata:
 
 # recsys-pipeline-architect
 
-A spec-and-scaffold skill for building composable recommendation, ranking, and feed pipelines. It encodes the **six-stage pattern** — Source → Hydrator → Filter → Scorer → Selector → SideEffect — popularized by xAI's open-sourced [For You algorithm](https://github.com/xai-org/x-algorithm) (Apache 2.0). This skill is an independent reimplementation of the pattern (MIT) — no code copied from the original.
+Spec-and-scaffold skill for composable recommendation, ranking, and feed pipelines, encoding the **six-stage pattern** — Source → Hydrator → Filter → Scorer → Selector → SideEffect — popularized by xAI's open-sourced [For You algorithm](https://github.com/xai-org/x-algorithm) (Apache 2.0). Independent reimplementation (MIT); no code copied from the original.
 
 Upstream: <https://github.com/mturac/recsys-pipeline-architect>
 
@@ -63,17 +63,17 @@ Walk the user through these eight steps:
 
 ### 1. Single score vs multi-action prediction
 
-- **Single score**: train one model to predict relevance. To change behavior → retrain.
-- **Multi-action**: predict `P(action)` for many actions (read, like, share, skip, report), combine with weights at serving time. To change behavior → change weights. No retraining.
+- **Single score**: one model predicts relevance; changing behavior means retraining.
+- **Multi-action**: predict `P(action)` for many actions (read, like, share, skip, report), combined with weights at serving time; changing behavior means changing weights — no retraining.
 
-The X For You system uses multi-action with both positive and negative weights. Recommend multi-action when the user expects to tune frequently.
+X For You uses multi-action with positive and negative weights. Recommend multi-action when the user expects to tune frequently.
 
 ### 2. Candidate isolation in scoring
 
-- **Isolated**: each candidate scored independently. Deterministic, cacheable.
-- **Joint**: candidates attend to each other during scoring (e.g., transformer over batch). More expressive but non-deterministic across batches.
+- **Isolated**: each candidate scored independently — deterministic, cacheable.
+- **Joint**: candidates attend to each other (e.g., transformer over batch) — more expressive, non-deterministic across batches.
 
-Default to isolation. Joint only when there's a specific reason (e.g., explicit batch-aware diversity).
+Default to isolation; joint only for a specific reason (e.g., explicit batch-aware diversity).
 
 ### 3. Online vs offline
 

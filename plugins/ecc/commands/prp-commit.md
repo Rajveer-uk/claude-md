@@ -38,7 +38,7 @@ Interpret `$ARGUMENTS` to determine what to stage:
 | `the auth changes` | Interpret from status/diff — find auth-related files | `git add <matched files>` |
 | Specific filenames | Stage those files | `git add <files>` |
 
-For natural language inputs (like "the auth changes"), cross-reference the `git status` output and `git diff` to identify relevant files. Show the user which files you're staging and why.
+For natural language inputs (like "the auth changes"), cross-reference `git status` and `git diff` to identify relevant files; show the user which files you're staging and why.
 
 ```bash
 git add <determined files>

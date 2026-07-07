@@ -150,7 +150,7 @@ If the feature uses only well-understood internal patterns, skip this phase and 
 
 ### UX Transformation (if applicable)
 
-Document the before/after user experience:
+Document the before/after UX:
 
 **Before:**
 ```
@@ -195,9 +195,9 @@ Define:
 
 ## Phase 6 — GENERATE
 
-Write the full plan document using the template below. Save to `.claude/PRPs/plans/{kebab-case-feature-name}.plan.md`.
+Write the full plan using the template below to `.claude/PRPs/plans/{kebab-case-feature-name}.plan.md`.
 
-Create the directory if it doesn't exist:
+Create the directory if needed:
 ```bash
 mkdir -p .claude/PRPs/plans
 ```

@@ -11,9 +11,8 @@ author: jeff
 
 # Motion Foundations
 
-The base layer of the motion system. Defines every value, constraint, and
-rule that downstream skills (`motion-patterns`, `motion-advanced`) inherit.
-Load this skill before any animation work begins.
+Base layer of the motion system: every value, constraint, and rule that
+`motion-patterns` and `motion-advanced` inherit. Load before any animation work.
 
 ## When to Activate
 
@@ -41,8 +40,8 @@ Motion must do at least one of the following or it must be removed:
 - Communicate state
 - Preserve spatial continuity
 
-Responsiveness always outranks smoothness. A 60 fps animation that causes
-input delay is worse than no animation.
+Responsiveness always outranks smoothness — a 60 fps animation that causes
+input delay is worse than none.
 
 ## Rules
 
@@ -172,8 +171,8 @@ export const motionConfig = {
 2. Low-end device detection — reduces duration, removes non-essential animations
 3. Design preference — everything else
 
-Motion must degrade gracefully. It must never disappear abruptly in a way
-that causes layout shift or confuses orientation.
+Motion must degrade gracefully — never disappear abruptly in a way that
+causes layout shift or confuses orientation.
 
 ```tsx
 // hooks/use-reduced-motion.tsx
@@ -297,5 +296,5 @@ This skill does **not** cover:
 
 ## Related Skills
 
-- **`motion-patterns`** — consumes tokens and springs defined here to build button, modal, stagger, page transition, and scroll patterns. Does not redefine any values.
-- **`motion-advanced`** — consumes tokens and springs defined here for drag, SVG, text, and gesture patterns. Adds `useAnimate` sequences and custom hooks on top of this foundation.
+- **`motion-patterns`** — consumes these tokens and springs for button, modal, stagger, page transition, and scroll patterns; redefines no values.
+- **`motion-advanced`** — consumes these tokens and springs for drag, SVG, text, and gesture patterns; adds `useAnimate` sequences and custom hooks on top.

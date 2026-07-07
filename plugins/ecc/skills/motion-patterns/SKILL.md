@@ -11,9 +11,9 @@ author: jeff
 
 # Motion Patterns
 
-Copy-paste patterns for the most common UI animation needs.
-Every pattern here is built on `motion-foundations` tokens and springs.
-Do not define new duration or easing values here — import them.
+Copy-paste patterns for common UI animation needs, all built on
+`motion-foundations` tokens and springs. Do not define new duration or
+easing values here — import them.
 
 ## When to Activate
 
@@ -78,13 +78,11 @@ This skill produces:
 
 ### AnimatePresence contract
 
-Three things must always be true:
+Three things must always be true — miss any one and the exit animation silently fails:
 
 1. `AnimatePresence` wraps the conditional
 2. The direct child has a `key`
 3. The child has an `exit` prop
-
-Miss any one of these and the exit animation silently fails.
 
 ### layout vs layoutId
 
@@ -345,9 +343,9 @@ export function ExpandingCard({ title, body }: { title: string; body: string }) 
 
 ## End-to-End Example
 
-A staggered list that enters on mount, handles conditional presence, and
-respects reduced motion — combining tokens, springs, AnimatePresence, and
-the accessibility hook from `motion-foundations`:
+Staggered list: enters on mount, handles conditional presence, respects
+reduced motion — combining tokens, springs, AnimatePresence, and the
+`motion-foundations` accessibility hook:
 
 ```tsx
 "use client"
@@ -432,5 +430,5 @@ This skill does **not** cover:
 
 ## Related Skills
 
-- **`motion-foundations`** — defines all tokens, springs, the `useSafeMotion` hook, and SSR guards that every pattern here imports. Must be set up first.
-- **`motion-advanced`** — extends these patterns with drag, gestures, SVG, text, custom hooks, and imperative sequencing. Does not redefine any patterns from this skill.
+- **`motion-foundations`** — defines all tokens, springs, the `useSafeMotion` hook, and SSR guards imported here. Set up first.
+- **`motion-advanced`** — extends these patterns with drag, gestures, SVG, text, custom hooks, and imperative sequencing; redefines nothing from this skill.

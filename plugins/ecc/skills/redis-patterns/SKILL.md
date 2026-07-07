@@ -11,7 +11,7 @@ Quick reference for Redis best practices across common backend use cases.
 
 ## How It Works
 
-Redis is an in-memory data structure store that supports strings, hashes, lists, sets, sorted sets, streams, and more. Individual Redis commands are atomic on a single instance; multi-step workflows require Lua scripts, MULTI/EXEC transactions, or explicit synchronization to stay atomic. Data is optionally persisted via RDB snapshots or AOF logs. Clients communicate over TCP using the RESP protocol; connection pools are essential to avoid per-request handshake overhead.
+Redis is an in-memory data structure store (strings, hashes, lists, sets, sorted sets, streams, more). Individual commands are atomic on a single instance; multi-step workflows need Lua scripts, MULTI/EXEC, or explicit synchronization. Persistence is optional via RDB snapshots or AOF logs. Clients speak RESP over TCP; connection pools are essential to avoid per-request handshake overhead.
 
 ## When to Activate
 
@@ -269,7 +269,7 @@ stats:pageviews:2024-01-01
 | Leaderboard | 1h–24h |
 | Static/reference data | 1h–1 week |
 
-Always set a TTL. Keys without TTL accumulate indefinitely and cause memory pressure.
+Always set a TTL — keys without one accumulate indefinitely and cause memory pressure.
 
 ## Connection Management
 

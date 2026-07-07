@@ -496,4 +496,4 @@ test:
       run: cargo llvm-cov --fail-under-lines 80
 ```
 
-**Remember**: Tests are documentation. They show how your code is meant to be used. Write them clearly and keep them up to date.
+**Remember**: tests are documentation — they show how the code is meant to be used; write them clearly and keep them current.

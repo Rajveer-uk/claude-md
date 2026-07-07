@@ -7,7 +7,7 @@ metadata:
 
 # Swift 6.2 Approachable Concurrency
 
-Patterns for adopting Swift 6.2's concurrency model where code runs single-threaded by default and concurrency is introduced explicitly. Eliminates common data-race errors without sacrificing performance.
+Patterns for Swift 6.2's concurrency model — single-threaded by default, concurrency introduced explicitly — eliminating common data-race errors without sacrificing performance.
 
 ## When to Activate
 
@@ -20,7 +20,7 @@ Patterns for adopting Swift 6.2's concurrency model where code runs single-threa
 
 ## Core Problem: Implicit Background Offloading
 
-In Swift 6.1 and earlier, async functions could be implicitly offloaded to background threads, causing data-race errors even in seemingly safe code:
+Through Swift 6.1, async functions could be implicitly offloaded to background threads, causing data-race errors even in seemingly safe code:
 
 ```swift
 // Swift 6.1: ERROR
@@ -112,7 +112,7 @@ final class StickerLibrary {
 
 ### MainActor Default Inference Mode
 
-Swift 6.2 introduces a mode where MainActor is inferred by default — no manual annotations needed:
+Swift 6.2 adds a mode inferring MainActor by default — no manual annotations:
 
 ```swift
 // With MainActor default inference enabled:
@@ -132,7 +132,7 @@ extension StickerModel: Exportable {  // Implicitly @MainActor conformance
 }
 ```
 
-This mode is opt-in and recommended for apps, scripts, and other executable targets.
+Opt-in; recommended for apps, scripts, and other executable targets.
 
 ## Core Pattern — @concurrent for Background Work
 

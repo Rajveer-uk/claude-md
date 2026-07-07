@@ -7,7 +7,7 @@ metadata:
 
 # Quarkus Security Review
 
-Best practices for securing Quarkus applications with authentication, authorization, and input validation.
+Securing Quarkus applications: authentication, authorization, input validation.
 
 ## When to Activate
 

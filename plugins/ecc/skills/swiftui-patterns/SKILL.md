@@ -7,7 +7,7 @@ metadata:
 
 # SwiftUI Patterns
 
-Modern SwiftUI patterns for building declarative, performant user interfaces on Apple platforms. Covers the Observation framework, view composition, type-safe navigation, and performance optimization.
+Modern SwiftUI patterns for declarative, performant UIs on Apple platforms: Observation framework, view composition, type-safe navigation, performance optimization.
 
 ## When to Activate
 
@@ -101,7 +101,7 @@ struct ProfileView: View {
 
 ### Extract Subviews to Limit Invalidation
 
-Break views into small, focused structs. When state changes, only the subview reading that state re-renders:
+Break views into small, focused structs — on state change, only the subview reading that state re-renders:
 
 ```swift
 struct OrderView: View {

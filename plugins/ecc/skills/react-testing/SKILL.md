@@ -7,7 +7,7 @@ metadata:
 
 # React Testing
 
-Comprehensive React testing patterns for behavior-focused component tests, custom hook tests, accessibility assertions, and network-level mocking.
+React testing patterns: behavior-focused component tests, custom hook tests, accessibility assertions, network-level mocking.
 
 ## When to Activate
 
@@ -109,7 +109,7 @@ Never `setTimeout` + assertion — flaky. Use the matchers above.
 
 ## Network Mocking with MSW
 
-Mock Service Worker mocks at the network layer. The component, hooks, and fetch library all behave exactly as in production.
+Mock Service Worker mocks at the network layer, so the component, hooks, and fetch library behave exactly as in production.
 
 ### Setup
 
@@ -135,7 +135,7 @@ afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 ```
 
-Configure `onUnhandledRequest: "error"` so any unmocked request fails the test loudly — silent passes are worse than red.
+`onUnhandledRequest: "error"` makes any unmocked request fail loudly — silent passes are worse than red.
 
 ### Per-test override
 
@@ -259,7 +259,7 @@ Acceptable snapshot uses:
 - Pure data serialization functions (`formatInvoice(invoice)` -> stable string)
 - Generated config files (e.g., webpack config output)
 
-For visual regression on components, use Playwright/Cypress screenshots or Percy/Chromatic — actual visual diffs, not DOM strings.
+For visual regression, use Playwright/Cypress screenshots or Percy/Chromatic — actual visual diffs, not DOM strings.
 
 ## When to Reach for Playwright / Cypress
 
@@ -271,7 +271,7 @@ JSDOM (used by Vitest/Jest) cannot:
 - Handle iframes, popups, downloads, cross-origin flows
 - Run real network in a controlled environment with full DevTools support
 
-For any of those, use Playwright Component Testing (component test in real browser) or full E2E. See [e2e-testing skill](../e2e-testing/SKILL.md).
+For any of those: Playwright Component Testing (real browser) or full E2E. See [e2e-testing skill](../e2e-testing/SKILL.md).
 
 Decision boundary:
 

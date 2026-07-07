@@ -296,7 +296,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
 ## Background Jobs
 
-Use Spring’s `@Scheduled` or integrate with queues (e.g., Kafka, SQS, RabbitMQ). Keep handlers idempotent and observable.
+Use Spring's `@Scheduled` or queues (Kafka, SQS, RabbitMQ). Keep handlers idempotent and observable.
 
 ## Observability
 
@@ -312,4 +312,4 @@ Use Spring’s `@Scheduled` or integrate with queues (e.g., Kafka, SQS, RabbitMQ
 - Use `@Transactional(readOnly = true)` for queries
 - Enforce null-safety via `@NonNull` and `Optional` where appropriate
 
-**Remember**: Keep controllers thin, services focused, repositories simple, and errors handled centrally. Optimize for maintainability and testability.
+**Remember**: controllers thin, services focused, repositories simple, errors handled centrally — optimize for maintainability and testability.

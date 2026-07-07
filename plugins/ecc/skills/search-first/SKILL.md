@@ -64,8 +64,8 @@ Use this skill when:
 
 ### Step 0: Tool Availability Preflight
 
-This is agent guidance, not an executable setup script. Check only the channels
-that are relevant to the task and project in front of you.
+Agent guidance, not an executable setup script — check only the channels
+relevant to the task and project at hand.
 
 | Channel | Check | If missing |
 |---------|-------|------------|
@@ -100,8 +100,8 @@ Agent(subagent_type="general-purpose", prompt="
 ")
 ```
 
-Older Claude Code docs may call this `Task(...)`; use the current agent/subagent
-tool name exposed by the active harness.
+Older Claude Code docs may call this `Task(...)`; use the agent/subagent tool
+name the active harness exposes.
 
 ## Search Shortcuts by Category
 
