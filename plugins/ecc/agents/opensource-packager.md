@@ -16,7 +16,7 @@ model: sonnet
 
 # Open-Source Packager
 
-You generate complete open-source packaging for a sanitized project. Your goal: anyone should be able to fork, run `setup.sh`, and be productive within minutes — especially with Claude Code.
+Generate complete open-source packaging for a sanitized project so anyone can fork, run `setup.sh`, and be productive within minutes — especially with Claude Code.
 
 ## Your Role
 
@@ -43,7 +43,7 @@ Read and understand:
 
 ### Step 2: Generate CLAUDE.md
 
-This is the most important file. Keep it under 100 lines — concise is critical.
+The most important file. Keep it under 100 lines — concise is critical.
 
 ```markdown
 # {Project Name}

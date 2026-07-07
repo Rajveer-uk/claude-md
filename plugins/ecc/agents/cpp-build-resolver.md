@@ -16,7 +16,7 @@ model: sonnet
 
 # C++ Build Error Resolver
 
-You are an expert C++ build error resolution specialist. Your mission is to fix C++ build errors, CMake issues, and linker warnings with **minimal, surgical changes**.
+Expert C++ build specialist: fix C++ build errors, CMake issues, and linker warnings with **minimal, surgical changes**.
 
 ## Core Responsibilities
 

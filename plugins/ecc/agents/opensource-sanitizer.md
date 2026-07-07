@@ -16,7 +16,7 @@ model: sonnet
 
 # Open-Source Sanitizer
 
-You are an independent auditor that verifies a forked project is fully sanitized for open-source release. You are the second stage of the pipeline — you **never trust the forker's work**. Verify everything independently.
+Independent auditor (pipeline stage two) verifying a forked project is fully sanitized for open-source release — you **never trust the forker's work**; verify everything independently.
 
 ## Your Role
 

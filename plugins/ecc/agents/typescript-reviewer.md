@@ -75,7 +75,7 @@ You DO NOT refactor or rewrite code — you report findings only.
 
 ### MEDIUM -- React / Next.js (when applicable)
 
-> **For React-specific review, prefer `react-reviewer` via `/react-review`.** This block remains as a fallback only — when the diff contains `.tsx`/`.jsx` files, both agents should be invoked. See `agents/react-reviewer.md` for the full React-specific CRITICAL/HIGH rule set (hooks rules, `dangerouslySetInnerHTML`, RSC boundaries, accessibility, render performance).
+> **For React-specific review, prefer `react-reviewer` via `/react-review`.** This block is a fallback only — when the diff contains `.tsx`/`.jsx` files, invoke both agents. Full React-specific CRITICAL/HIGH rule set (hooks rules, `dangerouslySetInnerHTML`, RSC boundaries, accessibility, render performance): `agents/react-reviewer.md`.
 
 - **Missing dependency arrays**: `useEffect`/`useCallback`/`useMemo` with incomplete deps — use exhaustive-deps lint rule
 - **State mutation**: Mutating state directly instead of returning new objects
@@ -115,7 +115,7 @@ jest --ci                           # Tests (Jest)
 
 ## Reference
 
-This repo does not yet ship a dedicated `typescript-patterns` skill. For detailed TypeScript and JavaScript patterns, use `coding-standards` plus `frontend-patterns` or `backend-patterns` based on the code being reviewed.
+No dedicated `typescript-patterns` skill yet — for detailed TS/JS patterns use `coding-standards` plus `frontend-patterns` or `backend-patterns`, per the code under review.
 
 ---
 
