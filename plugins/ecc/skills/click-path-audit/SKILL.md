@@ -171,13 +171,9 @@ This audit is expensive. Scope it appropriately:
 
 ```
 Agent 1: Map ALL state stores (Step 1) — this is shared context for all other agents
-Agent 2: Dashboard (Tasks, Notes, Journal, Ideas)
-Agent 3: Chat (DanteChatColumn, JustChatPage)
-Agent 4: Emails (ThreadList, DraftArea, EmailsPage)
-Agent 5: Projects (ProjectsPage, ProjectOverviewTab, NewProjectWizard)
-Agent 6: CRM (all sub-tabs)
-Agent 7: Profile, Settings, Vault, Notifications
-Agent 8: Management Suite (all pages)
+Agent 2..N: One agent per top-level app area (e.g. dashboard, chat/messaging,
+            mail, projects, CRM, profile/settings, admin) — assign each agent
+            that area's pages and their major components/sub-tabs
 ```
 
 Agent 1 MUST complete first. Its output is input for all other agents.

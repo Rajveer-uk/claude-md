@@ -122,7 +122,7 @@ class UserRepositoryIntegrationTest {
 
 ### API Tests with MockMvc
 
-Test controller layer with full Spring context:
+Test the controller layer with `@WebMvcTest` + `MockMvc` (happy-path pattern: see the `springboot-tdd` skill's Web Layer Tests). Verification adds the negative case — malformed input must be rejected:
 
 ```java
 @WebMvcTest(UserController.class)
@@ -130,20 +130,6 @@ class UserControllerTest {
 
   @Autowired private MockMvc mockMvc;
   @MockBean private UserService userService;
-
-  @Test
-  void createUser_validInput_returns201() throws Exception {
-    var user = new UserDto(1L, "Alice", "alice@example.com");
-    when(userService.create(any())).thenReturn(user);
-
-    mockMvc.perform(post("/api/users")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {"name": "Alice", "email": "alice@example.com"}
-                """))
-        .andExpect(status().isCreated())
-        .andExpect(jsonPath("$.name").value("Alice"));
-  }
 
   @Test
   void createUser_invalidEmail_returns400() throws Exception {
