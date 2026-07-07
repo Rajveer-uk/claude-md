@@ -6,7 +6,7 @@ This config is **stack-agnostic and OS-agnostic**. The files are identical on ev
 
 | Piece | Scope | Location | Why |
 |------|-------|----------|-----|
-| `base` plugin — 23 agents + `/caveman` skill | **Plugin** | via `/plugin` | The main team — install from the marketplace (see §G) |
+| `base` plugin — 23 agents + 3 skills | **Plugin** | via `/plugin` | The main team — install from the marketplace (see §G) |
 | Addons: `marketing` (7), `council` (6) | **Plugin** | via `/plugin` | Opt-in add-ons — install from the marketplace (see §G) |
 | `settings.json` (deny-list + modes) | **Global / user** | `~/.claude/settings.json` | The security baseline — **not** plugin-able; install it before the plugins |
 | Hooks `guard`/`format`/`verify` (`.ps1`+`.sh`, optional) | **Global / user** | `~/.claude/hooks/` | guard = enforce no-secret-read/egress + safe agent-gen; format = auto-format edited file; verify = run project checks before finishing |
@@ -40,7 +40,7 @@ Copy-Item "$repo\.claude\settings.json" "$dest\settings.json" -Force
 # 3. (Optional) Install the hooks: guard (security) + format/verify (convenience)
 Copy-Item "$repo\.claude\hooks\*.ps1" "$dest\hooks\" -Force
 
-# The agents + /caveman skill are NOT copied here — they install as the `base` plugin (see §G).
+# The agents + skills are NOT copied here — they install as the `base` plugin (see §G).
 ```
 
 Then, **only if you installed the hook**, add this to `~/.claude/settings.json` next to `permissions`:
@@ -94,7 +94,7 @@ cp "$REPO/.claude/settings.json" "$DEST/settings.json"
 cp "$REPO"/.claude/hooks/*.sh "$DEST/hooks/"
 chmod +x "$DEST"/hooks/*.sh
 
-# The agents + /caveman skill are NOT copied here — they install as the `base` plugin (see §G).
+# The agents + skills are NOT copied here — they install as the `base` plugin (see §G).
 ```
 
 Then, **only if you installed the hook**, add this to `~/.claude/settings.json` next to `permissions`:

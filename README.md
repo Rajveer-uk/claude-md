@@ -72,10 +72,10 @@ The payoff is fewer wrong turns, less rework, tighter diffs, and a documented se
 ├── .claude-plugin/
 │   └── marketplace.json          # marketplace listing the four plugins below
 ├── plugins/                      # the team — installed via /plugin (nothing loads until installed)
-│   ├── base/                     # MAIN: 23 zero-network engineering agents + /caveman skill + 1 static prompt hook
+│   ├── base/                     # MAIN: 23 zero-network engineering agents + 3 skills + 1 static prompt hook
 │   │   ├── .claude-plugin/plugin.json
 │   │   ├── agents/*.md
-│   │   └── skills/caveman/SKILL.md
+│   │   └── skills/*/SKILL.md      # caveman, secure-code-reviewer, work-quality-checker
 │   ├── marketing/                # ADDON: 7 marketing/content agents (incl. the only 2 network researchers)
 │   │   ├── .claude-plugin/plugin.json
 │   │   ├── .mcp.json             # plugin-scope MCP (Tavily + DataForSEO) — keys from env
@@ -117,6 +117,8 @@ The payoff is fewer wrong turns, less rework, tighter diffs, and a documented se
 ## Skills
 
 - **`/caveman [lite|full|ultra]`** (in the `base` plugin) — ultra-terse output mode that cuts ~65% of response tokens while keeping code, errors, and technical facts exact; auto-reverts to full prose for security warnings and irreversible-action confirmations. The prose counterpart to the `ponytail` reviewer (which strips *code* to the minimal version that works).
+- **`secure-code-reviewer`** (in the `base` plugin) — OWASP-focused defensive audit of code you paste or point at: severity-triaged report (Critical→Low) with secure-code fixes; explains risk without generating exploit payloads. Complements the `security-auditor` agent — the agent does delegated repo-wide scans, the skill audits inline what you show it.
+- **`work-quality-checker`** (in the `base` plugin) — ruthless pre-send QA for emails, decks, concept notes, proposals, and scripts: logic-gap audit, top-3 sentence rewrites, the three toughest boss/client questions with suggested answers, and a binary "Ship it" / "Fix these 2 things first" verdict. Also turns raw meeting notes into a decisions/owners/deadlines dashboard.
 - **`/council <question>`** (in the `council` plugin) — convene the 6-seat decision council and return a synthesized verdict.
 - **117 ECC skills** (in the optional `ecc` plugin) — per-stack patterns, testing/TDD, architecture, performance, accessibility, code-tour, and more; surfaced on demand or via `/ecc:<skill>`.
 
@@ -134,7 +136,7 @@ Add the marketplace once, then install the `base` team plus any addons; toggle t
 
 ```text
 /plugin marketplace add .                    # local path to this repo's root (or <owner>/claude-md once pushed)
-/plugin install base@claude-md-packs         # MAIN:  23 engineering agents + /caveman skill
+/plugin install base@claude-md-packs         # MAIN:  23 engineering agents + 3 skills
 /plugin install marketing@claude-md-packs    # addon: 7 marketing/content agents (+ Tavily/DataForSEO)
 /plugin install council@claude-md-packs      # addon: 6 council seats + /council skill
 /plugin install ecc@claude-md-packs          # addon: 42 ECC agents + 117 skills + 34 commands
@@ -152,6 +154,8 @@ $repo = "<repo>"; $dest = "$env:USERPROFILE\.claude"
 New-Item -ItemType Directory -Force "$dest\agents","$dest\skills" | Out-Null
 Copy-Item "$repo\plugins\*\agents\*.md"          "$dest\agents\" -Force            # all 78 across packs (use \base\ for just the 23; ecc's skills/commands are NOT copied here)
 Copy-Item "$repo\plugins\base\skills\caveman"    "$dest\skills\caveman"  -Recurse -Force
+Copy-Item "$repo\plugins\base\skills\secure-code-reviewer" "$dest\skills\secure-code-reviewer" -Recurse -Force
+Copy-Item "$repo\plugins\base\skills\work-quality-checker" "$dest\skills\work-quality-checker" -Recurse -Force
 Copy-Item "$repo\plugins\council\skills\council" "$dest\skills\council"  -Recurse -Force
 ```
 
@@ -161,6 +165,8 @@ repo="<repo>"; dest="$HOME/.claude"
 mkdir -p "$dest/agents" "$dest/skills"
 cp "$repo"/plugins/*/agents/*.md "$dest/agents/"                  # all 78 across packs (use plugins/base/ for just the 23; ecc's skills/commands are NOT copied here)
 cp -r "$repo/plugins/base/skills/caveman"    "$dest/skills/caveman"
+cp -r "$repo/plugins/base/skills/secure-code-reviewer" "$dest/skills/secure-code-reviewer"
+cp -r "$repo/plugins/base/skills/work-quality-checker" "$dest/skills/work-quality-checker"
 cp -r "$repo/plugins/council/skills/council" "$dest/skills/council"
 ```
 

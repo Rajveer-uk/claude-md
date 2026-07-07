@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "base",
-      "description": "Core engineering team — 23 least-privilege, zero-network agents (planning, review, implementation, debugging, testing, devops, docs, curated stack experts) plus the /caveman terse-output skill. The main install; pair it with the settings.json security baseline (see setup.md). Ships one static, no-network auto-delegation prompt hook.",
+      "description": "Core engineering team — 23 least-privilege, zero-network agents (planning, review, implementation, debugging, testing, devops, docs, curated stack experts) plus 3 skills — /caveman (terse output), secure-code-reviewer (OWASP audit), work-quality-checker (pre-send executive QA). The main install; pair it with the settings.json security baseline (see setup.md). Ships one static, no-network auto-delegation prompt hook.",
       "source": "./plugins/base",
       "category": "productivity"
     },
