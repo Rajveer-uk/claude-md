@@ -37,8 +37,6 @@ For pure `.ts`/`.js` changes with no React imports, use `/code-review` (general)
 | `security-auditor` | Project-wide security audit |
 | `/code-review` | Generic uncommitted-changes or PR review |
 
-On a TSX/JSX PR, invoke both `react-reviewer` and `typescript-reviewer` — their findings are non-overlapping by design.
-
 ## Review Categories
 
 ### CRITICAL (Must Fix)

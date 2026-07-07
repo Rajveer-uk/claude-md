@@ -32,10 +32,7 @@ Activate this skill for:
 - readability, KISS, DRY, and YAGNI enforcement
 - error-handling expectations and code-smell review
 
-Do not use this skill as the primary source for:
-- React composition, hooks, or rendering patterns
-- backend architecture, API design, or database layering
-- domain-specific framework guidance when a narrower ECC skill already exists
+For framework- or domain-specific guidance, use the narrower skills listed in the pointer list at the top of this file instead.
 
 ## Code Quality Principles
 

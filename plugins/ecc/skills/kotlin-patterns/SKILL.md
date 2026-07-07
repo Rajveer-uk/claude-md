@@ -21,35 +21,6 @@ Idiomatic Kotlin patterns and best practices for robust, efficient, maintainable
 
 Enforces idiomatic Kotlin conventions across seven areas: null safety (type system, safe-call operators), immutability (`val`, `copy()` on data classes), sealed classes/interfaces for exhaustive type hierarchies, structured concurrency (coroutines, `Flow`), extension functions (behaviour without inheritance), type-safe DSL builders (`@DslMarker`, lambda receivers), and Gradle Kotlin DSL for build configuration.
 
-## Examples
-
-**Null safety with Elvis operator:**
-```kotlin
-fun getUserEmail(userId: String): String {
-    val user = userRepository.findById(userId)
-    return user?.email ?: "unknown@example.com"
-}
-```
-
-**Sealed class for exhaustive results:**
-```kotlin
-sealed class Result<out T> {
-    data class Success<T>(val data: T) : Result<T>()
-    data class Failure(val error: AppError) : Result<Nothing>()
-    data object Loading : Result<Nothing>()
-}
-```
-
-**Structured concurrency with async/await:**
-```kotlin
-suspend fun fetchUserWithPosts(userId: String): UserProfile =
-    coroutineScope {
-        val user = async { userService.getUser(userId) }
-        val posts = async { postService.getUserPosts(userId) }
-        UserProfile(user = user.await(), posts = posts.await())
-    }
-```
-
 ## Core Principles
 
 ### 1. Null Safety

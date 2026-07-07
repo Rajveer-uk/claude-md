@@ -19,10 +19,6 @@ Production-grade Kubernetes patterns for deploying, managing, and debugging work
 - Configuring HPA (Horizontal Pod Autoscaler) or PodDisruptionBudgets
 - Reviewing K8s YAML for security or correctness
 
-## When to Use
-
-> Same as **When to Activate** above (alias for repo skill-format conventions).
-
 ## How It Works
 
 **Copy-pasteable, production-grade YAML patterns** and **kubectl debugging commands** by task:

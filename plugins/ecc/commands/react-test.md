@@ -253,14 +253,11 @@ jest path/to/file.test.tsx
 CI=true vitest run --coverage
 ```
 
-## Related Commands
+## Related
 
 - `/react-build` — fix build errors before running tests
 - `/react-review` — review after implementation
 - `eval-harness` skill — full verification loop
-
-## Related
-
 - Skills: react-testing, tdd-workflow, accessibility, e2e-testing
 - Rules: `rules/react/testing.md`
 - Agents: `react-reviewer` (reviews test quality), `tdd-guide` (enforces TDD process)

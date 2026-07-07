@@ -83,10 +83,9 @@ When invoked:
 
 ## Diagnostic Commands
 
+The `cargo check` / `cargo clippy -- -D warnings` / `cargo fmt --check` / `cargo test` commands are listed in step 1 of "When invoked" above. Additional diagnostics:
+
 ```bash
-cargo clippy -- -D warnings
-cargo fmt --check
-cargo test
 if command -v cargo-audit >/dev/null; then cargo audit; else echo "cargo-audit not installed"; fi
 if command -v cargo-deny >/dev/null; then cargo deny check; else echo "cargo-deny not installed"; fi
 cargo build --release 2>&1 | head -50

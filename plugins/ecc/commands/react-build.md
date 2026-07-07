@@ -174,15 +174,12 @@ Stop and report if:
 - Requires architectural change beyond build resolution (e.g., redesigning the RSC boundary)
 - Bundler version no longer supports the installed React major
 
-## Related Commands
+## Related
 
 - `/react-test` — run tests after the build is green
 - `/react-review` — review code quality after the build succeeds
 - `/build-fix` — generic build fixer (non-React)
 - `eval-harness` skill — full verification loop
-
-## Related
-
 - Agent: react-build-resolver
 - Skills: react-patterns, frontend-patterns
 - Rules: `rules/react/coding-style.md`, `rules/react/patterns.md`

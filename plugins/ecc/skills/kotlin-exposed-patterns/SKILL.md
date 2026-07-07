@@ -26,48 +26,6 @@ Database access with JetBrains Exposed ORM: DSL queries, DAO, transactions, and 
 - All database operations run inside `newSuspendedTransaction` blocks for coroutine safety and atomicity.
 - The repository pattern wraps Exposed queries behind an interface — business logic stays decoupled from the data layer; tests can use an in-memory H2 database.
 
-## Examples
-
-### DSL Query
-
-```kotlin
-suspend fun findUserById(id: UUID): UserRow? =
-    newSuspendedTransaction {
-        UsersTable.selectAll()
-            .where { UsersTable.id eq id }
-            .map { it.toUser() }
-            .singleOrNull()
-    }
-```
-
-### DAO Entity Usage
-
-```kotlin
-suspend fun createUser(request: CreateUserRequest): User =
-    newSuspendedTransaction {
-        UserEntity.new {
-            name = request.name
-            email = request.email
-            role = request.role
-        }.toModel()
-    }
-```
-
-### HikariCP Configuration
-
-```kotlin
-val hikariConfig = HikariConfig().apply {
-    driverClassName = config.driver
-    jdbcUrl = config.url
-    username = config.username
-    password = config.password
-    maximumPoolSize = config.maxPoolSize
-    isAutoCommit = false
-    transactionIsolation = "TRANSACTION_READ_COMMITTED"
-    validate()
-}
-```
-
 ## Database Setup
 
 ### HikariCP Connection Pooling

@@ -75,13 +75,7 @@ Coverage (CI):
 XDEBUG_MODE=coverage php artisan test --coverage
 ```
 
-CI example (format -> static analysis -> tests):
-
-```bash
-vendor/bin/pint --test
-vendor/bin/phpstan analyse
-XDEBUG_MODE=coverage php artisan test --coverage
-```
+For a CI example (format -> static analysis -> tests), see the CI-style pipeline under Examples at the end of this file.
 
 ## Phase 4: Security and Dependency Checks
 

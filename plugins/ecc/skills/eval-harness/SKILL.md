@@ -243,22 +243,7 @@ Status: SHIP IT
 
 Use product evals when behavior quality cannot be captured by unit tests alone.
 
-### Grader Types
-
-1. Code grader (deterministic assertions)
-2. Rule grader (regex/schema constraints)
-3. Model grader (LLM-as-judge rubric)
-4. Human grader (manual adjudication for ambiguous outputs)
-
-### pass@k Guidance
-
-- `pass@1`: direct reliability
-- `pass@3`: practical reliability under controlled retries
-- `pass^3`: stability test (all 3 runs must pass)
-
-Recommended thresholds:
-- Capability evals: pass@3 >= 0.90
-- Regression evals: pass^3 = 1.00 for release-critical paths
+Grader types and pass@k/pass^k guidance: see the "Grader Types" and "Metrics" sections above. One additional grader applies here: a rule grader (regex/schema constraints).
 
 ### Eval Anti-Patterns
 

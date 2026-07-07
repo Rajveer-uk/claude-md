@@ -38,8 +38,6 @@ For pure `.ts`/`.js` changes with no Vue imports, use `/code-review` (general) o
 | `security-auditor` | Project-wide security audit |
 | `/code-review` | Generic uncommitted-changes or PR review |
 
-On a `.vue` / Vue-related PR, invoke both `vue-reviewer` and `typescript-reviewer` — their findings are non-overlapping by design.
-
 ## Review Categories
 
 ### CRITICAL (Must Fix)

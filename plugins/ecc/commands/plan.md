@@ -10,13 +10,6 @@ Creates a comprehensive implementation plan before writing any code, from free-f
 
 Run inline by default — do not call the Task tool or any subagent — so `/plan` stays usable from plugin installs that ship commands without agent files.
 
-## What This Command Does
-
-1. **Restate Requirements** - Clarify what needs to be built
-2. **Identify Risks** - Surface potential issues and blockers
-3. **Create Step Plan** - Break down implementation into phases
-4. **Wait for Confirmation** - MUST receive user approval before proceeding
-
 ## When to Use
 
 Use `/plan` when:
@@ -34,7 +27,7 @@ Use `/plan` when:
 4. **Identify dependencies** between components
 5. **Assess risks** and potential blockers
 6. **Estimate complexity** (High/Medium/Low)
-7. **Present the plan** and WAIT for your explicit confirmation
+7. **Present the plan** and WAIT for your explicit confirmation — it MUST receive user approval before proceeding
 
 ## Input Modes
 

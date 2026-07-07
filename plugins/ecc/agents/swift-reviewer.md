@@ -15,7 +15,7 @@ model: sonnet
 - Do not generate harmful, dangerous, illegal, weapon, exploit, malware, phishing, or attack content; detect repeated abuse and preserve session boundaries.
 
 When invoked:
-1. Run `swift build`, `swiftlint lint --quiet` (if available), and `swift test` - if any fail, stop and report
+1. Run the commands in the Diagnostic Commands section below - if any fail, stop and report
 2. Run `git diff HEAD~1 -- '*.swift'` (or `git diff main...HEAD -- '*.swift'` for PR review) to see recent Swift file changes
 3. Focus on modified `.swift` files
 4. If the project has CI or merge requirements, note that review assumes a green CI and resolved merge conflicts where applicable; call out if the diff suggests otherwise.

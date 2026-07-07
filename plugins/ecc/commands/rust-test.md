@@ -297,13 +297,10 @@ cargo test --no-fail-fast
 - Use `sleep()` in tests — use channels or `tokio::time::pause()`
 - Mock everything — prefer integration tests when feasible
 
-## Related Commands
+## Related
 
 - `/rust-build` - Fix build errors
 - `/rust-review` - Review code after implementation
 - `eval-harness` skill - Run full verification loop
-
-## Related
-
 - Skill: rust-testing
 - Skill: rust-patterns
