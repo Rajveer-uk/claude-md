@@ -5,7 +5,7 @@ allowed-tools: Read, Grep, Glob, Bash, Task
 
 # Vue Code Review
 
-This command invokes the **vue-reviewer** agent for Vue-specific code review. For pull requests touching `.vue` files or Vue-containing `.ts`/`.js` files, both `vue-reviewer` and `typescript-reviewer` should run — each owns a distinct lane.
+Invokes the **vue-reviewer** agent for Vue-specific code review. On PRs touching `.vue` files or Vue-containing `.ts`/`.js` files, run both `vue-reviewer` and `typescript-reviewer` — each owns a distinct lane.
 
 ## What This Command Does
 
@@ -38,7 +38,7 @@ For pure `.ts`/`.js` changes with no Vue imports, use `/code-review` (general) o
 | `security-auditor` | Project-wide security audit |
 | `/code-review` | Generic uncommitted-changes or PR review |
 
-On a `.vue` / Vue-related PR, invoke both `vue-reviewer` and `typescript-reviewer`. Findings from each are non-overlapping by design.
+On a `.vue` / Vue-related PR, invoke both `vue-reviewer` and `typescript-reviewer` — their findings are non-overlapping by design.
 
 ## Review Categories
 

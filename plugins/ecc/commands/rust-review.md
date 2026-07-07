@@ -5,7 +5,7 @@ allowed-tools: Read, Grep, Glob, Bash, Task
 
 # Rust Code Review
 
-This command invokes the **rust-reviewer** agent for comprehensive Rust-specific code review.
+Invokes the **rust-reviewer** agent for comprehensive Rust-specific code review.
 
 ## What This Command Does
 

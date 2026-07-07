@@ -7,7 +7,7 @@ metadata:
 
 # React Performance
 
-Performance optimization patterns for React 18/19 and Next.js, adapted from [Vercel Labs `react-best-practices`](https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices) (MIT, v1.0.0). This skill organizes rules by priority and provides decision-tree guidance for active code review and refactoring.
+Performance patterns for React 18/19 and Next.js, adapted from [Vercel Labs `react-best-practices`](https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices) (MIT, v1.0.0). Rules organized by priority with decision-tree guidance for review and refactoring.
 
 ## When to Activate
 
@@ -103,7 +103,7 @@ const [user, posts] = await Promise.all([userP, postsP]);
 
 ### Suspense for streaming
 
-Push `<Suspense>` boundaries close to the data so the page paints what it can while slower sub-trees stream in. The trade-off: layout shift when content arrives — reserve space (skeleton or `min-height`).
+Push `<Suspense>` boundaries close to the data so the page paints early while slower sub-trees stream in. Trade-off: layout shift on arrival — reserve space (skeleton or `min-height`).
 
 ### Server Components: parallel through composition
 
@@ -130,7 +130,7 @@ export default async function Page() {
 
 ### Direct imports, not barrels
 
-Barrel `index.ts` files force the bundler to walk the entire module graph even when tree-shaking removes most of it. Direct imports save 200-800ms of first-load JS in many real-world apps.
+Barrel `index.ts` files force the bundler to walk the whole module graph even when tree-shaking removes most of it; direct imports save 200-800ms of first-load JS in many apps.
 
 ```ts
 // INCORRECT
@@ -142,7 +142,7 @@ import { Card } from "@/components/Card";
 import { Modal } from "@/components/Modal";
 ```
 
-Next.js 13.5+ has [Optimize Package Imports](https://nextjs.org/docs/app/api-reference/next-config-js/optimizePackageImports) that automates this for listed packages — use it; manual direct imports still required for non-listed libs.
+Next.js 13.5+ [Optimize Package Imports](https://nextjs.org/docs/app/api-reference/next-config-js/optimizePackageImports) automates this for listed packages — use it; non-listed libs still need manual direct imports.
 
 ### Statically analyzable paths
 
@@ -186,7 +186,7 @@ Trigger `<link rel="preload">` or `import()` on hover so the bundle is in cache 
 
 ### Authenticate Server Actions like API routes
 
-Every `"use server"` function is a public endpoint. Authenticate AND authorize inside the action — never rely on the calling Client Component's gating.
+Every `"use server"` function is a public endpoint: authenticate AND authorize inside the action — never rely on the calling Client Component's gating.
 
 ```ts
 "use server";
@@ -211,7 +211,7 @@ export const getUser = cache(async (id: string) => {
 });
 ```
 
-`React.cache` dedupes within a single request. Calling `getUser("1")` from three Server Components in the same render = one DB query.
+Dedupes within a single request: `getUser("1")` from three Server Components in one render = one DB query.
 
 ### LRU cache for cross-request data
 
@@ -219,7 +219,7 @@ For data that does NOT change per request (config, lookup tables), cache outside
 
 ### Avoid duplicate serialization in RSC props
 
-When a Server Component renders the same data into multiple Client Components, the data is serialized once per consumer. Lift the Client Component up and pass children.
+Same data rendered into multiple Client Components serializes once per consumer — lift the Client Component up and pass children.
 
 ### Hoist static I/O to module scope
 
@@ -234,7 +234,7 @@ export async function Page() {
 
 ### No mutable module-level state in RSC/SSR
 
-Module state on the server is shared across all requests — a race condition between users. Use request-scoped storage (`headers()`, `cookies()`, async context) instead.
+Server module state is shared across all requests — a race between users. Use request-scoped storage (`headers()`, `cookies()`, async context).
 
 ### Minimize data passed to Client Components
 
@@ -266,7 +266,7 @@ export async function GET() {
 
 ### SWR / TanStack Query for deduplication
 
-Multiple components calling `useUser(id)` should share one network request and one cache entry. Use SWR or TanStack Query — never roll your own `useEffect` + `fetch` for shared data.
+Multiple components calling `useUser(id)` must share one request and one cache entry — use SWR or TanStack Query, never hand-rolled `useEffect` + `fetch` for shared data.
 
 ### Deduplicate global event listeners
 
@@ -377,7 +377,7 @@ const [tree] = useState(() => parseTree(largeInput));
 
 ### Avoid memo for simple primitives
 
-`useMemo(() => x + 1, [x])` is overhead. Memo earns its keep on object identity and expensive computation.
+`useMemo(() => x + 1, [x])` is overhead — memo pays off only for object identity and expensive computation.
 
 ### Split hooks with independent deps
 
@@ -392,7 +392,7 @@ const b = useB(source2);
 
 ### Move interaction logic into event handlers
 
-Event handlers run only on the user action — `useEffect` re-runs whenever deps change.
+Event handlers run only on the action; `useEffect` re-runs whenever deps change.
 
 ### `startTransition` for non-urgent updates
 
@@ -422,13 +422,13 @@ function Outer() {
 }
 ```
 
-Each render makes a new `Inner` type, defeating reconciliation and unmounting children.
+A new `Inner` type per render defeats reconciliation and unmounts children.
 
 ## 6. Rendering Performance (MEDIUM)
 
 ### Animate the wrapper, not the SVG
 
-Transforming a `<div>` wrapper around an SVG is GPU-accelerated; transforming the SVG itself triggers paint.
+Transforming a `<div>` wrapper is GPU-accelerated; transforming the SVG itself triggers paint.
 
 ### `content-visibility: auto` for long lists
 
@@ -436,7 +436,7 @@ Transforming a `<div>` wrapper around an SVG is GPU-accelerated; transforming th
 .row { content-visibility: auto; contain-intrinsic-size: auto 80px; }
 ```
 
-Browser skips offscreen rendering — major win for lists with hundreds of rows.
+Browser skips offscreen rendering — big win for hundreds of rows.
 
 ### Hoist static JSX
 
@@ -449,11 +449,11 @@ function Page() {
 
 ### SVG: reduce coordinate precision
 
-`d="M10.123456,20.654321"` → `d="M10.12,20.65"`. Each digit costs bytes; the visual difference is sub-pixel.
+`d="M10.123456,20.654321"` → `d="M10.12,20.65"` — digits cost bytes; the visual difference is sub-pixel.
 
 ### Hydration no-flicker via inline script
 
-For values needed before hydration (theme, locale), inline a `<script>` that sets `document.documentElement.dataset.*` before React mounts.
+For values needed before hydration (theme, locale), inline a `<script>` setting `document.documentElement.dataset.*` before React mounts.
 
 ### Suppress expected hydration mismatches narrowly
 
@@ -465,7 +465,7 @@ Use ONLY for known-divergent leaf nodes — never on a tree containing other chi
 
 ### `<Activity>` for show/hide instead of mount/unmount
 
-React 19 `<Activity mode="visible|hidden">` keeps tree state and effects mounted but hides — cheaper than unmount/remount for tabs and accordions.
+React 19 `<Activity mode="visible|hidden">` keeps tree state and effects mounted while hidden — cheaper than unmount/remount for tabs and accordions.
 
 ### Ternary over `&&` for conditional render
 
@@ -479,7 +479,7 @@ React 19 `<Activity mode="visible|hidden">` keeps tree state and effects mounted
 
 ### `useTransition` for loading states
 
-Pair `startTransition` with the action; React shows the previous UI as `isPending` while the next state computes.
+Pair `startTransition` with the action; React keeps the previous UI as `isPending` while the next state computes.
 
 ### React DOM resource hints
 
@@ -542,14 +542,14 @@ function useLatest<T>(value: T) {
 
 ## Automated Tools
 
-Many of these rules are now automated:
+Rules increasingly automated by:
 
 - **Next.js 13.5+ Optimize Package Imports** — barrel import optimization
 - **React Compiler** (RFC, in canary) — auto-memoization
 - **Turbopack** — faster builds, better tree-shaking
 - **Bundle Analyzer** (`@next/bundle-analyzer`) — visualize first-load JS
 
-When the project ships React Compiler, demote `rerender-*` manual memoization rules to "review-only" — the compiler handles them. Manual `useMemo`/`useCallback` becomes unnecessary noise.
+When the project ships React Compiler, demote `rerender-*` manual memoization rules to "review-only" — the compiler handles them; manual `useMemo`/`useCallback` becomes noise.
 
 ## Lighthouse / Web Vitals Mapping
 
@@ -570,6 +570,4 @@ When the project ships React Compiler, demote `rerender-*` manual memoization ru
 
 ## Attribution
 
-Adapted from Vercel Labs `react-best-practices` skill (MIT License, copyright Vercel Engineering, v1.0.0 January 2026). Source: [https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices](https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices).
-
-This skill restructures and adapts the original 70-rule catalog into a single navigable reference. For the full original ruleset with extended examples, see the upstream repository.
+Adapted from Vercel Labs `react-best-practices` skill (MIT License, copyright Vercel Engineering, v1.0.0 January 2026). Source: [https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices](https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices). Restructures the original 70-rule catalog into one navigable reference; see upstream for the full ruleset with extended examples.

@@ -6,7 +6,7 @@ origin: ECC
 
 # Vue.js Patterns and Best Practices
 
-Comprehensive guide for Vue.js 3 development using Composition API (`<script setup>`), covering component design, reactivity, state management, routing, testing, and SSR patterns. Nuxt-specific guidance is included where it differs from vanilla Vue.
+Vue.js 3 with Composition API (`<script setup>`): component design, reactivity, state management, routing, testing, SSR. Nuxt guidance included where it differs from vanilla Vue.
 
 ## When to Activate
 
@@ -151,9 +151,7 @@ export function useDebounce<T>(value: MaybeRef<T>, delay: number): Ref<T> {
 
 ### vs Mixins
 
-Composables replace Vue 2 mixins entirely:
-- **Mixins**: Opaque data flow, source-of-truth collisions, name conflicts.
-- **Composables**: Explicit imports, clear return values, composable and tree-shakable.
+Composables replace Vue 2 mixins entirely: mixins have opaque data flow, source-of-truth collisions, and name conflicts; composables have explicit imports, clear return values, and are composable and tree-shakable.
 
 ---
 
@@ -325,7 +323,7 @@ it("renders and emits", async () => {
 
 ### Auto-Imports
 
-Nuxt auto-imports `ref`, `computed`, `watch`, `useFetch`, `useAsyncData`, etc. Use them directly without importing. For non-Nuxt projects, always import explicitly.
+Nuxt auto-imports `ref`, `computed`, `watch`, `useFetch`, `useAsyncData`, etc. — use directly without importing. Non-Nuxt projects: always import explicitly.
 
 ### useAsyncData / useFetch
 
@@ -375,7 +373,7 @@ export default defineNuxtConfig({
 
 ### Reactive Props Destructure
 
-Vue 3.5 stabilized reactive props destructure — destructured variables from `defineProps()` are automatically reactive:
+Stabilized in Vue 3.5 — variables destructured from `defineProps()` are automatically reactive:
 
 ```ts
 // Vue 3.5+: destructured props are reactive (no need for toRefs)
@@ -402,7 +400,7 @@ Supports dynamic ref IDs: `useTemplateRef(dynamicRefId)`.
 
 ### `onWatcherCleanup()`
 
-Globally importable watcher cleanup API (Vue 3.5+). It must be called synchronously inside the watcher callback:
+Globally importable watcher cleanup (Vue 3.5+); must be called synchronously inside the watcher callback:
 
 ```ts
 import { watch, onWatcherCleanup } from "vue";

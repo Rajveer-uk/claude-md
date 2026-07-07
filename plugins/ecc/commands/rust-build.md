@@ -5,7 +5,7 @@ allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 
 # Rust Build and Fix
 
-This command invokes the **rust-build-resolver** agent to incrementally fix Rust build errors with minimal changes.
+Invokes the **rust-build-resolver** agent to incrementally fix Rust build errors with minimal changes.
 
 ## What This Command Does
 
@@ -170,7 +170,7 @@ Build Status: SUCCESS
 
 ## Stop Conditions
 
-The agent will stop and report if:
+Stop and report if:
 - Same error persists after 3 attempts
 - Fix introduces more errors
 - Requires architectural changes

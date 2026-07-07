@@ -5,7 +5,7 @@ allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 
 # Rust TDD Command
 
-This command enforces test-driven development methodology for Rust code using `#[test]`, rstest, proptest, and mockall.
+Enforces TDD for Rust code using `#[test]`, rstest, proptest, and mockall.
 
 ## What This Command Does
 

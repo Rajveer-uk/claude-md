@@ -16,7 +16,7 @@ metadata:
 
 ## How It Works
 
-This skill enforces idiomatic Rust conventions across six key areas: ownership and borrowing to prevent data races at compile time, `Result`/`?` error propagation with `thiserror` for libraries and `anyhow` for applications, enums and exhaustive pattern matching to make illegal states unrepresentable, traits and generics for zero-cost abstraction, safe concurrency via `Arc<Mutex<T>>`, channels, and async/await, and minimal `pub` surfaces organized by domain.
+Enforces idiomatic Rust across six areas: ownership/borrowing (compile-time data-race prevention); `Result`/`?` propagation with `thiserror` for libraries, `anyhow` for applications; enums + exhaustive matching to make illegal states unrepresentable; traits and generics for zero-cost abstraction; safe concurrency via `Arc<Mutex<T>>`, channels, and async/await; minimal `pub` surfaces organized by domain.
 
 ## Core Principles
 
@@ -495,4 +495,4 @@ async fn bad_async() {
 }
 ```
 
-**Remember**: If it compiles, it's probably correct — but only if you avoid `unwrap()`, minimize `unsafe`, and let the type system work for you.
+**Remember**: if it compiles it's probably correct — but only if you avoid `unwrap()`, minimize `unsafe`, and let the type system work for you.

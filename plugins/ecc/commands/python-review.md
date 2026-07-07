@@ -5,7 +5,7 @@ allowed-tools: Read, Grep, Glob, Bash, Task
 
 # Python Code Review
 
-This command invokes the **python-reviewer** agent for comprehensive Python-specific code review.
+Invokes the **python-reviewer** agent for comprehensive Python-specific code review.
 
 ## What This Command Does
 
@@ -180,14 +180,14 @@ Run: `black app/routes/user.py app/services/auth.py`
 ## Framework-Specific Reviews
 
 ### Django Projects
-The reviewer checks for:
+Checks for:
 - N+1 query issues (use `select_related` and `prefetch_related`)
 - Missing migrations for model changes
 - Raw SQL usage when ORM could work
 - Missing `transaction.atomic()` for multi-step operations
 
 ### FastAPI Projects
-The reviewer checks for:
+Checks for:
 - CORS misconfiguration
 - Pydantic models for request validation
 - Response models correctness
@@ -195,7 +195,7 @@ The reviewer checks for:
 - Dependency injection patterns
 
 ### Flask Projects
-The reviewer checks for:
+Checks for:
 - Context management (app context, request context)
 - Proper error handling
 - Blueprint organization
@@ -284,7 +284,7 @@ result = "".join(str(item) for item in items)
 
 ## Python Version Compatibility
 
-The reviewer notes when code uses features from newer Python versions:
+The reviewer flags features requiring newer Python versions:
 
 | Feature | Minimum Python |
 |---------|----------------|

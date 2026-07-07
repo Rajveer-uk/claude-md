@@ -5,7 +5,7 @@ allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 
 # React TDD Command
 
-This command enforces test-driven development for React using React Testing Library plus Vitest or Jest, detected at runtime.
+Enforces TDD for React using React Testing Library plus Vitest or Jest, detected at runtime.
 
 ## What This Command Does
 

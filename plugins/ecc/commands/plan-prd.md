@@ -6,7 +6,7 @@ allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 
 # PRD Command
 
-Produces a **Product Requirements Document** — the requirements-phase artifact of the SDLC. Captures *what* must be true for success and *why*, and stops before *how*. Implementation decomposition is delegated to `/plan`.
+Produces a **Product Requirements Document** — the SDLC requirements-phase artifact: *what* must be true for success and *why*, stopping before *how*. Implementation decomposition is delegated to `/plan`.
 
 **Input**: `$ARGUMENTS`
 
@@ -48,7 +48,7 @@ Wait for the user. Do not proceed without answers (or explicit "skip").
 
 ### Phase 2 — GROUND
 
-Ask for evidence. This is the shortest phase and the most load-bearing:
+Ask for evidence — the shortest and most load-bearing phase:
 
 > What evidence do you have that this problem is real and worth solving? (user quotes, support tickets, metrics, observed behavior, failed workarounds — anything concrete)
 

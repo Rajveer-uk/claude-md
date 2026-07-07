@@ -6,9 +6,9 @@ allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 
 # Plan Command
 
-This command creates a comprehensive implementation plan before writing any code. It accepts either free-form requirements or a PRD markdown file.
+Creates a comprehensive implementation plan before writing any code, from free-form requirements or a PRD markdown file.
 
-Run inline by default. Do not call the Task tool or any subagent by default. This keeps `/plan` usable from plugin installs that ship commands without agent files.
+Run inline by default — do not call the Task tool or any subagent — so `/plan` stays usable from plugin installs that ship commands without agent files.
 
 ## What This Command Does
 
@@ -27,8 +27,6 @@ Use `/plan` when:
 - Requirements are unclear or ambiguous
 
 ## How It Works
-
-The assistant will:
 
 1. **Analyze the request** and restate requirements in clear terms
 2. **Ground the plan** in relevant codebase patterns when the repo is available
@@ -51,7 +49,7 @@ In PRD artifact mode, create `.claude/plans/` if needed. If the PRD contains a `
 
 ## Pattern Grounding
 
-Before writing the plan, search the codebase for conventions the implementation should mirror. Capture the top example for each relevant category with file references:
+Before writing the plan, search the codebase for conventions to mirror; capture the top example per relevant category with file references:
 
 | Category | What to capture |
 |---|---|
@@ -193,9 +191,4 @@ After planning:
 
 ## Optional Planner Agent
 
-ECC also provides a `planner` agent for manual installs that include agent files. Use it only when the local runtime already exposes that subagent and the user explicitly asks you to delegate planning.
-
-If the `planner` subagent is unavailable, continue planning inline instead of surfacing an "Agent type 'planner' not found" error.
-
-For manual installs, the source file lives at:
-`agents/planner.md`
+ECC also provides a `planner` agent (source for manual installs: `agents/planner.md`) for installs that include agent files. Use it only when the local runtime already exposes that subagent and the user explicitly asks you to delegate planning. If it is unavailable, continue planning inline instead of surfacing an "Agent type 'planner' not found" error.

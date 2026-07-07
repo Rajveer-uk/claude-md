@@ -8,9 +8,7 @@ allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 
 # PRP Implement
 
-Execute a plan file step-by-step with continuous validation. Every change is verified immediately — never accumulate broken state.
-
-**Core Philosophy**: Validation loops catch mistakes early. Run checks after every change. Fix issues immediately.
+Execute a plan file step-by-step with continuous validation — validation loops catch mistakes early, so run checks after every change and fix issues immediately.
 
 **Golden Rule**: If a validation fails, fix it before moving on. Never accumulate broken state.
 
@@ -51,13 +49,13 @@ Read the plan file:
 cat "$ARGUMENTS"
 ```
 
-Extract these sections from the plan:
-- **Summary** — What is being built
-- **Patterns to Mirror** — Code conventions to follow
-- **Files to Change** — What to create or modify
-- **Step-by-Step Tasks** — Implementation sequence
-- **Validation Commands** — How to verify correctness
-- **Acceptance Criteria** — Definition of done
+Extract these sections:
+- **Summary** — what is being built
+- **Patterns to Mirror** — code conventions to follow
+- **Files to Change** — what to create or modify
+- **Step-by-Step Tasks** — implementation sequence
+- **Validation Commands** — how to verify correctness
+- **Acceptance Criteria** — definition of done
 
 If the file doesn't exist or isn't a valid plan:
 ```
@@ -99,32 +97,31 @@ git pull --rebase origin $(git branch --show-current) 2>/dev/null || true
 
 ## Phase 3 — EXECUTE
 
-Process each task from the plan sequentially.
+Process the plan's tasks sequentially.
 
 ### Per-Task Loop
 
 For each task in **Step-by-Step Tasks**:
 
-1. **Read MIRROR reference** — Open the pattern file referenced in the task's MIRROR field. Understand the convention before writing code.
+1. **Read MIRROR reference** — open the task's MIRROR pattern file; understand the convention before writing code.
 
-2. **Implement** — Write the code following the pattern exactly. Apply GOTCHA warnings. Use specified IMPORTS.
+2. **Implement** — follow the pattern exactly; apply GOTCHA warnings; use specified IMPORTS.
 
-3. **Validate immediately** — After EVERY file change:
+3. **Validate immediately** — after EVERY file change:
    ```bash
    # Run type-check (adjust command per project)
    [type-check command from Phase 0]
    ```
-   If type-check fails → fix the error before moving to the next file.
+   If type-check fails → fix the error before the next file.
 
-4. **Track progress** — Log: `[done] Task N: [task name] — complete`
+4. **Track progress** — log: `[done] Task N: [task name] — complete`
 
 ### Handling Deviations
 
 If implementation must deviate from the plan:
-- Note **WHAT** changed
-- Note **WHY** it changed
+- Note **WHAT** changed and **WHY**
 - Continue with the corrected approach
-- These deviations will be captured in the report
+- Deviations are captured in the report
 
 **CHECKPOINT**: All tasks executed. Deviations logged.
 
@@ -274,7 +271,7 @@ Write report to `.claude/PRPs/reports/{plan-name}-report.md`:
 
 ### Update PRD (if applicable)
 
-If this implementation was for a PRD phase:
+If implementing a PRD phase:
 1. Update the phase status from `in-progress` to `complete`
 2. Add report path as reference
 

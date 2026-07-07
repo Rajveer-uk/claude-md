@@ -5,7 +5,7 @@ allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 
 # React Build and Fix
 
-This command invokes the **react-build-resolver** agent to incrementally fix React build errors with minimal changes.
+Invokes the **react-build-resolver** agent to incrementally fix React build errors with minimal changes.
 
 ## What This Command Does
 
@@ -28,7 +28,7 @@ Use `/react-build` when:
 
 ## Scope
 
-This command owns **React build/bundler/runtime hydration** failures. For pure TypeScript type errors with no React involvement, use `/build-fix` (generic) instead.
+Owns **React build/bundler/runtime hydration** failures; for pure TypeScript type errors with no React involvement, use `/build-fix` (generic).
 
 ## Diagnostic Commands Run
 
@@ -167,7 +167,7 @@ Build Status: PASS: SUCCESS
 
 ## Stop Conditions
 
-The agent will stop and report if:
+Stop and report if:
 
 - Same error persists after 3 attempts
 - Fix introduces more errors than it resolves

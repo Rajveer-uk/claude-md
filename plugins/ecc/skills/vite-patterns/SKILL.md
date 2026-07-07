@@ -7,7 +7,7 @@ metadata:
 
 # Vite Patterns
 
-Build tool and dev server patterns for Vite 8+ projects. Covers configuration, environment variables, proxy setup, library mode, dependency pre-bundling, and common production pitfalls.
+Build tool and dev server patterns for Vite 8+: configuration, env variables, proxy, library mode, dependency pre-bundling, production pitfalls.
 
 ## When to Use
 
@@ -22,11 +22,11 @@ Build tool and dev server patterns for Vite 8+ projects. Covers configuration, e
 
 ## How It Works
 
-- **Dev mode** serves source files as native ESM — no bundling. Transforms happen on-demand per module request, which is why cold starts are fast and HMR is precise.
-- **Build mode** uses Rolldown (v7+) or Rollup (v5–v6) to bundle the app for production with tree-shaking, code-splitting, and Oxc-based minification.
-- **Dependency pre-bundling** converts CJS/UMD deps to ESM once via esbuild and caches the result under `node_modules/.vite`, so subsequent starts skip the work.
-- **Plugins** share a unified interface across dev and build — the same plugin object works for both the dev server's on-demand transforms and the production pipeline.
-- **Environment variables** are statically inlined at build time. `VITE_`-prefixed vars become public constants in the bundle; everything unprefixed is invisible to client code.
+- **Dev mode** serves source as native ESM, no bundling; on-demand per-module transforms give fast cold starts and precise HMR.
+- **Build mode** bundles via Rolldown (v7+) or Rollup (v5–v6) with tree-shaking, code-splitting, and Oxc minification.
+- **Dependency pre-bundling** converts CJS/UMD deps to ESM once via esbuild, cached under `node_modules/.vite`.
+- **Plugins** share one interface across dev and build — the same plugin object serves both pipelines.
+- **Environment variables** are statically inlined at build time: `VITE_`-prefixed vars become public bundle constants; unprefixed vars are invisible to client code.
 
 ## Examples
 
@@ -82,7 +82,7 @@ export default defineConfig(({ command, mode }) => {
 
 #### Essential Plugins
 
-Most plugin needs are covered by a handful of well-maintained packages. Reach for these before writing your own.
+Reach for these well-maintained packages before writing your own.
 
 | Plugin | Purpose | When to use |
 |--------|---------|-------------|
@@ -100,7 +100,7 @@ Most plugin needs are covered by a handful of well-maintained packages. Reach fo
 
 #### Authoring Custom Plugins
 
-Authoring is rare — most needs are covered by existing plugins. When you do need one, start inline in `vite.config.ts` and only extract if reused.
+Authoring is rare — existing plugins cover most needs. Start inline in `vite.config.ts`; extract only if reused.
 
 ```typescript
 // vite.config.ts — minimal inline plugin
@@ -125,7 +125,7 @@ For full plugin API, see [vite.dev/guide/api-plugin](https://vite.dev/guide/api-
 
 ### HMR API
 
-Framework plugins (`@vitejs/plugin-react`, `@vitejs/plugin-vue`, etc.) handle HMR automatically. Reach for `import.meta.hot` directly only when building custom state stores, dev tools, or framework-agnostic utilities that need to persist state across updates.
+Framework plugins (`@vitejs/plugin-react`, `@vitejs/plugin-vue`, etc.) handle HMR automatically. Use `import.meta.hot` directly only for custom state stores, dev tools, or framework-agnostic utilities that persist state across updates.
 
 ```typescript
 // src/store.ts — manual HMR for a vanilla module
@@ -261,7 +261,7 @@ manualChunks(id) {
 
 #### Avoid Barrel Files
 
-Barrel files (`index.ts` re-exporting everything from a directory) force Vite to load every re-exported file even when you import a single symbol. This is the #1 dev-server slowdown flagged by the official docs.
+Barrel files (`index.ts` re-exporting a directory) force Vite to load every re-exported file even for a single-symbol import — the #1 dev-server slowdown flagged by the official docs.
 
 ```typescript
 // BAD — importing one util forces Vite to load the whole barrel
@@ -273,7 +273,7 @@ import { slash } from '@/utils/slash'
 
 #### Be Explicit with Import Extensions
 
-Each implicit extension forces up to 6 filesystem checks via `resolve.extensions`. In large codebases, this adds up.
+Each implicit extension forces up to 6 filesystem checks via `resolve.extensions` — costly in large codebases.
 
 ```typescript
 // BAD
@@ -287,7 +287,7 @@ Narrow `tsconfig.json` `allowImportingTsExtensions` + `resolve.extensions` to on
 
 #### Warm-Up Hot-Path Routes
 
-`server.warmup.clientFiles` pre-transforms known hot entries before the browser requests them — eliminating the cold-load request waterfall on large apps.
+`server.warmup.clientFiles` pre-transforms known hot entries before the browser requests them, eliminating the cold-load waterfall on large apps.
 
 ```typescript
 // vite.config.ts
@@ -300,11 +300,11 @@ server: {
 
 #### Profiling Slow Dev Servers
 
-When `vite dev` feels slow, start with `vite --profile`, interact with the app, then press `p+enter` to save a `.cpuprofile`. Load it in [Speedscope](https://www.speedscope.app) to find which plugins are eating time — usually `buildStart`, `config`, or `configResolved` hooks in community plugins.
+When `vite dev` feels slow: run `vite --profile`, interact with the app, press `p+enter` to save a `.cpuprofile`, load it in [Speedscope](https://www.speedscope.app). Time sinks are usually `buildStart`, `config`, or `configResolved` hooks in community plugins.
 
 ### Library Mode
 
-When publishing an npm package, use `build.lib`. Two footguns matter more than config detail:
+Use `build.lib` when publishing an npm package. Two footguns matter more than config detail:
 
 1. **Types are not emitted** — add `vite-plugin-dts` or run `tsc --emitDeclarationOnly` separately.
 2. **Peer dependencies MUST be externalized** — unlisted peers get bundled into your library, causing duplicate-runtime errors in consumers.
@@ -325,7 +325,7 @@ build: {
 
 ### SSR Externals
 
-Bare `createServer({ middlewareMode: true })` setups are framework-author territory. Most apps should use Nuxt, Remix, SvelteKit, Astro, or TanStack Start instead. What you *will* tweak as a framework user is the externals config when deps break in SSR:
+Bare `createServer({ middlewareMode: true })` is framework-author territory — most apps should use Nuxt, Remix, SvelteKit, Astro, or TanStack Start. As a framework user you *will* tweak externals when deps break in SSR:
 
 ```typescript
 // vite.config.ts — ssr options
@@ -357,18 +357,18 @@ optimizeDeps: {
 
 #### Dev Does Not Match Build
 
-Dev uses esbuild/Rolldown for transforms; build uses Rolldown for bundling. CJS libraries can behave differently between the two. Always verify with `vite build && vite preview` before deploying.
+Dev transforms via esbuild/Rolldown; build bundles via Rolldown — CJS libraries can behave differently. Always verify with `vite build && vite preview` before deploying.
 
 #### Stale Chunks After Deployment
 
-New builds produce new chunk hashes. Users with active sessions request old filenames that no longer exist. Vite has no built-in solution. Mitigations:
+New builds produce new chunk hashes, so active sessions request old filenames that no longer exist; Vite has no built-in solution. Mitigations:
 
 - Keep old `dist/assets/` files live for a deployment window
 - Catch dynamic import errors in your router and force a page reload
 
 #### Docker and Containers
 
-Vite binds to `localhost` by default, which is unreachable from outside a container:
+Vite binds `localhost` by default — unreachable from outside a container:
 
 ```typescript
 // vite.config.ts — Docker/container setup
@@ -380,7 +380,7 @@ server: {
 
 #### Monorepo File Access
 
-Vite restricts file serving to the project root. Packages outside root are blocked:
+Vite serves files only from the project root; packages outside it are blocked:
 
 ```typescript
 // vite.config.ts — monorepo file access

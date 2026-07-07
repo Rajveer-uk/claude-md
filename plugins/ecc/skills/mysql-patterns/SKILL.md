@@ -7,11 +7,10 @@ metadata:
 
 # MySQL Patterns
 
-Use this skill when working on MySQL or MariaDB schema design, migrations,
-slow-query investigation, queue-style transactions, connection pools, or
-production database configuration. Prefer exact version checks before applying a
-feature-specific pattern because MySQL and MariaDB have diverged in several SQL
-details.
+For MySQL/MariaDB schema design, migrations, slow-query investigation,
+queue-style transactions, connection pools, and production configuration.
+Run exact version checks before applying feature-specific patterns — MySQL
+and MariaDB have diverged in several SQL details.
 
 ## Activation
 
@@ -71,8 +70,7 @@ Default choices:
 
 ## Indexing
 
-Composite index order usually follows equality predicates first, then range or
-sort columns:
+Composite index order: equality predicates first, then range or sort columns:
 
 ```sql
 CREATE INDEX idx_orders_account_status_created
@@ -107,7 +105,7 @@ Signals to investigate:
 | `rows` | Very high row estimate for an interactive path |
 | `Extra` | `Using temporary`, `Using filesort`, or broad `Using where` |
 
-Avoid adding indexes blindly. Each index increases write cost, migration time,
+Don't add indexes blindly — each one increases write cost, migration time,
 backup size, and buffer-pool pressure.
 
 ## Query Patterns
@@ -134,8 +132,8 @@ ON DUPLICATE KEY UPDATE
     updated_at = CURRENT_TIMESTAMP;
 ```
 
-Use the row-alias form only after confirming the target is MySQL. Use
-`VALUES(col)` for MariaDB or mixed MySQL/MariaDB fleets.
+Row-alias form only after confirming the target is MySQL; `VALUES(col)` for
+MariaDB or mixed fleets.
 
 ### Keyset Pagination
 
@@ -153,12 +151,12 @@ Back it with an index that matches the cursor:
 CREATE INDEX idx_products_created_id ON products (created_at, id);
 ```
 
-Do not use deep `OFFSET` pagination on large tables; it makes the server scan
-and discard rows before returning the page.
+No deep `OFFSET` pagination on large tables — the server scans and discards
+rows before returning the page.
 
 ### JSON Fields
 
-Use JSON columns for extension data, not for fields that need heavy relational
+JSON columns are for extension data, not fields needing heavy relational
 filtering or constraints.
 
 ```sql
@@ -171,8 +169,8 @@ CREATE TABLE events (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
 
-For frequently queried JSON paths, expose a generated column and index that
-column. Keep foreign keys, ownership, tenancy, and lifecycle fields relational.
+Index frequently queried JSON paths via generated columns. Keep foreign keys,
+ownership, tenancy, and lifecycle fields relational.
 
 ### Full-Text Search
 
@@ -186,8 +184,8 @@ ORDER BY score DESC
 LIMIT 20;
 ```
 
-Use external search when you need typo tolerance, complex ranking, cross-table
-facets, or language-specific analysis beyond built-in full-text behavior.
+Use external search for typo tolerance, complex ranking, cross-table facets,
+or language-specific analysis beyond built-in full-text behavior.
 
 ## Transactions
 
@@ -237,8 +235,8 @@ WHERE id = ?;
 COMMIT;
 ```
 
-Use `SKIP LOCKED` only for queue-like workloads where skipping a locked row is
-acceptable. It is not a replacement for normal transactional consistency.
+`SKIP LOCKED` is only for queue-like workloads where skipping a locked row is
+acceptable — not a replacement for normal transactional consistency.
 
 ## Connection Pools
 
@@ -281,9 +279,9 @@ const [rows] = await pool.execute(
 );
 ```
 
-Keep application pool recycling below the server `wait_timeout`. If the server
-uses `wait_timeout = 300`, a `pool_recycle` around 240 seconds is coherent;
-`pool_pre_ping` still helps recover from network and failover events.
+Keep pool recycling below the server `wait_timeout`: with `wait_timeout = 300`,
+`pool_recycle` around 240 seconds is coherent; `pool_pre_ping` still helps
+recover from network and failover events.
 
 ## Diagnostics
 
@@ -304,12 +302,12 @@ SET GLOBAL long_query_time = 1;
 SET GLOBAL log_queries_not_using_indexes = 'ON';
 ```
 
-Use `EXPLAIN ANALYZE` only when it is safe to execute the query. It runs the
-statement and can be expensive on production-sized data.
+`EXPLAIN ANALYZE` executes the statement — use only when safe to run; it can
+be expensive on production-sized data.
 
 ## Replication
 
-Read replicas can lag. Do not route read-your-own-write paths, checkout flows,
+Replicas can lag: never route read-your-own-write paths, checkout flows,
 permission checks, or idempotency-key reads to a replica immediately after a
 write.
 
@@ -321,9 +319,8 @@ SHOW SLAVE STATUS\G;
 SHOW REPLICA STATUS\G;
 ```
 
-Check the engine/version before standardizing on one command. Monitor replica
-SQL thread health, IO thread health, and lag, not just whether the TCP
-connection is alive.
+Check engine/version before standardizing on one command. Monitor replica SQL
+thread health, IO thread health, and lag — not just TCP liveness.
 
 ## Security
 
@@ -376,9 +373,9 @@ binlog_format = ROW
 binlog_expire_logs_seconds = 604800
 ```
 
-Treat configuration values as a prompt for review, not a universal preset. Size
-memory, connections, log retention, and durability settings from workload,
-hardware, backup policy, and recovery objectives.
+These values are a review prompt, not a universal preset — size memory,
+connections, log retention, and durability from workload, hardware, backup
+policy, and recovery objectives.
 
 ## Anti-Patterns
 

@@ -104,7 +104,7 @@ If rebase conflicts occur, stop and inform the user.
 
 ### With Template
 
-If a PR template was found in Phase 2, fill in each section using the commit and file analysis. Preserve all template sections — leave sections as "N/A" if not applicable rather than removing them.
+If a template was found in Phase 2, fill in each section from the commit and file analysis. Preserve all template sections — mark inapplicable ones "N/A" rather than removing them.
 
 ### Without Template
 

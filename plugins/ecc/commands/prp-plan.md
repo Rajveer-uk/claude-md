@@ -8,9 +8,7 @@ allowed-tools: Read, Edit, Grep, Glob, Bash, Task
 
 # PRP Plan
 
-Create a detailed, self-contained implementation plan that captures all codebase patterns, conventions, and context needed to implement a feature in a single pass.
-
-**Core Philosophy**: A great plan contains everything needed to implement without asking further questions. Every pattern, every convention, every gotcha — captured once, referenced throughout.
+Create a self-contained implementation plan capturing every codebase pattern, convention, and gotcha needed to implement a feature in a single pass — captured once, referenced throughout, no further questions needed.
 
 **Golden Rule**: If you would need to search the codebase during implementation, capture that knowledge NOW in the plan.
 
@@ -32,15 +30,8 @@ Determine input type from `$ARGUMENTS`:
 
 1. Read the PRD file with `cat "$PRD_PATH"`
 2. Parse the **Implementation Phases** section
-3. Find phases by status:
-   - Look for `pending` phases
-   - Check dependency chains (a phase may depend on prior phases being `complete`)
-   - Select the **next eligible pending phase**
-4. Extract from the selected phase:
-   - Phase name and description
-   - Acceptance criteria
-   - Dependencies on prior phases
-   - Any scope notes or constraints
+3. Select the **next eligible pending phase** — `pending` status, with any prior-phase dependencies `complete`
+4. Extract the phase name, description, acceptance criteria, dependencies, and any scope notes/constraints
 5. Use the phase description as the feature to plan
 
 If no pending phases remain, report that all phases are complete.
@@ -49,11 +40,9 @@ If no pending phases remain, report that all phases are complete.
 
 ## Phase 1 — PARSE
 
-Extract and clarify the feature requirements.
-
 ### Feature Understanding
 
-From the input (PRD phase or free-form description), identify:
+From the input (PRD phase or free-form), identify:
 
 - **What** is being built (concrete deliverable)
 - **Why** it matters (user value)
@@ -93,37 +82,37 @@ Do NOT guess. Ask. A plan built on assumptions fails during implementation.
 
 ## Phase 2 — EXPLORE
 
-Gather deep codebase intelligence. Search the codebase directly for each category below.
+Gather deep codebase intelligence.
 
 ### Codebase Search (8 Categories)
 
-For each category, search using grep, find, and file reading:
+Search each category using grep, find, and file reading:
 
-1. **Similar Implementations** — Find existing features that resemble the planned one. Look for analogous patterns, endpoints, components, or modules.
+1. **Similar Implementations** — existing features resembling the planned one: analogous patterns, endpoints, components, modules.
 
-2. **Naming Conventions** — Identify how files, functions, variables, classes, and exports are named in the relevant area of the codebase.
+2. **Naming Conventions** — how files, functions, variables, classes, and exports are named in the relevant area.
 
-3. **Error Handling** — Find how errors are caught, propagated, logged, and returned to users in similar code paths.
+3. **Error Handling** — how errors are caught, propagated, logged, and returned to users in similar code paths.
 
-4. **Logging Patterns** — Identify what gets logged, at what level, and in what format.
+4. **Logging Patterns** — what gets logged, at what level, in what format.
 
-5. **Type Definitions** — Find relevant types, interfaces, schemas, and how they're organized.
+5. **Type Definitions** — relevant types, interfaces, schemas, and their organization.
 
-6. **Test Patterns** — Find how similar features are tested. Note test file locations, naming, setup/teardown patterns, and assertion styles.
+6. **Test Patterns** — how similar features are tested: test file locations, naming, setup/teardown patterns, assertion styles.
 
-7. **Configuration** — Find relevant config files, environment variables, and feature flags.
+7. **Configuration** — relevant config files, environment variables, feature flags.
 
-8. **Dependencies** — Identify packages, imports, and internal modules used by similar features.
+8. **Dependencies** — packages, imports, and internal modules used by similar features.
 
 ### Codebase Analysis (5 Traces)
 
 Read relevant files to trace:
 
-1. **Entry Points** — How does a request/action enter the system and reach the area you're modifying?
-2. **Data Flow** — How does data move through the relevant code paths?
-3. **State Changes** — What state is modified and where?
-4. **Contracts** — What interfaces, APIs, or protocols must be honored?
-5. **Patterns** — What architectural patterns are used (repository, service, controller, etc.)?
+1. **Entry Points** — how a request/action enters the system and reaches the area you're modifying
+2. **Data Flow** — how data moves through the relevant code paths
+3. **State Changes** — what state is modified and where
+4. **Contracts** — interfaces, APIs, or protocols that must be honored
+5. **Patterns** — architectural patterns in use (repository, service, controller, etc.)
 
 ### Unified Discovery Table
 
@@ -139,7 +128,7 @@ Compile findings into a single reference:
 
 ## Phase 3 — RESEARCH
 
-If the feature involves external libraries, APIs, or unfamiliar technology:
+For external libraries, APIs, or unfamiliar technology:
 
 1. Search the web for official documentation
 2. Find usage examples and best practices
@@ -195,12 +184,12 @@ If the feature is purely backend/internal with no UX change, note: "Internal cha
 
 ### Strategic Design
 
-Define the implementation approach:
+Define:
 
-- **Approach**: High-level strategy (e.g., "Add new service layer following existing repository pattern")
-- **Alternatives Considered**: What other approaches were evaluated and why they were rejected
-- **Scope**: Concrete boundaries of what WILL be built
-- **NOT Building**: Explicit list of what is OUT OF SCOPE (prevents scope creep during implementation)
+- **Approach**: high-level strategy (e.g., "Add new service layer following existing repository pattern")
+- **Alternatives Considered**: other approaches evaluated and why rejected
+- **Scope**: concrete boundaries of what WILL be built
+- **NOT Building**: explicit OUT OF SCOPE list (prevents scope creep during implementation)
 
 ---
 
@@ -426,14 +415,13 @@ EXPECT: Feature works as designed
 
 ### Save the Plan
 
-Write the generated plan to:
+Write to:
 ```
 .claude/PRPs/plans/{kebab-case-feature-name}.plan.md
 ```
 
 ### Update PRD (if input was a PRD)
 
-If this plan was generated from a PRD phase:
 1. Update the phase status from `pending` to `in-progress`
 2. Add the plan file path as a reference in the phase
 
@@ -459,7 +447,7 @@ If this plan was generated from a PRD phase:
 
 ## Verification
 
-Before finalizing, verify the plan against these checklists:
+Before finalizing, verify against these checklists:
 
 ### Context Completeness
 - [ ] All relevant files discovered and documented
