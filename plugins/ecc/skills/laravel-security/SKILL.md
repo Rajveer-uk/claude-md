@@ -944,6 +944,5 @@ SecurityLogger::log('suspicious_activity', ['reason' => 'multiple_attempts_from_
 
 ## Related Skills
 
-- `laravel-patterns` — Laravel architecture, routing, Eloquent, and API patterns
 - `backend-patterns` — General backend API and database patterns
-- `laravel-tdd` — Laravel testing with PHPUnit and Pest
+- `laravel-verification` — Laravel verification and testing workflow

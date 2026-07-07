@@ -85,6 +85,7 @@ After each batch:
 - Right before production deployment
 - Without proper test coverage
 - On code you don't understand
+- For an advisory over-engineering audit without applying changes → use `ponytail` (base plugin); it flags what to cut, you execute the cuts
 
 ## Success Metrics
 

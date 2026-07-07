@@ -63,5 +63,4 @@ Order findings highest severity first. Use exactly:
 ## Related tooling
 
 - Delegated repo-wide scan → `security-auditor` agent (base plugin).
-- Exploitability / bounty triage with PoC → `security-bounty-hunter` skill (ecc plugin).
 - This skill → inline, structured audit of code the user shows you.

@@ -115,7 +115,7 @@ jest --ci                           # Tests (Jest)
 
 ## Reference
 
-No dedicated `typescript-patterns` skill yet — for detailed TS/JS patterns use `coding-standards` plus `frontend-patterns` or `backend-patterns`, per the code under review.
+No dedicated `typescript-patterns` skill yet — for detailed TS/JS patterns use `coding-standards`, plus `backend-patterns` or the framework's skill (`react-patterns`, `vue-patterns`), per the code under review.
 
 ---
 

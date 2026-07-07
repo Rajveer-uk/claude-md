@@ -84,7 +84,7 @@ The payoff is fewer wrong turns, less rework, tighter diffs, and a documented se
 │   │   ├── .claude-plugin/plugin.json
 │   │   ├── agents/*.md
 │   │   └── skills/council/SKILL.md
-│   └── ecc/                      # ADDON: curated + audited ECC vendoring — 42 agents, 117 skills, 34 commands
+│   └── ecc/                      # ADDON: curated + audited ECC vendoring — 41 agents, 116 skills, 34 commands
 │       ├── .claude-plugin/plugin.json
 │       ├── agents/*.md · skills/*/SKILL.md · commands/*.md
 │       └── ATTRIBUTION.md         # provenance + MIT license + every audit edit
@@ -112,7 +112,7 @@ The payoff is fewer wrong turns, less rework, tighter diffs, and a documented se
 
 **Decision council (6) — `council` plugin.** Pure reasoners (no network, no `Agent` tool): `council-optimist`, `council-pessimist`, `council-out-of-the-box` (opus), `council-skeptic`, `council-pragmatist`, `council-chair` (opus). Bundles the **`/council <question>`** skill (the main session fans the seats out and synthesizes via the chair). Install: `/plugin install council@claude-md-packs`. Pattern adapted from Karpathy's `llm-council` + persona councils.
 
-**ECC extras (42 agents + 117 skills + 34 commands) — optional `ecc` plugin.** Includes 10 ECC agent-engineering knowledge skills (agent architecture, autonomous loops, eval-driven dev); the broader ECC harness/command machinery was trimmed for token economy. A curated, security-audited subset of [ECC](https://github.com/affaan-m/ECC) (MIT): per-language reviewers and build-error resolvers (Go, Rust, Java, Kotlin, Swift, C#, C++, Dart/Flutter, Python, TS, React, Vue, Django, FastAPI, PHP…), plus TDD, refactor, accessibility, type-design, and open-source-release agents, and a large engineering-skills library. **Namespaced separately** so nothing collides with `base`; **pure markdown** (no scripts/hooks/installers); network stays governed by `settings.json`. Install: `/plugin install ecc@claude-md-packs`. Provenance and the exact audit edits: [`plugins/ecc/ATTRIBUTION.md`](plugins/ecc/ATTRIBUTION.md).
+**ECC extras (41 agents + 116 skills + 34 commands) — optional `ecc` plugin.** Includes 10 ECC agent-engineering knowledge skills (agent architecture, autonomous loops, eval-driven dev); the broader ECC harness/command machinery was trimmed for token economy. A curated, security-audited subset of [ECC](https://github.com/affaan-m/ECC) (MIT): per-language reviewers and build-error resolvers (Go, Rust, Java, Kotlin, Swift, C#, C++, Dart/Flutter, Python, TS, React, Vue, Django, FastAPI, PHP…), plus TDD, refactor, accessibility, type-design, and open-source-release agents, and a large engineering-skills library. **Namespaced separately** so nothing collides with `base`; **pure markdown** (no scripts/hooks/installers); network stays governed by `settings.json`. Install: `/plugin install ecc@claude-md-packs`. Provenance and the exact audit edits: [`plugins/ecc/ATTRIBUTION.md`](plugins/ecc/ATTRIBUTION.md).
 
 ## Skills
 
@@ -139,7 +139,7 @@ Add the marketplace once, then install the `base` team plus any addons; toggle t
 /plugin install base@claude-md-packs         # MAIN:  23 engineering agents + 3 skills
 /plugin install marketing@claude-md-packs    # addon: 7 marketing/content agents (+ Tavily/DataForSEO)
 /plugin install council@claude-md-packs      # addon: 6 council seats + /council skill
-/plugin install ecc@claude-md-packs          # addon: 42 ECC agents + 117 skills + 34 commands
+/plugin install ecc@claude-md-packs          # addon: 41 ECC agents + 116 skills + 34 commands
 ```
 
 Nothing under `plugins/` loads until you install it, so a base-only setup stays lean and network-free. The `marketing` addon declares its MCP servers at plugin scope (`plugins/marketing/.mcp.json`) because per-subagent inline `mcpServers` is ignored inside a plugin; set the `TAVILY_API_KEY` / `DATAFORSEO_*` env vars and verify with `/mcp`.

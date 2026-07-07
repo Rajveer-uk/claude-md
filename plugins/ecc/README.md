@@ -5,7 +5,7 @@ fourth, namespaced pack in this marketplace. It adds breadth — per-language re
 resolvers, and a large library of engineering skills — **without touching** the `base` pack or this
 repo's least-privilege, no-network security posture.
 
-- **42 agents · 117 skills · 34 commands** (193 of 435 upstream items vendored)
+- **41 agents · 116 skills · 34 commands** (191 of 435 upstream items vendored)
 - Includes **10 ECC agent-engineering knowledge skills** (agent architecture, autonomous loops, eval-driven dev), each carrying a provenance note. The broader ECC harness/command machinery (gan/orch/hookify/instinct/multi/epic/sessions) was **trimmed for token economy** — it was inert here without ECC's runtime
 - Namespaced separately, so nothing collides with `base` / `marketing` / `council`
 - **Pure markdown** — no bundled scripts, no hooks, no installers, no cross-harness config
@@ -25,8 +25,8 @@ Install the security baseline (`settings.json`) separately — see the repo's `s
 
 **Agents** (`agents/`) — mostly things `base` doesn't cover:
 - **Language reviewers:** Go, Rust, Java, Kotlin, Swift, C#, C++, Dart/Flutter, Python, TypeScript, React, Vue, Django, FastAPI, F#, PHP, MLE
-- **Build-error resolvers:** C++, Dart, Django, Go, Java, Kotlin, PyTorch, React, Rust, Swift
-- **Cross-cutting:** `architect`, `code-architect`, `code-simplifier`, `refactor-cleaner`, `tdd-guide`,
+- **Build-error resolvers:** C++, Dart, Django, Go, Java, Kotlin, React, Rust, Swift, TypeScript/Node — plus `pytorch-runtime-debugger` for training/inference crashes
+- **Cross-cutting:** `code-architect`, `code-simplifier`, `refactor-cleaner`, `tdd-guide`,
   `silent-failure-hunter`, `type-design-analyzer`, `comment-analyzer`, `a11y-architect`,
   `e2e-runner`, `pr-test-analyzer`, and the `opensource-forker` / `-sanitizer` / `-packager` trio
 

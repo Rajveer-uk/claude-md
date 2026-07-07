@@ -11,13 +11,15 @@ This pack (`plugins/ecc`) is a **curated, security-audited subset** of the
 
 ## What was included
 
-From 435 upstream items evaluated, **193 are now vendored**: **42 agents, 117 skills, 34 commands**. This landed in three passes:
+From 435 upstream items evaluated, **193 were vendored**: **42 agents, 117 skills, 34 commands**. This landed in three passes:
 
 1. **Curated engineering core (171).** Broadly useful agents/skills/commands, dropping duplicates of our `base`/`marketing`/`council` packs, niche domains, and unresolved security risks.
 2. **Duplicates re-evaluated (+12).** See below.
 3. **ECC harness / meta-tooling (added +133, then trimmed to +10).** ECC's harness layer was vendored on request and adapted, then cut back to 10 standalone agent-engineering knowledge skills for token economy — see below.
 
 A second, independent security-verify pass excluded `canary-watch`, `flox-environments`, and `jira-integration` (hard network dependencies, writes outside the workspace, or live-token requirements). ~242 upstream items remain un-vendored (the ECC harness/command machinery, niche domains, and skills that need an external MCP the baseline blocks).
+
+A later duplication audit removed `agents/architect.md` (covered by `code-architect` + base `tech-lead-orchestrator`) and `skills/security-bounty-hunter/` (covered by base `security-auditor` + `secure-code-reviewer`), and renamed `build-error-resolver` → `typescript-build-resolver` and `pytorch-build-resolver` → `pytorch-runtime-debugger` to match what they actually do. **Current totals: 41 agents, 116 skills, 34 commands.**
 
 ## Duplicates re-evaluated
 

@@ -34,17 +34,16 @@ Do not rewrite the system unless asked. Report concrete findings with file and l
 Compose existing SWE review surfaces instead of replacing them:
 
 - Use `python-reviewer` for Python style, typing, error handling, dependency hygiene, and unsafe deserialization.
-- Use `pytorch-build-resolver` when tensor shape, device placement, gradient, CUDA, DataLoader, or AMP failures block training/inference.
+- Use `pytorch-runtime-debugger` when tensor shape, device placement, gradient, CUDA, DataLoader, or AMP failures block training/inference.
 - Use `database-expert` for feature tables, label stores, prediction logs, experiment metrics, and point-in-time query performance.
 - Use `security-auditor` for secrets, PII, prompt/data leakage, artifact integrity, unsafe pickle/joblib loading, and supply-chain risk.
 - Use `performance-optimizer` for latency, memory, batching, GPU utilization, cold start, and cost per prediction.
-- Use `build-error-resolver` for CI, dependency, native extension, CUDA, and environment-specific failures outside PyTorch itself.
+- Use `typescript-build-resolver` (or the language's `*-build-resolver`) for CI, dependency, native extension, and environment-specific build failures outside PyTorch itself.
 - Use `pr-test-analyzer` when the change claims coverage but does not prove leakage, schema drift, serving fallback, or promotion-gate behavior.
 - Use `silent-failure-hunter` when pipelines can appear green while skipping data, labels, eval slices, alerts, or artifact publication.
 - Use `e2e-runner` for product flows where predictions affect user-visible or business-critical behavior.
 - Use `a11y-architect` when prediction explanations, confidence states, or fallback UI need to be accessible.
-- Use `doc-updater` when new model contracts, promotion gates, dashboards, or rollback runbooks need durable project documentation.
-- Use `documentation-lookup` before relying on evolving ML serving, vector DB, feature store, or eval-framework APIs.
+- Use `documentation-specialist` (base plugin) when new model contracts, promotion gates, dashboards, or rollback runbooks need durable project documentation.
 
 ## Critical Review Areas
 

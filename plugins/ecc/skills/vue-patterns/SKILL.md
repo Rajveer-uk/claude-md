@@ -464,6 +464,5 @@ const AsyncComp = defineAsyncComponent({
 ## Related Skills
 
 - `accessibility` — ARIA, semantic HTML, focus management
-- `frontend-patterns` — Cross-framework frontend architecture
-- `typescript` — TypeScript best practices applied to Vue projects
-- `coding-standards` — General code quality standards
+- `nuxt4-patterns` — Nuxt-specific patterns on top of Vue
+- `coding-standards` — General code quality and TypeScript standards

@@ -2,7 +2,7 @@
   "name": "ecc",
   "version": "1.1.0",
   "license": "MIT",
-  "description": "A curated + audited vendoring of ECC (affaan-m/ECC, MIT): 42 agents, 117 skills, and 34 slash-commands — an engineering core (per-language reviewers/build-resolvers for Go/Rust/Java/Kotlin/Swift/C#/C++/Dart/Python/TS/React/Vue/Django/FastAPI/PHP, plus TDD, refactor, accessibility, patterns) plus 10 ECC agent-engineering knowledge skills (agent architecture, autonomous loops, eval-driven dev). The broader ECC harness/command machinery was trimmed for token economy. Namespaced separately from base/marketing/council so nothing collides; pure markdown — no scripts, hooks, or network installers. Network stays governed by the settings.json baseline. See ATTRIBUTION.md.",
+  "description": "A curated + audited vendoring of ECC (affaan-m/ECC, MIT): 41 agents, 116 skills, and 34 slash-commands — an engineering core (per-language reviewers/build-resolvers for Go/Rust/Java/Kotlin/Swift/C#/C++/Dart/Python/TS/React/Vue/Django/FastAPI/PHP, plus TDD, refactor, accessibility, patterns) plus 10 ECC agent-engineering knowledge skills (agent architecture, autonomous loops, eval-driven dev). The broader ECC harness/command machinery was trimmed for token economy. Namespaced separately from base/marketing/council so nothing collides; pure markdown — no scripts, hooks, or network installers. Network stays governed by the settings.json baseline. See ATTRIBUTION.md.",
   "author": {
     "name": "Cintel-UK-LTD",
     "url": "https://github.com/Cintel-UK-LTD"

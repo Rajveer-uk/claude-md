@@ -20,7 +20,7 @@ Expert React build specialist: fix React build failures across Vite, webpack, Ne
 
 ## Scope
 
-Owns **React build / bundler / runtime hydration** failures. Pure TypeScript type errors with no React involvement (no JSX/TSX, no `react` import): defer to a future `typescript-build-resolver`, or fix inline only when the error blocks the React build.
+Owns **React-specific build failures**: JSX/TSX compile errors, hydration mismatches, server/client component boundaries, React bundler plugins, and React-coupled config (the `"jsx"` tsconfig setting, `@vitejs/plugin-react`, RSC directives). Pure TypeScript type errors, generic module resolution, and non-React build config: defer to `typescript-build-resolver`, or fix inline only when the error blocks the React build.
 
 ## Core Responsibilities
 
@@ -209,7 +209,7 @@ Final: `Build Status: SUCCESS | Errors Fixed: N | Files Modified: <list>` or `Bu
 
 ## Related
 
-- Agent: `react-reviewer` for code review after build is green
+- Agents: `react-reviewer` for code review after build is green; `typescript-build-resolver` for pure TS/JS build errors
 - Rules: `rules/react/coding-style.md`, `rules/react/patterns.md`
-- Skills: `skills/react-patterns/`, `skills/frontend-patterns/`
+- Skills: `skills/react-patterns/`, `skills/vite-patterns/`, `skills/nextjs-turbopack/`
 - Commands: `/react-build`, `/react-review`

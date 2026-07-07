@@ -15,7 +15,7 @@
     },
     {
       "name": "marketing",
-      "description": "7 marketing & content agents — conversion-copywriter, content-writer, content-editor, email-campaign-writer, growth-strategist, and the config's only two network-enabled agents: content-researcher (Tavily search) and seo-rank-monitor (DataForSEO), both read-only on files.",
+      "description": "7 marketing & content agents — conversion-copywriter, content-writer, content-editor, email-campaign-writer, growth-strategist, and the config's only two network-enabled agents: content-researcher (Tavily search) and seo-rank-monitor (DataForSEO), both read-only on files — plus the shared ai-writing-tells skill (the single banned-patterns list the writers cite).",
       "source": "./plugins/marketing",
       "category": "productivity"
     },
@@ -27,7 +27,7 @@
     },
     {
       "name": "ecc",
-      "description": "A curated, security-audited subset of ECC (affaan-m/ECC, MIT): 42 agents (per-language reviewers and build-error resolvers for Go, Rust, Java, Kotlin, Swift, C#, C++, Dart/Flutter, Python, TypeScript, React, Vue, Django, FastAPI, PHP, plus TDD, refactor, accessibility, and open-source release agents), 117 engineering skills, and 34 slash-commands — an engineering core plus 10 ECC agent-engineering knowledge skills (the broader ECC harness/command machinery was trimmed for token economy). Namespaced separately from base so nothing collides; pure markdown — no scripts, hooks, or installers. Network stays governed by the settings.json baseline. See plugins/ecc/ATTRIBUTION.md.",
+      "description": "A curated, security-audited subset of ECC (affaan-m/ECC, MIT): 41 agents (per-language reviewers and build-error resolvers for Go, Rust, Java, Kotlin, Swift, C#, C++, Dart/Flutter, Python, TypeScript, React, Vue, Django, FastAPI, PHP, plus TDD, refactor, accessibility, and open-source release agents), 116 engineering skills, and 34 slash-commands — an engineering core plus 10 ECC agent-engineering knowledge skills (the broader ECC harness/command machinery was trimmed for token economy). Namespaced separately from base so nothing collides; pure markdown — no scripts, hooks, or installers. Network stays governed by the settings.json baseline. See plugins/ecc/ATTRIBUTION.md.",
       "source": "./plugins/ecc",
       "category": "productivity"
     }

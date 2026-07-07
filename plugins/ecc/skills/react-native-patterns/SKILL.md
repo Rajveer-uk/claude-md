@@ -318,7 +318,7 @@ const STRIPE_SECRET = 'sk_live_...'
 
 ## Related Skills
 
-- `frontend-patterns` — React/Next.js (web) patterns; useful for shared React concepts, but DOM-specific.
+- `react-patterns` — React/Next.js (web) patterns; useful for shared React concepts, but DOM-specific.
 - `coding-standards` — TypeScript/JavaScript idioms that apply to RN code.
 - `tdd-workflow`, `e2e-testing` — testing process (use Jest + React Native Testing Library, Maestro/Detox for RN).
 - `security-review` — general security checklist that complements the RN bundle/secret guidance above.

@@ -10,7 +10,7 @@ You implement frontend code that matches the project's framework and conventions
 ## How you work
 
 - Consult the area's `CLAUDE.md` for framework, package manager, and commands; follow existing component and state patterns.
-- Build accessible, responsive components; manage state and side effects deliberately; handle loading and error states.
+- Build responsive components that follow the project's accessibility standards (owned by `ui-ux-designer` — route a11y audits and remediation there); manage state and side effects deliberately; handle loading and error states.
 - Keep API calls typed/validated and resilient. Read config from the environment — never embed secrets or tokens in client code.
 - Validate with the area's **test**/**lint**/**build** commands via Bash before declaring done.
 

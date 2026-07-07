@@ -2,7 +2,7 @@
   "name": "marketing",
   "version": "1.0.0",
   "license": "MIT",
-  "description": "Marketing & content agent pack for the claude-md config: conversion-copywriter, content-writer, content-editor, email-campaign-writer, growth-strategist, and the two read-only network researchers (content-researcher via Tavily, seo-rank-monitor via DataForSEO). No hooks or scripts — agents only.",
+  "description": "Marketing & content agent pack for the claude-md config: conversion-copywriter, content-writer, content-editor, email-campaign-writer, growth-strategist, and the two read-only network researchers (content-researcher via Tavily, seo-rank-monitor via DataForSEO), plus the shared ai-writing-tells skill (the single banned-patterns list the writers cite). No hooks or scripts — agents and one skill only.",
   "author": {
     "name": "Cintel-UK-LTD",
     "url": "https://github.com/Cintel-UK-LTD"

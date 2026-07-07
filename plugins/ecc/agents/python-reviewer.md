@@ -90,11 +90,10 @@ Fix: What to change
 - **Warning**: MEDIUM issues only (can merge with caution)
 - **Block**: CRITICAL or HIGH issues found
 
-## Framework Checks
+## Framework Boundaries
 
-- **Django**: `select_related`/`prefetch_related` for N+1, `atomic()` for multi-step, migrations
-- **FastAPI**: CORS config, Pydantic validation, response models, no blocking in async
-- **Flask**: Proper error handlers, CSRF protection
+- **Django** and **FastAPI** specifics (ORM/N+1, migrations, CORS, Pydantic, async blocking) are owned by `django-reviewer` and `fastapi-reviewer` — don't duplicate their checks; they defer general Python quality back to you.
+- **Flask** (no dedicated reviewer): check proper error handlers and CSRF protection here.
 
 ## Reference
 

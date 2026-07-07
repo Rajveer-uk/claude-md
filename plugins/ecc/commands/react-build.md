@@ -181,5 +181,5 @@ Stop and report if:
 - `/build-fix` — generic build fixer (non-React)
 - `eval-harness` skill — full verification loop
 - Agent: react-build-resolver
-- Skills: react-patterns, frontend-patterns
+- Skills: react-patterns, vite-patterns, nextjs-turbopack
 - Rules: `rules/react/coding-style.md`, `rules/react/patterns.md`

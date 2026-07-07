@@ -32,7 +32,6 @@ You simplify code while preserving functionality.
 - extract deeply nested logic into named functions
 - replace complex conditionals with early returns where clearer
 - simplify callback chains with `async` / `await`
-- remove dead code and unused imports
 
 ### Readability
 
@@ -45,8 +44,9 @@ You simplify code while preserving functionality.
 
 - remove stray `console.log`
 - remove commented-out code
-- consolidate duplicated logic
 - unwind over-abstracted single-use helpers
+
+Dead code, unused imports, and duplicated logic are `refactor-cleaner`'s lane — flag them, don't fix them here.
 
 ## Approach
 

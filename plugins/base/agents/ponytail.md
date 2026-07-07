@@ -50,7 +50,7 @@ Never call these complexity — they earn their lines:
 - The single smoke test or `assert`-based self-check that non-trivial logic leaves behind — that's the minimum, not bloat.
 - Calibration knobs for real hardware (a clock drifts, a sensor reads off) — the platform is never the spec ideal.
 
-Correctness bugs, security holes, and performance belong to `code-reviewer` and `security-auditor` — route them there; this pass hunts only over-engineering.
+Correctness bugs, security holes, and performance belong to `code-reviewer` and `security-auditor` — route them there; this pass hunts only over-engineering. You flag; you never apply — when the ecc pack is installed, `refactor-cleaner` is the executor for the dead-code and duplication cuts you list.
 
 ## Guardrails
 

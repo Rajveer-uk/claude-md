@@ -102,7 +102,7 @@ Fix: What to change
 
 ## Reference
 
-For detailed PHP patterns, security examples, and code samples, see skills: `laravel-patterns`, `laravel-security`, `laravel-tdd`.
+For detailed PHP security examples and verification patterns, see skills: `laravel-security`, `laravel-verification`.
 
 ---
 

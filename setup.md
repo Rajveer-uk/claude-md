@@ -228,13 +228,13 @@ The agent team ships as Claude Code **plugins**, listed in `.claude-plugin/marke
 /plugin install base@claude-md-packs         # MAIN: 23 engineering agents + the /caveman skill
 /plugin install marketing@claude-md-packs    # addon: 7 marketing/content agents + Tavily/DataForSEO researchers
 /plugin install council@claude-md-packs      # addon: 6 council seats + the /council skill
-/plugin install ecc@claude-md-packs          # addon: 42 ECC agents + 117 skills + 34 commands
+/plugin install ecc@claude-md-packs          # addon: 41 ECC agents + 116 skills + 34 commands
 ```
 
 - **`base`** is the main install — the 23 zero-network engineering agents plus the `/caveman` skill. Pair it with the `settings.json` security baseline (§A/§B), which is required and is not part of any plugin. It also ships **one static, no-network `UserPromptSubmit` hook** — an auto-delegation directive (proactively use subagents/skills, scaled to task size); opt out anytime in `/hooks`.
 - **`marketing`** adds the 7 marketing/content agents. Two are network-enabled (`content-researcher` via Tavily, `seo-rank-monitor` via DataForSEO). Their MCP servers are declared at **plugin scope** in `plugins/marketing/.mcp.json`, because per-subagent inline `mcpServers` is ignored inside a plugin. Set `TAVILY_API_KEY` / `DATAFORSEO_USERNAME` / `DATAFORSEO_PASSWORD` in your environment first, then run `/mcp` to confirm the servers connect and the exact tool names. Full security model: [`council-and-network-config.md`](council-and-network-config.md). If your build doesn't pick up the plugin-scope `.mcp.json`, move those two servers into your global `~/.claude.json` instead.
 - **`council`** adds the 6 reasoning seats and the `/council` skill — pure reasoners, no network, no scripts.
-- **`ecc`** adds a curated, security-audited subset of [ECC](https://github.com/affaan-m/ECC) (MIT, snapshot `81af407`): 42 agents, 117 engineering skills, and 34 slash-commands — an engineering core plus 10 ECC agent-engineering knowledge skills (the broader ECC harness/command machinery was trimmed for token economy). It is **namespaced separately** so nothing collides with `base`, and is **pure markdown** — no bundled scripts, hooks, or installers. Web access stays blocked by the `settings.json` baseline; `ecc`'s `github-ops` skill uses the authenticated `gh` CLI, and `inherit-legacy-style` can install a user-gated hook (review before accepting). Provenance and the exact audit edits: [`plugins/ecc/ATTRIBUTION.md`](plugins/ecc/ATTRIBUTION.md).
+- **`ecc`** adds a curated, security-audited subset of [ECC](https://github.com/affaan-m/ECC) (MIT, snapshot `81af407`): 41 agents, 116 engineering skills, and 34 slash-commands — an engineering core plus 10 ECC agent-engineering knowledge skills (the broader ECC harness/command machinery was trimmed for token economy). It is **namespaced separately** so nothing collides with `base`, and is **pure markdown** — no bundled scripts, hooks, or installers. Web access stays blocked by the `settings.json` baseline; `ecc`'s `github-ops` skill uses the authenticated `gh` CLI, and `inherit-legacy-style` can install a user-gated hook (review before accepting). Provenance and the exact audit edits: [`plugins/ecc/ATTRIBUTION.md`](plugins/ecc/ATTRIBUTION.md).
 - The **`marketing`/`council`/`ecc`** addon packs are **agents/skills/commands only — no hooks** (`base` ships one static, no-network prompt hook; see above) — so they keep the core's least-privilege posture. Disable or remove a pack anytime from `/plugin` (or `/plugin marketplace remove`).
 
 ---
@@ -280,7 +280,7 @@ Updates flow from the **marketplace source** (the GitHub repo you added), so the
 /plugin install base@claude-md-packs          # e.g. picks up base v1.1.1 — adds the auto-delegation hook
 
 # 3. install any pack added since you set up (new packs do not appear on their own)
-/plugin install ecc@claude-md-packs           # 42 agents + 117 skills + 34 commands
+/plugin install ecc@claude-md-packs           # 41 agents + 116 skills + 34 commands
 ```
 - If prompted to **trust `base`'s new `UserPromptSubmit` hook**, accept it, then confirm with `/hooks` (open `/hooks` once to reload if it does not fire).
 - Plugin updates do **not** touch the `settings.json` security baseline (§A/§B) — no re-copy needed unless a release note says otherwise.
