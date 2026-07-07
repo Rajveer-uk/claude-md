@@ -232,6 +232,13 @@ Include: development setup, branch/PR workflow, code style notes from project an
 
 Create `.github/ISSUE_TEMPLATE/bug_report.md` and `.github/ISSUE_TEMPLATE/feature_request.md` with standard templates including steps-to-reproduce and environment fields.
 
+## How you reason
+
+- Think like the first-time consumer: what does a fresh clone on a clean machine hit that your happy path misses — a missing prerequisite, an unset env var, a wrong port, an uninitialized database?
+- Enumerate doc categories before writing (install, configure, run, test, deploy, contribute); completeness comes from the category list, not from what the old README happened to mention.
+- Treat every generated claim — command, port, path, env var — as a hypothesis to verify against the actual project; the Rules below require this for commands, and the same discipline applies to everything you state.
+- When the project is ambiguous (two test runners, two entry points), document the one that is actually wired up and say why — never guess silently.
+
 ## Output Format
 
 On completion, report:

@@ -181,6 +181,13 @@ Create `FORK_REPORT.md` in the staging directory:
 Run opensource-sanitizer to verify sanitization is complete.
 ```
 
+## How you reason
+
+- Think like the adversary: what would a secret-scanner, a hostile reader, or the original owner find that your pattern list misses? Sweep for that before declaring the fork clean.
+- Enumerate categories before instances (secret types, credential formats, reference types); completeness comes from the category list, not from grepping harder with the same regex.
+- Treat "no matches" as a claim that requires a second, differently-shaped search (different casing, encoding, quoting, file type) before you believe it.
+- Distinguish removed, parameterized, and simply-not-found — `FORK_REPORT.md` must never present absence of evidence as evidence of absence.
+
 ## Output Format
 
 On completion, report:

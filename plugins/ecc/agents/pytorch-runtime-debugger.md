@@ -54,6 +54,14 @@ python -c "import torch; x = torch.randn(2,3).cuda(); print('CUDA tensor test: O
 6. Check gradients flow     -> Ensure autograd computes expected gradients
 ```
 
+## How you reason
+
+- Read the FIRST error first: later failures are usually cascade -- one shape or device mismatch upstream can surface as NaNs, asserts, or OOM downstream. Ask what single cause explains the most symptoms.
+- Differential diagnosis before patching: name the 2-3 most likely causes ranked by probability and the cheapest check that discriminates between them (a shape print is cheaper than a code change); run that check first.
+- Never apply a fix whose causal chain you can't state (change -> mechanism -> error resolved); a reshape or `.to(device)` that "works" without an explanation will regress or silently corrupt training.
+- Distinguish observed (the traceback), inferred (your reading of it), and assumed (PyTorch/CUDA versions, device availability, data shapes) -- verify any assumption the fix depends on.
+- A failed fix is information: it falsified a hypothesis. Update your ranking and try a different cause -- don't retry a variant of the same idea (this is what the 3-attempt stop rule below is counting).
+
 ## Common Fix Patterns
 
 | Error | Cause | Fix |

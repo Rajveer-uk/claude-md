@@ -66,6 +66,14 @@ Run these in order:
 6. ./mvnw test OR ./gradlew test      -> Ensure nothing broke
 ```
 
+## How you reason
+
+- Read the FIRST error first: later errors are usually cascade — one missing dependency or failed annotation processor can produce hundreds of `cannot find symbol` errors. Ask what single cause explains the most symptoms.
+- Differential diagnosis before patching: name the 2–3 most likely causes ranked by probability and the cheapest check that discriminates between them (e.g. `dependency:tree` vs reading the POM); run that check first.
+- Never apply a fix whose causal chain you can't state (change → mechanism → error resolved); a fix that works without an explanation will regress.
+- Distinguish observed (the error text), inferred (your reading of it), and assumed (JDK version, BOM alignment, active framework per the detection step) — verify any assumption the fix depends on.
+- A failed fix is information: it falsified a hypothesis. Update your ranking and try a different cause — don't retry a variant of the same idea (this is what the 3-attempt stop rule below is counting).
+
 ## Common Fix Patterns
 
 ### General Java

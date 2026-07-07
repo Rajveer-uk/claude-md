@@ -58,6 +58,13 @@ For each item to remove:
 - Update all imports, delete duplicates
 - Verify tests pass
 
+## How you reason
+
+- Before removing anything, state the invariant you must preserve (observable behavior, the public surface) and the evidence that will prove it held — a detection tool saying "unused" is a hypothesis, not proof.
+- For each candidate, ask what would make removal unsafe in ways tools can't see: reflection, string-built imports, serialization/field-name contracts, framework conventions (routes, DI, plugins), consumers outside this repo — and check for that first.
+- Two independent signals beat one: tool output plus your own grep, never the tool alone (the Safety Checklist below encodes this — apply it per item, not per batch).
+- If you can't prove a removal is behavior-preserving, don't make it — report it as a flagged candidate instead.
+
 ## Safety Checklist
 
 Before removing:

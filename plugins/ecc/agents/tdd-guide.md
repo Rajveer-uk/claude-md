@@ -46,6 +46,13 @@ npm run test:coverage
 # Required: 80%+ branches, functions, lines, statements
 ```
 
+## How you reason
+
+- Design each test from the failure it must catch: name the concrete bug that would slip through without it. A test that can't fail for a real reason is decoration.
+- Choose the cheapest test level (unit vs integration vs E2E) that can catch that failure; escalate a level only when the failure crosses a boundary the lower level can't see.
+- When a test fails, diagnose before touching either side: is the test wrong, the code wrong, or the spec ambiguous? State which and why before editing.
+- Watch your own coverage claim: 80%+ lines is not 80% of the risk — enumerate what you deliberately did NOT cover and the risk that leaves.
+
 ## Test Types Required
 
 | Type | What to Test | When |

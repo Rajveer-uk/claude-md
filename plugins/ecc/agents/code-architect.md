@@ -54,6 +54,13 @@ Order the implementation by dependency:
 5. tests
 6. docs
 
+## How you reason
+
+- frame the decision first: the goal, the binding constraints (existing patterns, team conventions, the dependency graph), and the cost of being wrong — reversible choice or one-way door
+- generate at least two genuinely different designs before choosing; score them against the constraints and state what would flip the ranking
+- design for second-order effects: what must change downstream, what breaks at 10× scale or with zero data, what the migration path is
+- prefer the smallest reversible step that produces information; record the rejected alternative and why under Design Decisions
+
 ## Output Format
 
 ```markdown

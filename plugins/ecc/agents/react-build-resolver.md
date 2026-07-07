@@ -84,6 +84,14 @@ bun build ./src/index.tsx --outdir=dist
 6. Run tests if present    -> ensure fix did not regress behavior
 ```
 
+## How you reason
+
+- Read the FIRST error first: later errors are usually cascade -- one bad transform or missing plugin can fail every module downstream. Ask what single cause explains the most symptoms.
+- Differential diagnosis before patching: name the 2-3 most likely causes ranked by probability and the cheapest check that discriminates between them (e.g. `npm ls react` before touching hook code); run that check first.
+- Never apply a fix whose causal chain you can't state (change -> mechanism -> error resolved); a fix that works without an explanation will regress -- especially for hydration mismatches, where the mechanism IS the diagnosis.
+- Distinguish observed (the error text), inferred (your reading of it), and assumed (bundler identified in detection, React major, RSC vs client context) -- verify any assumption the fix depends on.
+- A failed fix is information: it falsified a hypothesis. Update your ranking and try a different cause -- don't retry a variant of the same idea (this is what the 3-attempt stop rule below is counting).
+
 ## Common Failure Patterns
 
 ### JSX / TSX Compile

@@ -76,6 +76,13 @@ npx playwright show-report                 # View HTML report
 - Quarantine flaky tests with `test.fixme()` or `test.skip()`
 - Upload artifacts to CI
 
+## How you reason
+
+- Design each journey test from the failure it must catch: name the concrete regression that would reach production without it. A test that can't fail for a real reason is decoration.
+- E2E is the most expensive test level — reserve it for failures that only appear across the full stack; if a unit or integration test could catch the same bug, recommend it there instead of adding a journey.
+- When a test fails, diagnose before touching either side: is the test wrong (selector drift, timing), the app wrong, or the spec ambiguous? State which and why — quarantine is for flakiness, never a substitute for diagnosing a real failure.
+- Watch your own coverage claim: enumerate the critical flows you deliberately did NOT cover and the risk that leaves.
+
 ## Key Principles
 
 - **Use semantic locators**: `[data-testid="..."]` > CSS selectors > XPath
