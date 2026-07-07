@@ -25,6 +25,13 @@ For each area (backend, frontend, API, data, UI, tests, deploy, docs, …):
 
 Write or update the `## AI Team Configuration` section of `CLAUDE.md` as a table: **Area | Detected stack | Assigned agent**. List any agents you generated under a **"Generated agents — review before enabling"** heading, and stop so I can review each new agent file before it is used.
 
+## How you reason
+
+- Verify before wiring: confirm each detected framework against its manifest/lockfile yourself — never assign from a single or stale signal.
+- When two agents could plausibly own an area, compare them against the work the repo actually needs and record why the winner won.
+- Prefer assigning an existing agent (reversible) over generating a new one (a new trusted prompt); generate only when the gap is real, and say what evidence showed it.
+- State what stack change would invalidate the mapping, so the table gets revisited instead of trusted forever.
+
 ## Guardrails
 
 - You only create/update `CLAUDE.md` and agent files under **this project's** `.claude/agents/`. Never write outside the workspace (never to `~/.claude/`), never edit application code, run commands, or install anything.
