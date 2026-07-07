@@ -40,9 +40,9 @@ the SVG when possible; otherwise adjust with a pixel-level margin or padding.
 
 ### Shadows And Borders
 
-Use borders for separation and focus rings. Use layered shadows when a card,
-button, dropdown, or popover needs depth. Shadows should be transparent and
-subtle enough to work across backgrounds.
+Borders for separation and focus rings; layered shadows when a card, button,
+dropdown, or popover needs depth. Shadows should be transparent and subtle
+enough to work across backgrounds.
 
 ### Text Wrapping
 
@@ -88,9 +88,9 @@ brand palette.
 
 ### Motion
 
-Use CSS transitions for interactive state changes because they can retarget
-when the user changes intent mid-motion. Reserve keyframes for staged
-one-shot entrances or loading sequences.
+CSS transitions for interactive state changes — they retarget when the user
+changes intent mid-motion. Reserve keyframes for staged one-shot entrances or
+loading sequences.
 
 Good motion defaults:
 
@@ -119,9 +119,9 @@ properties such as `transform`, `opacity`, and `filter`. Never use
 
 ### Hit Areas
 
-Interactive controls should have at least a 40x40px hit area, ideally 44x44px
-where the layout allows it. Expand with a pseudo-element when the visible icon
-is smaller, but do not let expanded hit areas overlap.
+Interactive controls need at least a 40x40px hit area, ideally 44x44px where
+layout allows. Expand with a pseudo-element when the visible icon is smaller,
+but never let expanded hit areas overlap.
 
 ## Review Output
 
