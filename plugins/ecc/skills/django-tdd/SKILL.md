@@ -727,4 +727,4 @@ open htmlcov/index.html
 | `assertTemplateUsed` | Verify template usage |
 | `mail.outbox` | Check sent emails |
 
-Remember: Tests are documentation. Good tests explain how your code should work. Keep them simple, readable, and maintainable.
+Tests are documentation — they explain how your code should work. Keep them simple, readable, maintainable.

@@ -7,7 +7,7 @@ metadata:
 
 # Architecture Decision Records
 
-Capture architectural decisions as they happen during coding sessions. Instead of decisions living only in Slack threads, PR comments, or someone's memory, this skill produces structured ADR documents that live alongside the code.
+Capture architectural decisions as they happen — structured ADR documents living alongside the code, not only in Slack threads, PR comments, or someone's memory.
 
 ## When to Activate
 

@@ -21,7 +21,7 @@ But it does NOT check:
 - **Does function B silently undo what function A just did?**
 - **Does shared state (Zustand/Redux/context) have side effects that cancel the intended action?**
 
-Real example: A "New Email" button called `setComposeMode(true)` then `selectThread(null)`. Both worked individually. But `selectThread` had a side effect resetting `composeMode: false`. The button did nothing. 54 bugs were found by systematic debugging — this one was missed.
+Real example: A "New Email" button called `setComposeMode(true)` then `selectThread(null)`. Both worked individually, but `selectThread` had a side effect resetting `composeMode: false` — the button did nothing. Systematic debugging found 54 bugs and missed this one.
 
 ---
 
@@ -58,7 +58,7 @@ For each Zustand store / React context in scope:
     - Document: actionName → {sets: [...], resets: [...]}
 ```
 
-This is the critical reference. The "New Email" bug was invisible without knowing that `selectThread` resets `composeMode`.
+This is the critical reference — the "New Email" bug was invisible without knowing that `selectThread` resets `composeMode`.
 
 **Output format:**
 ```

@@ -732,4 +732,4 @@ Product.objects.filter(stock=0).delete()
 | Signals | Event-driven actions |
 | Middleware | Request/response processing |
 
-Remember: Django provides many shortcuts, but for production applications, structure and organization matter more than concise code. Build for maintainability.
+Django offers many shortcuts, but in production structure and organization beat concise code — build for maintainability.

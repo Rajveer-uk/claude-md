@@ -20,7 +20,7 @@ ClickHouse-specific patterns for high-performance analytics and data engineering
 
 ## Overview
 
-ClickHouse is a column-oriented database management system (DBMS) for online analytical processing (OLAP). It's optimized for fast analytical queries on large datasets.
+ClickHouse is a column-oriented DBMS for OLAP, optimized for fast analytical queries on large datasets.
 
 **Key Features:**
 - Column-oriented storage
@@ -437,4 +437,4 @@ pgClient.on('notification', async (msg) => {
 - Check merge operations
 - Review slow query log
 
-**Remember**: ClickHouse excels at analytical workloads. Design tables for your query patterns, batch inserts, and leverage materialized views for real-time aggregations.
+Design tables for your query patterns, batch inserts, and leverage materialized views for real-time aggregations.

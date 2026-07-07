@@ -38,9 +38,7 @@ Before applying standards, determine the framework from the build file:
 
 ## Examples
 
-The sections below show concrete Spring Boot, Quarkus, and shared Java examples
-for naming, immutability, dependency injection, reactive code, exceptions,
-project layout, logging, configuration, and tests.
+Below: concrete Spring Boot, Quarkus, and shared Java examples for naming, immutability, dependency injection, reactive code, exceptions, project layout, logging, configuration, and tests.
 
 ## Naming
 
@@ -381,4 +379,4 @@ class MarketServiceTest {
 }
 ```
 
-**Remember**: Keep code intentional, typed, and observable. Optimize for maintainability over micro-optimizations unless proven necessary.
+Keep code intentional, typed, and observable — maintainability over micro-optimizations unless proven necessary.

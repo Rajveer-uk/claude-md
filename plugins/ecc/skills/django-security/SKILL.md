@@ -641,4 +641,4 @@ LOGGING = {
 | Logging | Log security events |
 | Updates | Keep Django and dependencies updated |
 
-Remember: Security is a process, not a product. Regularly review and update your security practices.
+Security is a process, not a product — review and update practices regularly.

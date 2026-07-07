@@ -559,4 +559,4 @@ export async function GET(request: Request) {
 }
 ```
 
-**Remember**: Backend patterns enable scalable, maintainable server-side applications. Choose patterns that fit your complexity level.
+Choose patterns that fit your complexity level.

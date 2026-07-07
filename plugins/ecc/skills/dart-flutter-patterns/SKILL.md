@@ -19,7 +19,7 @@ Use this skill when:
 
 ## How It Works
 
-This skill provides copy-paste-ready Dart/Flutter code patterns organized by concern:
+Copy-paste-ready Dart/Flutter code patterns by concern:
 1. **Null safety** — avoid `!`, prefer `?.`/`??`/pattern matching
 2. **Immutable state** — sealed classes, `freezed`, `copyWith`
 3. **Async composition** — concurrent `Future.wait`, safe `BuildContext` after `await`
@@ -64,7 +64,7 @@ double cartTotal(Ref ref) {
 
 ---
 
-Practical, production-ready patterns for Dart and Flutter applications. Library-agnostic where possible, with explicit coverage of the most common ecosystem packages.
+Production-ready Dart/Flutter patterns — library-agnostic where possible, with explicit coverage of the most common ecosystem packages.
 
 ---
 

@@ -98,7 +98,7 @@ Before finishing:
 
 ## The `ref` Field
 
-`ref` ties the tour to a git branch or commit. It matters more than it looks: when `ref` is not the branch the reader has checked out, CodeTour opens each step's file from that revision in git, not from the files on disk. If a file is not in that revision, the step will not open — the reader sees *"The editor could not be opened because the file was not found"* even though the file is sitting right there. The tour and its comments still show, so the real cause is easy to miss.
+`ref` ties the tour to a git branch or commit. When `ref` is not the reader's checked-out branch, CodeTour opens each step's file from that git revision, not from disk. If a file is missing from that revision the step will not open — the reader sees *"The editor could not be opened because the file was not found"* even though the file is on disk, and since the tour and its comments still show, the real cause is easy to miss.
 
 Pick `ref` by tour type:
 
@@ -108,7 +108,7 @@ Pick `ref` by tour type:
 | Onboarding / architecture | the branch the reader will be on (often `main`), or leave it out |
 | Not sure | leave `ref` out, so CodeTour reads files straight from disk |
 
-The PR case is the common trap: a PR usually adds new files, and new files do not exist on the base branch yet. Point `ref` at the base (e.g. `develop`) and every step on a new file fails to open.
+The PR case is the common trap: PRs usually add new files that don't exist on the base branch yet — point `ref` at the base (e.g. `develop`) and every step on a new file fails to open.
 
 Before finishing, confirm each step's file actually exists at the `ref` you chose.
 
