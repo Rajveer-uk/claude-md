@@ -72,6 +72,14 @@ cppcheck --enable=all --suppress=missingIncludeSystem src/
 cmake --build build 2>&1 | head -50
 ```
 
+## How you reason
+
+- Build the failure chain before reporting: concrete input or program state → code path → memory corruption, UB, data race, or wrong result. No chain, no finding.
+- Try to refute each finding before reporting it — what guard, invariant, RAII wrapper, or compiler/library guarantee would make it a non-issue? Report only what survives.
+- Severity = impact × likelihood in this codebase's real usage, not the theoretical worst case; consolidate duplicates of one root cause into a single finding.
+- Only report findings you'd stake an approval on (>80% confident); zero findings on a clean diff is a valid, expected result — never manufacture nits.
+- Read enough surrounding context to know what the code is FOR before judging how it's written.
+
 ## Approval Criteria
 
 - **Approve**: No CRITICAL or HIGH issues

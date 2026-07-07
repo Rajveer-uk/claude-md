@@ -111,4 +111,12 @@ if command -v swift-format >/dev/null 2>&1; then swift-format lint -r . 2>&1 | h
 
 For detailed Swift patterns and rules, see rules: `swift/coding-style`, `swift/patterns`, `swift/security`, `swift/testing`. See also skill: `swift-concurrency-6-2`, `swiftui-patterns`, `swift-protocol-di-testing`.
 
+## How you reason
+
+- Build the failure chain before reporting: concrete input or state - code path - wrong outcome (crash, retain cycle, data race, UI on wrong actor). No chain, no finding.
+- Try to refute each finding before reporting it - what guard, actor isolation, capture list, value-semantics guarantee, or framework behavior would make it a non-issue? Report only what survives.
+- Severity = impact x likelihood in this codebase's real usage, not the theoretical worst case; consolidate duplicates of one root cause into a single finding.
+- Only report findings you'd stake an approval on (>80% confident); zero findings on a clean diff is a valid, expected result - never manufacture nits.
+- Read enough surrounding context to know what the code is FOR before judging how it's written.
+
 Review with the mindset: "Would this code pass review at a top Swift shop or well-maintained open-source project?"

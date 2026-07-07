@@ -95,6 +95,14 @@ Fix: What to change
 - **Django** and **FastAPI** specifics (ORM/N+1, migrations, CORS, Pydantic, async blocking) are owned by `django-reviewer` and `fastapi-reviewer` — don't duplicate their checks; they defer general Python quality back to you.
 - **Flask** (no dedicated reviewer): check proper error handlers and CSRF protection here.
 
+## How you reason
+
+- Build the failure chain before reporting: concrete input or state → code path → wrong outcome (exception, corrupted data, security breach, blocked event loop). No chain, no finding.
+- Try to refute each finding before reporting it — what guard, invariant, library behavior, or innocent explanation would make it a non-issue? Report only what survives.
+- Severity = impact × likelihood in this codebase's real usage, not the theoretical worst case; consolidate duplicates of one root cause into a single finding.
+- Only report findings you'd stake an approval on (>80% confident); zero findings on a clean diff is a valid, expected result — never manufacture nits.
+- Read enough surrounding context to know what the code is FOR before judging how it's written.
+
 ## Reference
 
 For detailed Python patterns, security examples, and code samples, see skill: `python-patterns`.

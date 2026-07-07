@@ -113,6 +113,13 @@ jest --ci                           # Tests (Jest)
 - **Warning**: MEDIUM issues only (can merge with caution)
 - **Block**: CRITICAL or HIGH issues found
 
+## How you reason
+
+- Build the failure chain before reporting: concrete input or state → code path → wrong outcome (runtime TypeError, unhandled rejection, injection, blocked event loop). No chain, no finding.
+- Try to refute each finding before reporting it — what type narrowing, runtime guard, framework behavior, or innocent explanation would make it a non-issue? Report only what survives.
+- Severity = impact × likelihood in this codebase's real usage, not the theoretical worst case; consolidate duplicates of one root cause into a single finding.
+- Only report findings you'd stake an approval on (>80% confident); zero findings on a clean diff is a valid, expected result — never manufacture nits.
+
 ## Reference
 
 No dedicated `typescript-patterns` skill yet — for detailed TS/JS patterns use `coding-standards`, plus `backend-patterns` or the framework's skill (`react-patterns`, `vue-patterns`), per the code under review.

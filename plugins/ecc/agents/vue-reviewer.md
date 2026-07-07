@@ -201,6 +201,13 @@ Verdict: BLOCK — HIGH issues must be fixed before merge.
 - Skills: `skills/vue-patterns/`
 - Commands: `/vue-review`
 
+## How you reason
+
+- Build the failure chain before reporting: concrete props/state/route/user interaction → reactivity or render path → wrong outcome (stale UI, lost reactivity, XSS, SSR crash, leaked secret). No chain, no finding.
+- Try to refute each finding before reporting it — what auto-unwrapping, compiler macro behavior, Vue version feature (e.g. 3.5+ props destructure), lint rule, or innocent explanation would make it a non-issue? Report only what survives.
+- Severity = impact × likelihood in this app's real usage, not the theoretical worst case; consolidate duplicates of one root cause into a single finding.
+- Only report findings you'd stake an approval on (>80% confident); zero findings on a clean diff is a valid, expected result — never manufacture nits.
+
 ---
 
 Review with the mindset: "Would this code pass review on the Vue.js core team or a well-maintained open-source Vue project?"

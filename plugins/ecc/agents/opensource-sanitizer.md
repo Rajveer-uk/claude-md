@@ -136,6 +136,14 @@ git log --oneline | wc -l
 git log -p | grep -iE '(password|secret|api.?key|token)' | head -20
 ```
 
+## How you reason
+
+- Build the exposure chain before reporting: concrete match → what an outsider could do with it once the repo is public (use the credential, map internal infrastructure, identify a person or client). Name the consequence in the finding.
+- Attempt to refute each match — placeholder, documented example, test fixture, already-rotated key — but when refutation is uncertain, **still report it**; false positives are acceptable, false negatives are not. Only suppress a match you can prove innocuous (e.g. it is explicitly documented as a placeholder in `.env.example`).
+- Weigh reported severity by real exposure impact: a live credential outranks a stale internal hostname; the same leaked value appearing in many files is one root cause — report it once with all locations listed.
+- A clean repo with zero findings is a valid PASS — but reach it only after every scan category has actually run, never by skipping checks.
+- Read enough surrounding context to describe accurately what each matched value is (config, doc, fixture) — context informs the description, never a reason to silently drop an uncertain match.
+
 ## Output Format
 
 Generate `SANITIZATION_REPORT.md` in the project directory:

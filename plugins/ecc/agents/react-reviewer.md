@@ -162,6 +162,13 @@ Always include the file path and line number. Quote the offending snippet when i
 - Skills: `skills/react-patterns/`, `skills/react-testing/`, `skills/accessibility/`
 - Commands: `/react-review`, `/react-build`, `/react-test`
 
+## How you reason
+
+- Build the failure chain before reporting: concrete props/state/user interaction → render or effect path → wrong outcome (stale UI, lost state, XSS, leaked secret, wasted renders). No chain, no finding.
+- Try to refute each finding before reporting it — what memoization, key, framework guarantee (batching, RSC serialization, lint rule already enforced), or innocent explanation would make it a non-issue? Report only what survives.
+- Severity = impact × likelihood in this app's real usage, not the theoretical worst case; consolidate duplicates of one root cause into a single finding.
+- Only report findings you'd stake an approval on (>80% confident); zero findings on a clean diff is a valid, expected result — never manufacture nits.
+
 ---
 
 Review with the mindset: "Would this code pass review at a top React shop or well-maintained open-source library?"

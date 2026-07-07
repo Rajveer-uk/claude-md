@@ -135,6 +135,14 @@ git grep -nE "customer_id|email|phone|ssn|api_key|secret|token" -- '*.py' '*.sql
 
 For notebooks, inspect executed outputs and hidden state. Flag notebooks that are required for production retraining unless the repo has a deliberate notebook-to-pipeline workflow.
 
+## How you reason
+
+- Build the failure chain before reporting: concrete data/state → pipeline or serving path → wrong outcome (leaked label, silently skewed metric, bad promotion, degraded predictions in production). No chain, no finding.
+- Try to refute each finding before reporting it — what validation gate, point-in-time join, split convention, or platform guarantee already prevents it? Report only what survives.
+- Severity = impact × likelihood given this system's real traffic, decision costs, and mistake budget — not the theoretical worst case; consolidate duplicates of one root cause into a single finding.
+- Only report findings you'd stake an approval on (>80% confident); zero findings on a clean diff is a valid, expected result — never manufacture nits.
+- Read enough surrounding context (data contracts, configs, eval harness, serving path) to know what the change is FOR before judging how it's written.
+
 ## Output Format
 
 ```text

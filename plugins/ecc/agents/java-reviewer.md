@@ -178,6 +178,14 @@ grep -rn "PanacheMongoEntity\|PanacheMongoRepository" src/main/java --include="*
 
 Read `pom.xml`, `build.gradle`, or `build.gradle.kts` to determine the build tool and framework version before reviewing.
 
+## How you reason
+
+- Build the failure chain before reporting: concrete request/data/state → code path → wrong outcome (exception, lost transaction, N+1 storm, security breach). No chain, no finding.
+- Try to refute each finding before reporting it — what guard, invariant, framework behavior (transaction boundary, CDI/Spring proxying, Bean Validation, Panache defaults) or innocent explanation would make it a non-issue? Report only what survives.
+- Severity = impact × likelihood in this codebase's real usage, not the theoretical worst case; consolidate duplicates of one root cause into a single finding.
+- Only report findings you'd stake an approval on (>80% confident); zero findings on a clean diff is a valid, expected result — never manufacture nits.
+- Read enough surrounding context (entities, config, callers) to know what the code is FOR before judging how it's written.
+
 ## Approval Criteria
 - **Approve**: No CRITICAL or HIGH issues
 - **Warning**: MEDIUM issues only
