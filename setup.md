@@ -6,7 +6,7 @@ This config is **stack-agnostic and OS-agnostic**. The files are identical on ev
 
 | Piece | Scope | Location | Why |
 |------|-------|----------|-----|
-| `base` plugin — 23 agents + 3 skills | **Plugin** | via `/plugin` | The main team — install from the marketplace (see §G) |
+| `base` plugin — 24 agents + 3 skills | **Plugin** | via `/plugin` | The main team — install from the marketplace (see §G) |
 | Addons: `marketing` (7), `council` (6) | **Plugin** | via `/plugin` | Opt-in add-ons — install from the marketplace (see §G) |
 | `settings.json` (deny-list + modes) | **Global / user** | `~/.claude/settings.json` | The security baseline — **not** plugin-able; install it before the plugins |
 | Hooks `guard`/`format`/`verify` (`.ps1`+`.sh`, optional) | **Global / user** | `~/.claude/hooks/` | guard = enforce no-secret-read/egress + safe agent-gen; format = auto-format edited file; verify = run project checks before finishing |
@@ -65,7 +65,7 @@ Then, **only if you installed the hook**, add this to `~/.claude/settings.json` 
 Get-Content "$env:USERPROFILE\.claude\settings.json" -Raw | ConvertFrom-Json | Out-Null; "settings OK"
 # then inside Claude Code (after installing the base plugin — see §G):
 #   /plugin   -> shows installed plugins (base / marketing / council)
-#   /agents   -> lists the base team (23) plus any addon plugins, with tools + model
+#   /agents   -> lists the base team (24) plus any addon plugins, with tools + model
 #   /memory   -> shows which CLAUDE.md files are loaded
 ```
 
@@ -119,7 +119,7 @@ Then, **only if you installed the hook**, add this to `~/.claude/settings.json` 
 jq . "$HOME/.claude/settings.json" >/dev/null && echo "settings OK"
 # then inside Claude Code (after installing the base plugin — see §G):
 #   /plugin   -> shows installed plugins (base / marketing / council)
-#   /agents   -> lists the base team (23) plus any addon plugins, with tools + model
+#   /agents   -> lists the base team (24) plus any addon plugins, with tools + model
 #   /memory   -> shows which CLAUDE.md files are loaded
 ```
 
@@ -218,20 +218,20 @@ sudo cp "$REPO/managed/managed-settings.json" "/Library/Application Support/Clau
 
 ## G. Install the team — plugin marketplace (base + addons)
 
-The agent team ships as Claude Code **plugins**, listed in `.claude-plugin/marketplace.json`: install **`base`** (the main 23-agent team + `/caveman`), then add the **`marketing`** and **`council`** addons per project as needed. Nothing under `plugins/` loads until you install it. Same flow on every OS:
+The agent team ships as Claude Code **plugins**, listed in `.claude-plugin/marketplace.json`: install **`base`** (the main 24-agent team + `/caveman`), then add the **`marketing`** and **`council`** addons per project as needed. Nothing under `plugins/` loads until you install it. Same flow on every OS:
 
 ```text
 # 1. add this repo as a plugin marketplace (local path works; or <owner>/claude-md once it's pushed to GitHub)
 /plugin marketplace add <path-to-this-repo>
 
 # 2. install the base team, then whichever addons you want — toggle any of them anytime from /plugin
-/plugin install base@claude-md-packs         # MAIN: 23 engineering agents + the /caveman skill
+/plugin install base@claude-md-packs         # MAIN: 24 engineering agents + the /caveman skill
 /plugin install marketing@claude-md-packs    # addon: 7 marketing/content agents + Tavily/DataForSEO researchers
 /plugin install council@claude-md-packs      # addon: 6 council seats + the /council skill
 /plugin install ecc@claude-md-packs          # addon: 41 ECC agents + 116 skills + 34 commands
 ```
 
-- **`base`** is the main install — the 23 zero-network engineering agents plus the `/caveman` skill. Pair it with the `settings.json` security baseline (§A/§B), which is required and is not part of any plugin. It also ships **one static, no-network `UserPromptSubmit` hook** — an auto-delegation directive (proactively use subagents/skills, scaled to task size); opt out anytime in `/hooks`.
+- **`base`** is the main install — the 24 zero-network engineering agents plus the `/caveman` skill. Pair it with the `settings.json` security baseline (§A/§B), which is required and is not part of any plugin. It also ships **one static, no-network `UserPromptSubmit` hook** — an auto-delegation directive (proactively use subagents/skills, scaled to task size); opt out anytime in `/hooks`.
 - **`marketing`** adds the 7 marketing/content agents. Two are network-enabled (`content-researcher` via Tavily, `seo-rank-monitor` via DataForSEO). Their MCP servers are declared at **plugin scope** in `plugins/marketing/.mcp.json`, because per-subagent inline `mcpServers` is ignored inside a plugin. Set `TAVILY_API_KEY` / `DATAFORSEO_USERNAME` / `DATAFORSEO_PASSWORD` in your environment first, then run `/mcp` to confirm the servers connect and the exact tool names. Full security model: [`council-and-network-config.md`](council-and-network-config.md). If your build doesn't pick up the plugin-scope `.mcp.json`, move those two servers into your global `~/.claude.json` instead.
 - **`council`** adds the 6 reasoning seats and the `/council` skill — pure reasoners, no network, no scripts.
 - **`ecc`** adds a curated, security-audited subset of [ECC](https://github.com/affaan-m/ECC) (MIT, snapshot `81af407`): 41 agents, 116 engineering skills, and 34 slash-commands — an engineering core plus 10 ECC agent-engineering knowledge skills (the broader ECC harness/command machinery was trimmed for token economy). It is **namespaced separately** so nothing collides with `base`, and is **pure markdown** — no bundled scripts, hooks, or installers. Web access stays blocked by the `settings.json` baseline; `ecc`'s `github-ops` skill uses the authenticated `gh` CLI, and `inherit-legacy-style` can install a user-gated hook (review before accepting). Provenance and the exact audit edits: [`plugins/ecc/ATTRIBUTION.md`](plugins/ecc/ATTRIBUTION.md).
@@ -249,7 +249,7 @@ Prefer not to use the plugin system? The agents and skills are plain files — c
 ```powershell
 $repo = "<repo>"; $dest = "$env:USERPROFILE\.claude"
 New-Item -ItemType Directory -Force "$dest\agents","$dest\skills" | Out-Null
-Copy-Item "$repo\plugins\*\agents\*.md"          "$dest\agents\" -Force            # all 78 across packs (use \base\ for just the 23; ecc's skills/commands are NOT copied here)
+Copy-Item "$repo\plugins\*\agents\*.md"          "$dest\agents\" -Force            # all 78 across packs (use \base\ for just the 24; ecc's skills/commands are NOT copied here)
 Copy-Item "$repo\plugins\base\skills\caveman"    "$dest\skills\caveman"  -Recurse -Force
 Copy-Item "$repo\plugins\council\skills\council" "$dest\skills\council"  -Recurse -Force
 ```
@@ -258,7 +258,7 @@ Copy-Item "$repo\plugins\council\skills\council" "$dest\skills\council"  -Recurs
 ```bash
 repo="<repo>"; dest="$HOME/.claude"
 mkdir -p "$dest/agents" "$dest/skills"
-cp "$repo"/plugins/*/agents/*.md "$dest/agents/"                  # all 78 across packs (use plugins/base/ for just the 23; ecc's skills/commands are NOT copied here)
+cp "$repo"/plugins/*/agents/*.md "$dest/agents/"                  # all 78 across packs (use plugins/base/ for just the 24; ecc's skills/commands are NOT copied here)
 cp -r "$repo/plugins/base/skills/caveman"    "$dest/skills/caveman"
 cp -r "$repo/plugins/council/skills/council" "$dest/skills/council"
 ```

@@ -16,7 +16,7 @@ Every file in this repo was produced through a full multi-dimension security aud
 
 ## This repo vs vanilla Claude Code
 
-Vanilla Claude Code is a blank, capable agent: you drive every task in one context window, in full prose, with only the built-in tools. This repo turns that into a **standing engineering org** — a security baseline, a 36-agent specialist team, 100+ concrete skill playbooks, and terse/delegation modes — installed once and reused across every project.
+Vanilla Claude Code is a blank, capable agent: you drive every task in one context window, in full prose, with only the built-in tools. This repo turns that into a **standing engineering org** — a security baseline, a 37-agent specialist team, 100+ concrete skill playbooks, and terse/delegation modes — installed once and reused across every project.
 
 ### Token utilization
 
@@ -49,8 +49,8 @@ Bodies of agents/skills/commands load **on demand**, not up front — so the com
 
 Structural, not cosmetic:
 
-- **Right specialist, least privilege.** 36 role-scoped agents (plus curated stack experts and on-demand `<framework>-expert` generation) instead of one generalist — each with an explicit minimal tool set.
-- **A real merge gate.** `code-reviewer` (correctness/security) + `ponytail` (over-engineering) + `security-auditor` run before code lands, catching what a single pass misses.
+- **Right specialist, least privilege.** 37 role-scoped agents (plus curated stack experts and on-demand `<framework>-expert` generation) instead of one generalist — each with an explicit minimal tool set.
+- **A real merge gate.** `code-reviewer` (correctness/maintainability) + `ponytail` (over-engineering) + `security-auditor` (vulnerabilities) run before code lands, catching what a single pass misses.
 - **Playbooks, not guesses.** 100+ skills carry concrete patterns, checklists, and anti-patterns (testing/TDD, architecture, per-stack idioms, performance, accessibility), so output follows known-good practice.
 - **Better decisions.** The 6-seat `/council` stress-tests ambiguous or high-stakes calls from independent angles before you commit.
 - **Safety by default.** Plan-mode-first, a deny-list (no secret reads, no `WebFetch`/`WebSearch`, no destructive Bash) and no-bypass mode mean fewer costly mistakes and zero accidental exfiltration — every file was security-audited with findings independently verified.
@@ -72,7 +72,7 @@ The payoff is fewer wrong turns, less rework, tighter diffs, and a documented se
 ├── .claude-plugin/
 │   └── marketplace.json          # marketplace listing the four plugins below
 ├── plugins/                      # the team — installed via /plugin (nothing loads until installed)
-│   ├── base/                     # MAIN: 23 zero-network engineering agents + 3 skills + 1 static prompt hook
+│   ├── base/                     # MAIN: 24 zero-network engineering agents + 3 skills + 1 static prompt hook
 │   │   ├── .claude-plugin/plugin.json
 │   │   ├── agents/*.md
 │   │   └── skills/*/SKILL.md      # caveman, secure-code-reviewer, work-quality-checker
@@ -99,14 +99,14 @@ The payoff is fewer wrong turns, less rework, tighter diffs, and a documented se
 ## Design principles
 
 - **Stack-agnostic + dynamic.** Universal specialists handle any ecosystem; `project-analyst` detects the stack, `team-configurator` prefers a framework-specific agent and generates a `<framework>-expert` on demand. Curated experts ship for the recurring stacks (Laravel, React+Tailwind/shadcn, Frappe, n8n).
-- **Least privilege, zero network by default.** Every agent declares an explicit minimal `tools` list. **The `base` plugin's 23 agents are all air-gapped — zero network tools.** The only two network-capable agents (`content-researcher`, `seo-rank-monitor`) ship in the optional `marketing` addon, so a base-only install has no network surface at all; across the full 36-agent roster, 34 have zero network. Network is opt-in, per-agent, and never inherited (see the connector below).
+- **Least privilege, zero network by default.** Every agent declares an explicit minimal `tools` list. **The `base` plugin's 24 agents are all air-gapped — zero network tools.** The only two network-capable agents (`content-researcher`, `seo-rank-monitor`) ship in the optional `marketing` addon, so a base-only install has no network surface at all; across the full 37-agent roster, 35 have zero network. Network is opt-in, per-agent, and never inherited (see the connector below).
 - **OS-agnostic, layered & lean, self-improving.** Identical files across Windows/macOS/Linux; a small root `CLAUDE.md` points to on-demand per-package files; agents update `CLAUDE.md` when corrected.
 
-## The agent team (36)
+## The agent team (37)
 
-**36 agents — 23 in the `base` plugin, 7 in `marketing`, 6 in `council`.**
+**37 agents — 24 in the `base` plugin, 7 in `marketing`, 6 in `council`.**
 
-**Engineering (23) — the `base` plugin.** Planning/review on `opus` (`tech-lead-orchestrator`, `api-architect`, `security-auditor`, `code-reviewer`, `ponytail` — an over-engineering reviewer that lists what to delete); execution/analysis on `sonnet` (`project-analyst`, `team-configurator`, `backend-developer`, `frontend-developer`, `database-expert`, `ui-ux-designer`, `test-engineer`, `debugger`, `devops-troubleshooter`, `performance-optimizer`, `dependency-manager`, `deployment-engineer`, `code-archaeologist`); curated stack experts (`laravel-expert`, `react-tailwind-expert`, `frappe-expert`, `n8n-expert`); docs on `haiku` (`documentation-specialist`). All zero-network. Plus one static, no-network auto-delegation prompt hook (see setup.md).
+**Engineering (24) — the `base` plugin.** Planning/deep review on `opus` (`tech-lead-orchestrator`, `api-architect`, `security-auditor`, `ponytail` — an over-engineering reviewer that lists what to delete); execution/analysis on `sonnet` (`code-reviewer`, `backend-developer`, `frontend-developer`, `database-expert`, `ui-ux-designer`, `test-engineer`, `debugger`, `devops-troubleshooter`, `performance-optimizer`, `deployment-engineer`, `code-archaeologist`); curated stack experts (`laravel-expert`, `react-tailwind-expert`, `frappe-expert`, `n8n-expert`); fast/cheap on `haiku` (`project-analyst`, `team-configurator`, `dependency-manager`, `ops-triage` — read-only ops triage for logs/disk/queues/containers — and `documentation-specialist`). All zero-network. Plus one static, no-network auto-delegation prompt hook (see setup.md).
 
 **Marketing & content (7) — `marketing` plugin.** Draft/strategy, no network: `conversion-copywriter`, `content-writer`, `content-editor` (haiku), `email-campaign-writer`, `growth-strategist` (opus). 🌐 **Network-enabled (read-only):** `content-researcher` (Tavily web search) and `seo-rank-monitor` (DataForSEO SEO metrics) — the **only** two agents with any network access. Install only if you do marketing work: `/plugin install marketing@claude-md-packs`.
 
@@ -136,7 +136,7 @@ Add the marketplace once, then install the `base` team plus any addons; toggle t
 
 ```text
 /plugin marketplace add .                    # local path to this repo's root (or <owner>/claude-md once pushed)
-/plugin install base@claude-md-packs         # MAIN:  23 engineering agents + 3 skills
+/plugin install base@claude-md-packs         # MAIN:  24 engineering agents + 3 skills
 /plugin install marketing@claude-md-packs    # addon: 7 marketing/content agents (+ Tavily/DataForSEO)
 /plugin install council@claude-md-packs      # addon: 6 council seats + /council skill
 /plugin install ecc@claude-md-packs          # addon: 41 ECC agents + 116 skills + 34 commands
@@ -152,7 +152,7 @@ The agents and skills are plain files — copy them straight into `~/.claude/` a
 ```powershell
 $repo = "<repo>"; $dest = "$env:USERPROFILE\.claude"
 New-Item -ItemType Directory -Force "$dest\agents","$dest\skills" | Out-Null
-Copy-Item "$repo\plugins\*\agents\*.md"          "$dest\agents\" -Force            # all 78 across packs (use \base\ for just the 23; ecc's skills/commands are NOT copied here)
+Copy-Item "$repo\plugins\*\agents\*.md"          "$dest\agents\" -Force            # all 78 across packs (use \base\ for just the 24; ecc's skills/commands are NOT copied here)
 Copy-Item "$repo\plugins\base\skills\caveman"    "$dest\skills\caveman"  -Recurse -Force
 Copy-Item "$repo\plugins\base\skills\secure-code-reviewer" "$dest\skills\secure-code-reviewer" -Recurse -Force
 Copy-Item "$repo\plugins\base\skills\work-quality-checker" "$dest\skills\work-quality-checker" -Recurse -Force
@@ -163,7 +163,7 @@ Copy-Item "$repo\plugins\council\skills\council" "$dest\skills\council"  -Recurs
 ```bash
 repo="<repo>"; dest="$HOME/.claude"
 mkdir -p "$dest/agents" "$dest/skills"
-cp "$repo"/plugins/*/agents/*.md "$dest/agents/"                  # all 78 across packs (use plugins/base/ for just the 23; ecc's skills/commands are NOT copied here)
+cp "$repo"/plugins/*/agents/*.md "$dest/agents/"                  # all 78 across packs (use plugins/base/ for just the 24; ecc's skills/commands are NOT copied here)
 cp -r "$repo/plugins/base/skills/caveman"    "$dest/skills/caveman"
 cp -r "$repo/plugins/base/skills/secure-code-reviewer" "$dest/skills/secure-code-reviewer"
 cp -r "$repo/plugins/base/skills/work-quality-checker" "$dest/skills/work-quality-checker"

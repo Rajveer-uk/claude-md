@@ -1,8 +1,8 @@
 {
   "name": "base",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "license": "MIT",
-  "description": "The core engineering team for the claude-md config: 23 least-privilege agents (planning, review, implementation, debugging, testing, devops, docs, and curated stack experts) plus 3 skills — /caveman (terse output), secure-code-reviewer (OWASP audit), and work-quality-checker (pre-send executive QA). Zero-network; ships one static, no-network UserPromptSubmit hook (an auto-delegation directive) — no other scripts, no file access. Install the security baseline (settings.json) separately; see setup.md.",
+  "description": "The core engineering team for the claude-md config: 24 least-privilege agents (planning, review, implementation, debugging, testing, devops, ops triage, docs, and curated stack experts) plus 3 skills — /caveman (terse output), secure-code-reviewer (OWASP audit), and work-quality-checker (pre-send executive QA). Zero-network; ships one static, no-network UserPromptSubmit hook (an auto-delegation directive) — no other scripts, no file access. Install the security baseline (settings.json) separately; see setup.md.",
   "author": {
     "name": "Cintel-UK-LTD",
     "url": "https://github.com/Cintel-UK-LTD"
