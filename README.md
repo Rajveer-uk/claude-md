@@ -72,7 +72,7 @@ The payoff is fewer wrong turns, less rework, tighter diffs, and a documented se
 ├── .claude-plugin/
 │   └── marketplace.json          # marketplace listing the four plugins below
 ├── plugins/                      # the team — installed via /plugin (nothing loads until installed)
-│   ├── base/                     # MAIN: 24 zero-network engineering agents + 3 skills + 1 static prompt hook
+│   ├── base/                     # MAIN: 24 zero-network engineering agents + 3 skills + 1 command + 1 static prompt hook
 │   │   ├── .claude-plugin/plugin.json
 │   │   ├── agents/*.md
 │   │   └── skills/*/SKILL.md      # caveman, secure-code-reviewer, work-quality-checker
@@ -119,6 +119,7 @@ The payoff is fewer wrong turns, less rework, tighter diffs, and a documented se
 - **`/caveman [lite|full|ultra]`** (in the `base` plugin) — ultra-terse output mode that cuts ~65% of response tokens while keeping code, errors, and technical facts exact; auto-reverts to full prose for security warnings and irreversible-action confirmations. The prose counterpart to the `ponytail` reviewer (which strips *code* to the minimal version that works).
 - **`secure-code-reviewer`** (in the `base` plugin) — OWASP-focused defensive audit of code you paste or point at: severity-triaged report (Critical→Low) with secure-code fixes; explains risk without generating exploit payloads. Complements the `security-auditor` agent — the agent does delegated repo-wide scans, the skill audits inline what you show it.
 - **`work-quality-checker`** (in the `base` plugin) — ruthless pre-send QA for emails, decks, concept notes, proposals, and scripts: logic-gap audit, top-3 sentence rewrites, the three toughest boss/client questions with suggested answers, and a binary "Ship it" / "Fix these 2 things first" verdict. Also turns raw meeting notes into a decisions/owners/deadlines dashboard.
+- **`/implement-plan <plan-file…>`** (command in the `base` plugin) — execute a detailed plan file end-to-end: new branch off the current one, one subagent per plan item routed to the pack agent's declared model (subagents never run on fable — only the orchestrator), statuses marked done in the plan file itself, the full review gate (`code-reviewer` + `ponytail`, `security-auditor` when warranted), one commit per item, one push at the end.
 - **`/council <question>`** (in the `council` plugin) — convene the 6-seat decision council and return a synthesized verdict.
 - **117 ECC skills** (in the optional `ecc` plugin) — per-stack patterns, testing/TDD, architecture, performance, accessibility, code-tour, and more; surfaced on demand or via `/ecc:<skill>`.
 
