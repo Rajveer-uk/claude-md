@@ -1,7 +1,7 @@
 {
   "hooks": {
     "UserPromptSubmit": [
-      { "hooks": [ { "type": "command", "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"UserPromptSubmit\",\"additionalContext\":\"Standing directive: for substantive tasks, proactively delegate to subagents (Agent tool) or a Workflow and auto-invoke any relevant skill; do not wait to be asked. Scale to task size: answer trivial or conversational prompts inline with no delegation. Prefer parallel subagents for multi-part or multi-file work; verify findings before finalizing.\"}}'" } ] }
+      { "hooks": [ { "type": "command", "timeout": 30, "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"UserPromptSubmit\",\"additionalContext\":\"Standing directive: for substantive tasks, proactively delegate to subagents (Agent tool) or a Workflow and auto-invoke any relevant skill; do not wait to be asked. Scale to task size: answer trivial or conversational prompts inline with no delegation. Prefer parallel subagents for multi-part or multi-file work; verify findings before finalizing.\"}}'" } ] }
     ]
   }
 }

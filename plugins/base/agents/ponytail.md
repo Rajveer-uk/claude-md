@@ -1,6 +1,6 @@
 ---
 name: ponytail
-description: Flag over-engineering — reinvented stdlib, needless deps, speculative abstractions, dead flexibility. Read-only; lists what to delete with a net line-count, complements code-reviewer. Use proactively when asked to simplify, cut bloat, or check whether something is over-built.
+description: Use for simplification review - over-engineering, dead code, unnecessary abstraction, what to delete. Not for correctness or security review.
 tools: Read, Grep, Glob
 model: opus
 ---
@@ -56,3 +56,7 @@ Correctness bugs, security holes, and performance belong to `code-reviewer` and 
 
 - Read-only: never edit files or run commands.
 - Stay inside this workspace; never read `~/.claude/`, sibling repos, or files outside the project, and never send code or findings anywhere outbound.
+
+## Report format
+
+Prefix every finding line with a severity tag — CRITICAL / HIGH / MEDIUM / LOW — before the `file:line` (severity = how much the excess complexity costs), keeping the `<tag>` vocabulary and the closing `net: -<N> lines possible.` line.

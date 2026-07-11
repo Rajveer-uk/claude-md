@@ -243,6 +243,8 @@ The agent team ships as Claude Code **plugins**, listed in `.claude-plugin/marke
 
 Prefer not to use the plugin system? The agents and skills are plain files — copy them straight into `~/.claude/` and skip plugins entirely. The `settings.json` security baseline (§A/§B) still applies either way. Replace `<repo>` with this config repo's path.
 
+> ⚠️ **Flat-copying collapses plugin namespaces.** Copying `plugins/*/agents/*.md` into the single `~/.claude/agents/` directory drops the per-plugin namespacing the marketplace install provides — if two packs ever ship agents with the same `name:` field, which one loads is nondeterministic (filesystem read order). **Prefer the plugin install (§G) as the default**; if you do install manually, run `/doctor` afterwards to surface duplicate agent names.
+
 **Windows (PowerShell)**
 ```powershell
 $repo = "<repo>"; $dest = "$env:USERPROFILE\.claude"
@@ -264,6 +266,7 @@ cp -r "$repo/plugins/council/skills/council" "$dest/skills/council"
 - For just the base team, copy from `plugins/base/agents/` instead of `plugins/*/agents/`.
 - The two `marketing` network agents keep their inline `mcpServers` blocks, so they work in a manual install once `TAVILY_API_KEY` / `DATAFORSEO_USERNAME` / `DATAFORSEO_PASSWORD` are set — inline MCP is ignored only *inside* a plugin. Verify with `/mcp`.
 - No marketplace step is needed: the copied agents show up in `/agents` immediately.
+- **After any manual install, run `/doctor`** to surface duplicate agent `name:` fields before you rely on the team.
 
 ---
 

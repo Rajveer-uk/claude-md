@@ -4,7 +4,7 @@
     "tavily": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "tavily-mcp@latest"],
+      "args": ["-y", "tavily-mcp@0.2.21"],
       "env": {
         "TAVILY_API_KEY": "${TAVILY_API_KEY}"
       }
@@ -12,7 +12,7 @@
     "dataforseo": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "dataforseo-mcp-server"],
+      "args": ["-y", "dataforseo-mcp-server@2.9.11"],
       "env": {
         "DATAFORSEO_USERNAME": "${DATAFORSEO_USERNAME}",
         "DATAFORSEO_PASSWORD": "${DATAFORSEO_PASSWORD}"
