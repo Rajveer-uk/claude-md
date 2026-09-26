@@ -1,0 +1,16 @@
+{
+  "_comment": "For machines without the claude CLI (Claude Desktop only). Merge ONLY the extraKnownMarketplaces and enabledPlugins keys below into ~/.claude/settings.json (Windows: %USERPROFILE%\\.claude\\settings.json), next to the existing permissions block from the security baseline; don't copy this _comment key and keep every other key (including a merged hooks block). Then check the file still parses: python3 -m json.tool ~/.claude/settings.json (PowerShell: Get-Content $env:USERPROFILE\\.claude\\settings.json -Raw | ConvertFrom-Json). Replace <owner> with the GitHub owner of your claude-md repo (a private repo also needs git credentials on this machine). Claude Code clones the marketplace and installs the enabled plugins at the next session start: restart the Desktop app, then confirm once under + > Plugins > Manage plugins (or /context). autoUpdate is false (opt-in): true deploys whatever is pushed to the marketplace repo, plugin hooks included, to this machine at every start without review - flip it to true only if you accept that. marketing@synced false keeps the marketing pack, and its Tavily/DataForSEO MCP servers, out of this machine's signed-in sessions if marketing is enabled on your claude.ai account (it would otherwise load here as marketing@synced) - flip it to true to opt in; add council@synced false the same way to drop the synced council. Add marketing@claude-md-packs or council@claude-md-packs only on machines that need them (a local install wins over its @synced copy); never enable ecc here (about 15k always-on tokens) - enable it per project. Plugins cannot ship permissions, so the settings.json baseline stays a separate install (setup.md). Cloud Code sessions ignore these keys.",
+  "extraKnownMarketplaces": {
+    "claude-md-packs": {
+      "source": {
+        "source": "github",
+        "repo": "<owner>/claude-md"
+      },
+      "autoUpdate": false
+    }
+  },
+  "enabledPlugins": {
+    "base@claude-md-packs": true,
+    "marketing@synced": false
+  }
+}
