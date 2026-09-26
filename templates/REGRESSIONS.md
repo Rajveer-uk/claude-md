@@ -29,21 +29,9 @@ Format — one row per rule: | ID | Area | Rule (must stay true) | Guard | Added
   while brand/banned-phrases.txt is missing or empty — configure the step before you add the row.
 - The guard hook asks before any edit that would change or remove an existing row (appending new rows passes). Never delete, skip or weaken a guard without the owner's OK.
 
-Example rows — inactive: they sit inside this comment, which the guards skip, so a fresh copy starts green (header-only table).
-When you adopt one, COPY it below the table header (leave this comment as is), drop "_(example…)_", renumber it to your next
-free ID if that ID is taken, and create its guard first (the test, or the check: step in .claude/guards.sh and .ps1).
-- R-001 to R-004 show one row per area type.
-- R-005 to R-007 are examples from a data-pipeline project — in that project copy all three into the table and add the two
-  check: steps they name (mysql-binlog-expiry, worker-topology; commented out at the bottom of guards.sh and .ps1);
-  R-006 stays a review: row until the throughput balance can be asserted from config.
-
-| R-001 | code/api | _(example)_ Invoice totals round half-up to 2 decimal places (bug: 0.005 rounded down). | test: tests/test_invoice.py::test_total_rounds_half_up | 2026-01-15 |
-| R-002 | mkt/email | _(example)_ Email copy never says "game-changer" (owner correction; the phrase is in `brand/banned-phrases.txt`). | check: content-lint | 2026-01-20 |
-| R-003 | docs/setup | _(example)_ Every shell command in `docs/install.md` has a Windows PowerShell equivalent. | check: docs-windows-parity | 2026-02-02 |
-| R-004 | biz/pricing | _(example)_ Quotes and proposals use only prices from `pricing/price-list.md`; no discount without owner OK. | review: every price in the draft equals the price-list figure and no unapproved discount appears | 2026-02-10 |
-| R-005 | ops/mysql | _(example from a data-pipeline project — keep in that project, delete elsewhere)_ MySQL binlog expiry stays at 1 day (`binlog_expire_logs_seconds=86400`) — 1.1GB binlogs have filled the disk before. | check: mysql-binlog-expiry | 2026-09-25 |
-| R-006 | ops/queue | _(example from a data-pipeline project — keep in that project, delete elsewhere)_ Stream-worker vs queue-worker throughput stays balanced so the `jobs` table doesn't refill (past incident: 30M rows). | review: any change to stream-worker or queue-worker rate, batch size, concurrency or schedule states jobs/min produced vs consumed, and consumed ≥ produced | 2026-09-25 |
-| R-007 | ops/workers | _(example from a data-pipeline project — keep in that project, delete elsewhere)_ Topology stays six stream workers (companies, officers, charges, psc, insolvency, filings) + one queue worker. | check: worker-topology | 2026-09-25 |
+Example rows (incl. the data-pipeline binlog / jobs-table / worker-topology rows) live in claude-md/templates/REGRESSIONS.examples.md —
+never in this file, because `grep -i "<area tag>" REGRESSIONS.md` would return an inactive example as if it were a live rule.
+A fresh copy of this file is header-only and starts green.
 
 Public-safe: this file is committed — no secrets, hosts, IPs or client names in any row.
 -->
