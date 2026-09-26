@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # verify.sh - OPTIONAL Stop hook (Linux/macOS). When the agent tries to finish, run the
 # project's own checks (guards/lint/test) and BLOCK finishing (exit 2) while they fail.
+# Register the SAME script under UserPromptSubmit too (recommended): there it only records the
+# turn-start marker described below (hook_event_name tells the two apart).
 #
 # SAFE BY DEFAULT - it runs a project's .claude/checks.sh ONLY when ALL of:
 #   (a) that file exists AND is executable, AND
@@ -28,7 +30,12 @@
 #     diff vs HEAD + untracked file contents) for the session. If the checks (still run) are
 #     red again and no file changed since the last red run (e.g. a question-only turn), it does
 #     not block but shows the owner the same kind of "checks still RED" message instead.
-#     Outside git (or without git) there is no hash, so it blocks as before.
+#     Outside git (or without git) there is no hash, so it blocks as before;
+#   * no file changed THIS turn (needs the UserPromptSubmit registration): on UserPromptSubmit it
+#     stores the same tree hash as the turn-start marker for the session (never runs the checks,
+#     prints nothing, always exits 0; outside git no marker). At Stop, if the tree still equals
+#     that marker (e.g. a review-only turn in a project that was already red), Claude changed no
+#     files, so it exits 0 without running the checks. No marker (not registered) = as before.
 #
 # Enable a TRUSTED project once:
 #   echo "/path/to/project" >> ~/.claude/verify-allowed.txt
@@ -38,8 +45,9 @@
 set -u
 
 input="$(cat 2>/dev/null || true)"
-cwd=""; sid=""; active="false"; mode=""
+cwd=""; sid=""; active="false"; mode=""; event=""
 if command -v jq >/dev/null 2>&1 && [ -n "$input" ]; then
+  event="$(printf '%s' "$input" | jq -r '.hook_event_name // empty' 2>/dev/null || true)"
   cwd="$(printf '%s' "$input" | jq -r '.cwd // empty' 2>/dev/null || true)"
   sid="$(printf '%s' "$input" | jq -r '.session_id // empty' 2>/dev/null || true)"
   active="$(printf '%s' "$input" | jq -r '.stop_hook_active // false' 2>/dev/null || true)"
@@ -49,7 +57,12 @@ elif [ -n "$input" ]; then   # no jq: best-effort scrape of the simple fields
   printf '%s' "$input" | grep -Eq '"stop_hook_active"[[:space:]]*:[[:space:]]*true' && active="true"
   printf '%s' "$input" | grep -Eq '"permission_mode"[[:space:]]*:[[:space:]]*"plan"' && mode="plan"
 fi
-[ "$mode" = "plan" ] && exit 0   # plan mode: Claude cannot edit files, so a block cannot help
+[ -z "$event" ] && [ -n "$input" ] && printf '%s' "$input" | grep -Eq '"hook_event_name"[[:space:]]*:[[:space:]]*"UserPromptSubmit"' && event="UserPromptSubmit"   # no jq / bad JSON
+if [ "$event" = "UserPromptSubmit" ]; then
+  exec >/dev/null 2>&1               # turn-start marker call: print nothing (stdout would become context)
+  trap 'exit 0' EXIT                 # ... and never exit non-zero (exit 2 would erase the prompt)
+fi
+[ "$mode" = "plan" ] && [ "$event" != "UserPromptSubmit" ] && exit 0   # plan mode: Claude cannot edit files, so a block cannot help
 [ -z "$cwd" ] && cwd="$(pwd)"
 
 checks="$cwd/.claude/checks.sh"
@@ -73,12 +86,14 @@ case "$max" in ''|*[!0-9]*) max=3 ;; esac
 [ "${#max}" -gt 4 ] && max=9999
 max=$((10#$max))
 key="$(printf '%s' "$sid" | tr -cd 'A-Za-z0-9_-' | cut -c1-100)"
+mkey="$key"                                # the turn-start marker needs a real session id
 [ -z "$key" ] && key="no-session"
-state=""; tstate=""
+state=""; tstate=""; mstate=""
 sdir="${TMPDIR:-/tmp}"; sdir="${sdir%/}/claude-verify-$(id -u 2>/dev/null || echo 0)"
 if mkdir -p -m 700 "$sdir" 2>/dev/null && [ -d "$sdir" ] && [ ! -L "$sdir" ] && [ -O "$sdir" ]; then
   state="$sdir/$key.count"
   tstate="$sdir/$key.tree"                 # tree hash after the last red run of this session
+  [ -n "$mkey" ] && mstate="$sdir/$mkey.start"   # tree hash when this session's current turn started
 fi
 count=0
 if [ "$active" = "true" ]; then            # a continuation we (or another Stop hook) caused
@@ -107,10 +122,30 @@ tree_state() { # hash of the git working-tree state (status + diff vs HEAD + unt
 
 # ---- run the project's checks (same trust model: only the allowlisted local wrapper)
 cd "$cwd" 2>/dev/null || exit 0
+
+# ---- UserPromptSubmit: record the turn-start marker only (never run the checks here)
+if [ "$event" = "UserPromptSubmit" ]; then
+  if [ -n "$mstate" ]; then
+    rm -f "$mstate" 2>/dev/null            # never leave the previous turn's marker behind
+    start="$(tree_state)"
+    [ -n "$start" ] && printf '%s\n' "$start" > "$mstate" 2>/dev/null
+  fi
+  exit 0
+fi
+
 pre=""; last=""
 if [ -n "$tstate" ]; then
   pre="$(tree_state)"
   [ -f "$tstate" ] && { IFS= read -r last < "$tstate" 2>/dev/null || true; }
+fi
+# Tree equals this turn's start marker: Claude changed no files this turn, so a block cannot help
+# (e.g. a review-only turn in a project that was already red). Skip the checks.
+if [ -n "$pre" ] && [ -n "$mstate" ] && [ -f "$mstate" ]; then
+  start=""; { IFS= read -r start < "$mstate"; } 2>/dev/null || true
+  if [ "$pre" = "$start" ]; then
+    [ -n "$state" ] && rm -f "$state" 2>/dev/null
+    exit 0
+  fi
 fi
 out="$("$checks" 2>&1)"; code=$?
 if [ "$code" -eq 0 ]; then

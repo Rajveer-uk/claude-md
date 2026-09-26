@@ -2,6 +2,8 @@
 # verify.ps1 - OPTIONAL Stop hook (Windows). When the agent tries to finish, run the
 # project's own checks (guards/lint/test) and BLOCK finishing (exit 2) while they fail,
 # so the agent fixes it first.
+# Register the SAME script under UserPromptSubmit too (recommended): there it only records the
+# turn-start marker described below (hook_event_name tells the two apart).
 #
 # SAFE BY DEFAULT - it runs a project's .claude\checks.cmd ONLY when BOTH:
 #   (a) that file exists, AND
@@ -29,7 +31,12 @@
 #     diff vs HEAD + untracked file contents) for the session. If the checks (still run) are
 #     red again and no file changed since the last red run (e.g. a question-only turn), it does
 #     not block but shows the owner the same kind of "checks still RED" message instead.
-#     Outside git (or without git) there is no hash, so it blocks as before.
+#     Outside git (or without git) there is no hash, so it blocks as before;
+#   * no file changed THIS turn (needs the UserPromptSubmit registration): on UserPromptSubmit it
+#     stores the same tree hash as the turn-start marker for the session (never runs the checks,
+#     prints nothing, always exits 0; outside git no marker). At Stop, if the tree still equals
+#     that marker (e.g. a review-only turn in a project that was already red), Claude changed no
+#     files, so it exits 0 without running the checks. No marker (not registered) = as before.
 #
 # Enable a TRUSTED project once:
 #   Add-Content "$env:USERPROFILE\.claude\verify-allowed.txt" "D:\path\to\project"
@@ -38,7 +45,7 @@
 #   (or: vendor\bin\pint --test && vendor\bin\phpstan analyse)
 
 try {
-    $in = $null
+    $in = $null; $raw = ''
     try {
         # Read stdin as UTF-8 (Claude Code sends UTF-8; the console default would mangle non-ASCII paths).
         $reader = New-Object System.IO.StreamReader([Console]::OpenStandardInput(), [System.Text.Encoding]::UTF8)
@@ -50,7 +57,10 @@ try {
     $sid = if ($in -and $in.session_id) { [string]$in.session_id } else { '' }
     $active = [bool]($in -and ($in.stop_hook_active -eq $true))
     $mode = if ($in -and $in.permission_mode) { [string]$in.permission_mode } else { '' }
-    if ($mode -eq 'plan') { exit 0 }     # plan mode: Claude cannot edit files, so a block cannot help
+    $evt = if ($in -and $in.hook_event_name) { [string]$in.hook_event_name } else { '' }
+    if (-not $evt -and ("$raw" -cmatch '"hook_event_name"\s*:\s*"UserPromptSubmit"')) { $evt = 'UserPromptSubmit' }   # bad JSON
+    $turnStart = ($evt -ceq 'UserPromptSubmit')   # turn-start marker call: print nothing, always exit 0
+    if ($mode -eq 'plan' -and -not $turnStart) { exit 0 }   # plan mode: Claude cannot edit files, so a block cannot help
 
     $checks = Join-Path $cwd '.claude\checks.cmd'
     if (-not (Test-Path -LiteralPath $checks)) { exit 0 }   # opt-in per project
@@ -73,8 +83,9 @@ try {
     if ("$env:CLAUDE_VERIFY_MAX_BLOCKS" -match '^\d{1,4}$') { $max = [int]$env:CLAUDE_VERIFY_MAX_BLOCKS }
     $key = $sid -replace '[^A-Za-z0-9_-]', ''
     if ($key.Length -gt 100) { $key = $key.Substring(0, 100) }
+    $mkey = $key                         # the turn-start marker needs a real session id
     if (-not $key) { $key = 'no-session' }
-    $state = $null; $tstate = $null
+    $state = $null; $tstate = $null; $mstate = $null
     try {
         $tmp = if ($env:TEMP) { $env:TEMP } else { [System.IO.Path]::GetTempPath() }
         $dir = Join-Path $tmp 'claude-verify'
@@ -82,8 +93,9 @@ try {
         if (Test-Path -LiteralPath $dir -PathType Container) {
             $state = Join-Path $dir "$key.count"
             $tstate = Join-Path $dir "$key.tree"   # tree hash after the last red run of this session
+            if ($mkey) { $mstate = Join-Path $dir "$mkey.start" }   # tree hash when this session's current turn started
         }
-    } catch { $state = $null; $tstate = $null }
+    } catch { $state = $null; $tstate = $null; $mstate = $null }
 
     $count = 0
     if ($active) {                       # a continuation we (or another Stop hook) caused
@@ -123,11 +135,30 @@ try {
         }
     }
 
+    # ---- UserPromptSubmit: record the turn-start marker only (never run the checks here)
+    if ($turnStart) {
+        if ($mstate) {
+            Remove-Item -LiteralPath $mstate -Force -ErrorAction SilentlyContinue   # never leave the previous turn's marker behind
+            $start = [string](Get-TreeState $cwd)
+            if ($start) { Set-Content -LiteralPath $mstate -Value $start -ErrorAction SilentlyContinue }
+        }
+        exit 0
+    }
+
     # ---- run the project's checks directly (no cmd.exe string interpolation; same trust model)
     $pre = ''; $last = ''
     if ($tstate) {
         $pre = [string](Get-TreeState $cwd)
         if (Test-Path -LiteralPath $tstate) { $last = ([string](Get-Content -LiteralPath $tstate -TotalCount 1 -ErrorAction SilentlyContinue)).Trim() }
+    }
+    # Tree equals this turn's start marker: Claude changed no files this turn, so a block cannot help
+    # (e.g. a review-only turn in a project that was already red). Skip the checks.
+    if ($pre -and $mstate -and (Test-Path -LiteralPath $mstate)) {
+        $start = ([string](Get-Content -LiteralPath $mstate -TotalCount 1 -ErrorAction SilentlyContinue)).Trim()
+        if ($pre -eq $start) {
+            if ($state) { Remove-Item -LiteralPath $state -Force -ErrorAction SilentlyContinue }
+            exit 0
+        }
     }
     $global:LASTEXITCODE = $null         # the git calls above must not leak an exit code into $code
     Push-Location -LiteralPath $cwd
