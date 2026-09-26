@@ -122,7 +122,7 @@ Do one task per session and pick the model at the start (`opusplan` works). Sess
 
 ## 8. Token rules
 
-1. Do small, sequential or same-file work inline, without subagents.
+1. Do small, sequential or same-file work inline, without subagents — except deliverables a pack specialist owns with its own guardrails (marketing copy → the marketing writers; security audits → `security-auditor`), even when small.
 2. Use subagents when there are **10+ files to read, 3+ independent parts, verbose output to isolate, or an independent review**. Launch the independent ones in parallel in **one** message, and run parallel edits only on disjoint files. Each brief covers the objective, inputs (paths plus matching ledger rows), boundaries, output (a ≤200-word result, with details in a file whose path it returns) and tools/model. Resume an agent for follow-ups. Use workflows and agent teams only when the owner asks.
 3. Read in a targeted way: grep or glob first, then read only the range you need. Don't re-read files that haven't changed.
 4. Use Plan mode for multi-file or risky work. Skip planning when the diff fits in one sentence.

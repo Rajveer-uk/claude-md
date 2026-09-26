@@ -27,7 +27,7 @@ Maintainer notes: HTML block comments are stripped before loading, so this block
 - These rules cover every project on this machine. A project's `CLAUDE.md` adds specifics and wins where the two conflict.
 
 ## Task size & delegation
-- Do small, sequential or same-file work inline, without subagents.
+- Do small, sequential or same-file work inline, without subagents — except deliverables a pack specialist owns with its own guardrails, even when small: marketing copy (blog, landing page, email) → the marketing writers; security audits → security-auditor.
 - Use plan mode for multi-file or risky work, and wait for approval before editing. Skip planning when the diff fits in one sentence.
 - Use subagents when there are 10+ files to read, 3+ independent parts, verbose output to keep out of this context, or an independent review. Launch the independent ones in parallel in one message, because speed matters to the owner. Run parallel edits only on disjoint files.
 - A brief covers: objective · inputs (paths + matching `REGRESSIONS.md` rows) · boundaries · output (a result of 200 words or fewer; put details in a file and return its path) · tools/model. Restate any rule that must be followed, since Explore and Plan skip CLAUDE.md.
