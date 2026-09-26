@@ -1,8 +1,8 @@
 {
   "name": "council",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "license": "MIT",
-  "description": "Six-seat decision council + /council skill for the claude-md config. Pure reasoners (Read/Grep/Glob only, no network, no Agent tool); the main session fans a question to the seats and the chair synthesizes a verdict. No hooks or scripts — agents and one skill only.",
+  "description": "Six-seat decision council + /council skill for the claude-md config. Pure reasoners (Read/Grep/Glob only, no network, no Agent tool, no CLAUDE.md load — the convener passes each seat the question, the minimum project context and matching REGRESSIONS.md rows); the main session fans a question to the seats and the chair synthesizes a verdict. Chat fallback: where sub-agents aren't available (Claude chat, the Desktop Chat tab, mobile), /council runs the five seats sequentially and blind, then the chair synthesis. No hooks or scripts — agents and one skill only.",
   "author": {
     "name": "Cintel-UK-LTD",
     "url": "https://github.com/Cintel-UK-LTD"
