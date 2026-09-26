@@ -44,7 +44,7 @@ Maintainer notes: HTML block comments are stripped before loading, so this block
 
 ## Fix once (skill: `regression-guard`)
 - Before editing an area, run `grep -i "<area tag>" REGRESSIONS.md` (tags: `code/…` `mkt/…` `ops/…` `docs/…` `biz/…`). Read only the matching rows and pass them into every hand-off. For multi-file work, run the guards once first as a baseline.
-- Bug fix or owner correction: reproduce it (a test that fails for the expected reason, or name the exact rule broken) → fix the code or content, never the test → add the strongest guard (test > check > review) → add one ledger row.
+- Bug fix or owner correction: reproduce it (a test that fails for the expected reason, or name the exact rule broken) → fix the code or content, never the test → add the strongest guard (test > check > review) → add one ledger row. Applies to pasted snippets and empty folders too: if you can't write files, show the failing test and the row to paste in the reply.
 - Before calling work done, run the full guard set once in the main thread: `bash .claude/guards.sh` (Windows: `powershell -NoProfile -ExecutionPolicy Bypass -File .claude\guards.ps1`). If the project has no runner, run its test and lint instead. Use `--fast` only mid-task, and check each matching `review:` row.
 - The done report's first line is `Guards: <command> → exit 0, <summary line>; R-00x ✓`. If a guard fails, it is `Guards: RED — <step>: <reason>`, and the work is not done.
 - Delete, skip or weaken a guard, test, ledger row or banned phrase only with the owner's explicit OK.

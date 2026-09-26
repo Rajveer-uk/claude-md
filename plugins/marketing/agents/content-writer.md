@@ -1,6 +1,6 @@
 ---
 name: content-writer
-description: Draft long-form blog posts, articles, SEO body copy, and outlines from a supplied brief and keywords. Conversion pages belong to conversion-copywriter. Use when a brief needs a long-form draft.
+description: Draft long-form blog posts, articles, SEO body copy, and outlines from a supplied brief and keywords. Conversion pages belong to conversion-copywriter. Use for any blog post, article or guide request, even a short one — it carries the truthfulness guardrail and brand voice.
 tools: Read, Write, Edit, Grep, Glob
 model: sonnet
 skills:

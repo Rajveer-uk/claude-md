@@ -40,7 +40,7 @@ Hand-off: objective · the brief · researcher findings with source URLs · the 
 ## 5. Guards — here in the main thread, not through a subagent
 
 - Run `bash .claude/guards.sh` (Windows: `powershell -NoProfile -ExecutionPolicy Bypass -File .claude\guards.ps1`). Its `content-lint` step checks `brand/banned-phrases.txt` across `CONTENT_DIRS`.
-- No runner, or `content-lint` shows `SKIP` or doesn't cover the draft's folder → `Grep` the draft for each line of `brand/banned-phrases.txt` (case-insensitive; skip `#` and blank lines) and report it as a manual check.
+- No runner, running it is denied or blocked (don't retry — say "guards not run (denied)"), or `content-lint` shows `SKIP` or doesn't cover the draft's folder → `Grep` the draft for each line of `brand/banned-phrases.txt` (case-insensitive; skip `#` and blank lines) and report it as a manual check.
 - Red → fix the draft, never the guard, the test or the phrase list, then run the guards again.
 
 ## 6. Verdict

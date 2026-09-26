@@ -23,7 +23,7 @@ Review only: the file stays unchanged unless the owner asks for fixes. Agent nam
 
 ## 3. Exact checks — here in the main thread
 
-- **Banned phrases:** `Grep` the file for each line of `brand/banned-phrases.txt` (case-insensitive; skip `#` and blank lines). Each hit is High. If `.claude/guards.sh` exists and the file sits in a `CONTENT_DIRS` folder, also run `bash .claude/guards.sh` (Windows: `powershell -NoProfile -ExecutionPolicy Bypass -File .claude\guards.ps1`) and quote its `content-lint` line.
+- **Banned phrases:** `Grep` the file for each line of `brand/banned-phrases.txt` (case-insensitive; skip `#` and blank lines). Each hit is High. If `.claude/guards.sh` exists and the file sits in a `CONTENT_DIRS` folder, also run `bash .claude/guards.sh` (Windows: `powershell -NoProfile -ExecutionPolicy Bypass -File .claude\guards.ps1`) and quote its `content-lint` line. If running it is denied or blocked, don't retry — note "guards not run (denied)" and keep the manual Grep result.
 - **Ledger:** each `mkt/` row still holds for this file; cite the row ID on any breach (High).
 - **Placeholders:** list every `[VERIFY` marker still in the file; each one blocks shipping.
 
