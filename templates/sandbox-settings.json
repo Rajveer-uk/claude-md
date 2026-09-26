@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "_comment": "OPT-IN Bash sandbox for Linux, macOS and WSL2 (native Windows is not supported: skip this file there). WHAT IT ADDS: real, OS-enforced network control behind the curl/wget/scp deny rules in settings.json. Those deny rules only match command text, so /usr/bin/curl, sh -c '...' or a python/node script slip past them. The sandbox sends every Bash, PowerShell and Monitor command and its child processes through a proxy, so any connection to a host not listed below prompts you first, whichever program makes it. Hooks and MCP servers run outside the sandbox. INSTALL: Linux/WSL2 need bubblewrap and socat (sudo apt-get install bubblewrap socat); macOS needs nothing. Try it for one session with: claude --settings <path>/sandbox-settings.json. To keep it, MERGE into ~/.claude/settings.json (user scope; a project .claude/settings.json ignores filesystem.disabled): add the sandbox key as a new top-level key, append the permissions.ask entry to your existing permissions.ask list, keep every other key, and don't copy this _comment. Restart, then run /sandbox and check the Config tab. WHY THESE VALUES: autoAllowBashIfSandboxed is false on purpose. The default (true) runs sandboxed commands without a prompt even in Manual mode, which would loosen the baseline. With false, every command prompts exactly as before. Filesystem isolation is OFF for now (network-only stage). With it on, the baseline Read denies (**/.git/**, node_modules, dist, build, target, .venv and so on) would become OS read blocks for every sandboxed command, so git and builds would fail and retry outside the sandbox. Stage 2, after testing in /sandbox Config: remove filesystem.disabled, then add sandbox.credentials entries for home credential files. Never pair filesystem.disabled with autoAllowBashIfSandboxed true. NETWORK: only package registries are pre-allowed. github.com and every other host prompt on first use. Broad hosts like github.com can carry data out, so don't pre-allow them, and don't answer 'Yes, and don't ask again' for them, because that saves a WebFetch(domain:...) allow rule that also widens the sandbox. The ask rule forces a prompt whenever Claude retries a command outside the sandbox (dangerouslyDisableSandbox), even in auto mode.",
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": false,
+    "filesystem": {
+      "disabled": true
+    },
+    "network": {
+      "allowedDomains": [
+        "registry.npmjs.org",
+        "registry.yarnpkg.com",
+        "pypi.org",
+        "files.pythonhosted.org",
+        "index.crates.io",
+        "static.crates.io",
+        "proxy.golang.org",
+        "sum.golang.org"
+      ]
+    }
+  },
+  "permissions": {
+    "ask": [
+      "Bash(dangerouslyDisableSandbox:true)"
+    ]
+  }
+}
