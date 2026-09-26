@@ -19,7 +19,7 @@ The ledger `REGRESSIONS.md` (project/folder root) is the durable memory: one row
 3. Add the strongest guard (ladder above). A wording correction → a line in `brand/banned-phrases.txt` + `check: content-lint`.
 4. Append one ledger row with the next free ID.
 5. General lesson? Propose a one-line diff to `~/.claude/CLAUDE.md` that passes "Would removing this cause mistakes?" — apply only on approval. If a script can check it, make it a `check:` step instead.
-6. Can't write files here (no workspace, read-only surface, or the fix is only pasted in chat)? Still show both in the reply: the regression test in a code block (it must fail before the fix) and the ledger row to paste — never skip them.
+6. Can't write files or run the test here (no workspace, read-only surface, a snippet pasted in chat, or the run is denied/blocked)? Attempt a run at most once; if it's denied, never try it again (not via another command either). Still show both in the reply: the regression test in a code block (it must fail before the fix) and the ledger row to paste in the exact format `| R-0xx | <area tag> | <rule that must stay true> | test: <file>::<test name> | YYYY-MM-DD |`, and say "test not run (denied)" where that applies.
 
 ## Before editing an area
 - `grep -i "<area tag>" REGRESSIONS.md` → read only the matching rows, never the whole ledger.
