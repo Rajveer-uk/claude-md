@@ -1,7 +1,8 @@
 {
+  "description": "base: one static working-agreement line (delegation, parallel-safety, regression-guard) added as context at session startup, /clear and compaction; skips resume and fork, whose history already holds it. No network, no file access. The old per-prompt UserPromptSubmit directive is an opt-in snippet in .claude/settings.hooks.example.json.",
   "hooks": {
-    "UserPromptSubmit": [
-      { "hooks": [ { "type": "command", "timeout": 30, "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"UserPromptSubmit\",\"additionalContext\":\"Standing directive: for substantive tasks, proactively delegate to subagents (Agent tool) or a Workflow and auto-invoke any relevant skill; do not wait to be asked. Scale to task size: answer trivial or conversational prompts inline with no delegation. Prefer parallel subagents for multi-part or multi-file work; verify findings before finalizing.\"}}'" } ] }
+    "SessionStart": [
+      { "matcher": "startup|clear|compact", "hooks": [ { "type": "command", "timeout": 10, "command": "echo 'claude-md: Answer small, sequential or same-file tasks inline without subagents. For 10 or more files to read, 3 or more independent parts, or an independent review, run subagents in parallel in one message, each given only the context it needs plus matching REGRESSIONS.md rows and returning a short result. Use relevant skills without being asked. Never edit the same files in parallel. Use workflows or agent teams only when the user asks. Before calling work done, apply the regression-guard skill.'" } ] }
     ]
   }
 }
