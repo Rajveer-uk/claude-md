@@ -75,6 +75,7 @@ The following files were edited from their upstream form (minimal, surgical chan
 | `agents/conversation-analyzer.md` | Normalized unquoted `tools:` array to JSON |
 | `skills/security-scan/SKILL.md` | Retargeted `everything-claude-code:security-reviewer` → `security-auditor` (later removed in the trim) |
 | (token-optimization trim) | Removed the inert ECC harness machinery — 7 agents, 51 commands, 65 skills — plus `angular-developer/references/`; kept 10 standalone knowledge skills (≈197K tokens saved) |
+| `agents/refactor-cleaner.md`, `agents/code-simplifier.md` | 2026-09-25 — Quoted the `description:` value: its unquoted `Boundary: ` broke the YAML frontmatter, so the agent loaded with every field ignored (including its `tools:` allowlist). Text unchanged (v1.1.1) |
 
 ## Notes for users
 
