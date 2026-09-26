@@ -4,7 +4,7 @@
 
 **When:** only before a `plugins/council` version bump, or after editing the `council` skill or a seat agent. Inert otherwise (0 session tokens).
 
-**Run** (repo root): `claude plugin eval plugins/council --threshold 0.8 --max-cost-usd 10`
+**Run** (repo root): `claude plugin eval plugins/council --threshold 0.8 --max-cost-usd 10` (no interactive terminal, e.g. CI/scripts: add `--trust-plugin`)
 - Cheap pass: add `--runs 1 --ablation none` (the no-plugin arm only shows an unknown command).
 - CI: add `--trust-plugin --json results.json --model sonnet --no-publish`. Exit 0 pass · 1 below threshold · 2 cost ceiling hit (partial).
 

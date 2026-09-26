@@ -4,7 +4,7 @@
 
 **When:** only before a `plugins/marketing` version bump, or after editing an agent/skill `description`, a `tools:` list or `.mcp.json`. Inert otherwise (0 session tokens).
 
-**Run** (repo root): `claude plugin eval plugins/marketing --threshold 0.8 --max-cost-usd 5`
+**Run** (repo root): `claude plugin eval plugins/marketing --threshold 0.8 --max-cost-usd 5` (no interactive terminal, e.g. CI/scripts: add `--trust-plugin`)
 - Cheap pass: add `--tag smoke --runs 1 --ablation none` · one case: `--case <dir-name>`.
 - CI: add `--trust-plugin --json results.json --model sonnet --no-publish`. Exit 0 pass · 1 below threshold · 2 cost ceiling hit (partial).
 

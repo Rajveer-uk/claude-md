@@ -4,7 +4,7 @@
 
 **When:** only before a `plugins/base` version bump, or after editing a skill/agent `description` or `hooks/hooks.json`. Inert otherwise — `evals/` isn't a plugin component (0 session tokens).
 
-**Run** (repo root): `claude plugin eval plugins/base --threshold 0.8 --max-cost-usd 10`
+**Run** (repo root): `claude plugin eval plugins/base --threshold 0.8 --max-cost-usd 10` (no interactive terminal, e.g. CI/scripts: add `--trust-plugin`)
 - Cheap pass: add `--tag smoke --runs 1 --ablation none` · one case: `--case <dir-name>`.
 - CI: add `--trust-plugin --json results.json --model sonnet --no-publish`. Exit 0 pass · 1 below threshold · 2 cost ceiling hit (partial).
 
