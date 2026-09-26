@@ -1,0 +1,64 @@
+# guards.yml - runs this repo's own regression guards (.claude/guards.sh, rules in REGRESSIONS.md)
+# on every push and pull request. Zero model tokens, no secrets.
+# - Pull requests: the "never shrink" checks (deny lists, read-only agents, network tools, inventory,
+#   ledger rows) compare against the PR's base branch (GUARD_BASE_REF=origin/<base>).
+#   Pushes compare against the pre-push commit (GUARD_BASE_REF=github.event.before), so a pushed
+#   commit that drops a deny entry, agent or ledger row fails too; a new branch's first push
+#   (all-zero before) uses the runner default. A deliberate guard change pushed without a PR
+#   shows red on that push - route it through a PR with the label below.
+# - Owner OK for a deliberate guard change: add the PR label `guard-change-approved`
+#   (sets ALLOW_GUARD_CHANGE=1 for that PR only; adding/removing the label re-runs the job).
+#   Only people with triage/write access can label - keep that list short.
+# - Make `guards` a required status check (branch protection) so red can't merge.
+# - plugin-validate is a SKIP here: the claude CLI isn't installed (see the optional step below).
+# - Trigger is pull_request, never pull_request_target: PR code never runs with secrets or a write token.
+name: guards
+
+on:
+  push:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: guards-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  guards:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0             # full history: base-ref comparisons use git show origin/<base>:<file>
+          persist-credentials: false
+
+      # Optional - needs the owner's approval first (a new CI tool install, not added by default).
+      # Turns plugin-validate from SKIP into a real `claude plugin validate --strict` check.
+      # Pin the version you tested locally; confirm on the first run that validate needs no API key.
+      # - uses: actions/setup-node@v4
+      #   with:
+      #     node-version: 22
+      # - run: npm install -g @anthropic-ai/claude-code@<pinned-version>
+
+      # Pushes compare against the pre-push commit. A force push leaves it out of the clone: fetch it by SHA
+      # (works anonymously in public repos; if it can't be fetched, ledger-integrity reports the base ref missing).
+      - name: Fetch the pre-push commit if missing
+        if: github.event_name == 'push' && github.event.before != '0000000000000000000000000000000000000000'
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: git cat-file -e "$BEFORE^{commit}" 2>/dev/null || git fetch --quiet --no-tags origin "$BEFORE" || echo "::warning::pre-push commit $BEFORE is not in the clone and could not be fetched"
+
+      - name: Run guards (full set)
+        env:
+          GUARD_BASE_REF: ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || (github.event_name == 'push' && github.event.before != '0000000000000000000000000000000000000000') && github.event.before || '' }}
+          ALLOW_GUARD_CHANGE: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'guard-change-approved') && '1' || '0' }}
+        run: bash .claude/guards.sh
+
+      - name: Show guard log on failure
+        if: failure()
+        run: tail -n 200 .claude/guards.log || true
