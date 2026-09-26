@@ -763,6 +763,22 @@ def st_hook_registrations():
     done(hard=hard)
 
 
+def st_hook_optin_snippet():
+    # R-018 only checks for the text "UserPromptSubmit", which verify's own turn-start entry now also
+    # contains - so check the opt-in delegation snippet and the verify marker explicitly.
+    d = load_or_fail(HOOKS_EXAMPLE)
+    hard = []
+    snip = d.get('_optional_perPromptDelegationReminder')
+    blob = json.dumps(snip) if snip is not None else ''
+    if not snip:
+        hard.append('%s: _optional_perPromptDelegationReminder (the old per-prompt delegation hook, opt-in) is missing' % HOOKS_EXAMPLE)
+    elif 'UserPromptSubmit' not in blob or 'Standing directive' not in blob:
+        hard.append('%s: _optional_perPromptDelegationReminder no longer holds the UserPromptSubmit delegation directive' % HOOKS_EXAMPLE)
+    if not any(re.search(r'verify\.(sh|ps1)', c) for e in hook_entries(d, 'UserPromptSubmit') for c in entry_commands(e)):
+        hard.append('%s: verify is no longer registered on UserPromptSubmit (turn-start marker for review-only turns)' % HOOKS_EXAMPLE)
+    done(hard=hard)
+
+
 def st_base_hook():
     path = 'plugins/base/hooks/hooks.json'
     d = load_or_fail(path)
@@ -875,7 +891,8 @@ STEPS = {
     'managed-settings': st_managed_settings, 'network-agents': st_network_agents,
     'readonly-agents': st_readonly_agents, 'agent-network-growth': st_agent_network_growth,
     'inventory': st_inventory, 'verify-gate': st_verify_gate, 'guard-matcher': st_guard_matcher,
-    'hook-registrations': st_hook_registrations, 'base-hook': st_base_hook,
+    'hook-registrations': st_hook_registrations, 'hook-optin-snippet': st_hook_optin_snippet,
+    'base-hook': st_base_hook,
     'line-budgets': st_line_budgets, 'public-safe': st_public_safe,
     'readme-agent-badge': st_readme_agent_badge,
 }
@@ -1025,6 +1042,7 @@ step public-safe -- py public-safe
 step readme-agent-badge -- py readme-agent-badge
 step inventory -- py inventory
 step hook-registrations -- py hook-registrations
+step hook-optin-snippet -- py hook-optin-snippet
 step plugin-validate slow -- plugin_validate
 
 # ---------------------------------------------------------------- summary
