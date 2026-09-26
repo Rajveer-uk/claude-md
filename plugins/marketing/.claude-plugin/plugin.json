@@ -1,8 +1,8 @@
 {
   "name": "marketing",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "license": "MIT",
-  "description": "Marketing & content agent pack for the claude-md config: conversion-copywriter, content-writer, content-editor, email-campaign-writer, growth-strategist, and the two read-only network researchers (content-researcher via Tavily, seo-rank-monitor via DataForSEO), plus the shared ai-writing-tells skill (the single banned-patterns list the writers cite). No hooks or scripts — agents and one skill only.",
+  "description": "Marketing & content pack for the claude-md config. 7 agents: conversion-copywriter, content-writer, content-editor, email-campaign-writer, growth-strategist, and the two read-only network researchers (content-researcher via Tavily, seo-rank-monitor via DataForSEO), the only agents with network. 2 skills: ai-writing-tells (the single ban list) and brand-voice (applies brand/voice.md, logs every correction), both preloaded into the writers and editor. 2 manual commands with zero always-on cost: /marketing:draft and /marketing:review. Ledger-aware: agents check REGRESSIONS.md mkt/ (strategy: biz/) rows and brand/banned-phrases.txt, and drafts end with a guard-run evidence line. No hooks or scripts.",
   "author": {
     "name": "Cintel-UK-LTD",
     "url": "https://github.com/Cintel-UK-LTD"

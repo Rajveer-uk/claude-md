@@ -1,5 +1,5 @@
 {
-  "$comment": "Plugin-scope MCP for the marketing pack. Per-subagent inline 'mcpServers' frontmatter is ignored when an agent ships inside a plugin (see council-and-network-config.md §2), so the network researchers' servers are declared here instead. Keys are read from the environment via ${VAR} interpolation — never hardcode them. After installing this plugin, run /mcp to confirm the servers connect and the exact tool names (mcp__tavily__*, mcp__dataforseo__*).",
+  "$comment": "Plugin-scope MCP for the marketing pack. Per-subagent inline 'mcpServers' frontmatter is ignored when an agent ships inside a plugin (see council-and-network-config.md §2), so the network researchers' servers are declared here; the two agents keep inline blocks pinned to the same versions for classic installs — bump both places together. Keys are read from the environment via ${VAR} interpolation — never hardcode them. Tool naming: a plugin install exposes mcp__plugin_<plugin>_<server>__<tool> (here mcp__plugin_marketing_tavily__tavily_search and mcp__plugin_marketing_dataforseo__<tool>); a classic install exposes mcp__<server>__<tool>. The agents' tools: lists carry both forms, search/read tools only (tavily_extract stays omitted). After installing, run /mcp to confirm the servers connect and the exact tool names.",
   "mcpServers": {
     "tavily": {
       "type": "stdio",

@@ -1,11 +1,11 @@
 ---
 name: ai-writing-tells
-description: The shared banned-patterns list for all marketing copy — AI-writing tells to delete or rewrite. Referenced by content-writer, conversion-copywriter, and content-editor so the list lives in exactly one place. Use when drafting or editing any marketing copy to strip generic AI patterns.
+description: Shared ban list of AI-writing tells for all marketing copy, preloaded by the marketing writers and content-editor. Use when drafting or editing marketing copy to strip generic AI patterns.
 ---
 
 # AI-writing tells — the shared ban list
 
-One list, one owner. The marketing writing agents (`content-writer`, `conversion-copywriter`, `email-campaign-writer`) apply it while drafting; `content-editor` enforces it on existing drafts. Don't restate this list in agent prompts — reference this skill.
+One list, one owner. The marketing writing agents (`content-writer`, `conversion-copywriter`, `email-campaign-writer`) apply it while drafting; `content-editor` enforces it on existing drafts — all four preload it through their `skills:` field. Don't restate this list in agent prompts — reference this skill.
 
 ## Banned outright (delete or rewrite on sight)
 
@@ -25,3 +25,7 @@ If a line could drop unchanged into a competitor's campaign — or any article o
 - Lead with the concrete thing, then explain; proof over adjectives.
 - Specific, active prose in the brand voice; claims backed by supplied material only.
 - One specific, earned CTA per piece.
+
+## Project additions
+
+A project's `brand/banned-phrases.txt` extends this list: one phrase per line, `#` lines and blank lines ignored, matched case-insensitively. Treat every phrase in it as banned outright. The guards `content-lint` step enforces that file mechanically on every guard run, so an owner's wording correction goes into that file (it then holds for every writer) rather than into this skill.
