@@ -4,7 +4,7 @@
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin%20marketplace-6f42c1)
 ![Packs](https://img.shields.io/badge/packs-4-1f6feb)
 ![Agents](https://img.shields.io/badge/agents-78-1f6feb)
-![Skills](https://img.shields.io/badge/skills-123-1f6feb)
+![Skills](https://img.shields.io/badge/skills-124-1f6feb)
 ![Commands](https://img.shields.io/badge/commands-37-1f6feb)
 ![Security](https://img.shields.io/badge/security-audited-2ea44f)
 ![OS](https://img.shields.io/badge/OS-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
@@ -26,7 +26,7 @@ Bodies of agents/skills/commands load **on demand**, not up front — so the com
 
 | | Vanilla Claude Code | This repo |
 |---|---|---|
-| **Always-on overhead** | ~none | **Measured per pack:** `base` ≈2.8k tokens · `marketing` ≈0.86k (≈0.7k in context) · `council` ≈0.5k · `ecc` ≈15.4k — so `ecc` goes on only in projects that need it. Commands marked `disable-model-invocation` (`/marketing:draft`, `/marketing:review`) add nothing until you run them |
+| **Always-on overhead** | ~none | **Measured per pack:** `base` ≈2.9k tokens · `marketing` ≈0.86k (≈0.7k in context) · `council` ≈0.5k · `ecc` ≈15.4k — so `ecc` goes on only in projects that need it. Commands marked `disable-model-invocation` (`/marketing:draft`, `/marketing:review`) add nothing until you run them |
 | **Working agreement** | — | One static `SessionStart` line at startup, `/clear` and compaction — not re-sent with every prompt |
 | **Response prose** | full verbosity | **`/caveman` cuts ~65%** of prose tokens (its design target) while keeping code, errors, and paths verbatim; built-in `outputStyle: "Concise"` is a lighter option |
 | **Large multi-file tasks** | all grows in one window | **delegated to subagents** only when it pays (10+ files to read, 3+ independent parts, an independent review): their exploration / review / audit runs in *separate* context windows and only a short result returns — the main thread stays lean |
@@ -34,19 +34,19 @@ Bodies of agents/skills/commands load **on demand**, not up front — so the com
 | **Generated code** | as written | **`ponytail`** strips it to the minimal version that works |
 | **Remembering past fixes** | re-explained in chat | **guards** — ~0 tokens while green; rows are read only for the area being touched |
 
-**Net:** a measured *fixed* baseline (≈2.8k tokens for `base`) buys **materially lower main-context growth on real, multi-step work** — the long sessions where cost actually accumulates. It is not free in total: a subagent carries its own system prompt, `CLAUDE.md` and tool overhead, and Anthropic's published figures are **≈4× the tokens of a chat for an agent and ≈15× for its multi-agent research system** (agent teams run ≈7× a standard session when teammates are in plan mode). That is why the base rules keep small, sequential and same-file work inline and delegate only work that is large, independent, or verbose enough to be worth isolating.
+**Net:** a measured *fixed* baseline (≈2.9k tokens for `base`) buys **materially lower main-context growth on real, multi-step work** — the long sessions where cost actually accumulates. It is not free in total: a subagent carries its own system prompt, `CLAUDE.md` and tool overhead, and Anthropic's published figures are **≈4× the tokens of a chat for an agent and ≈15× for its multi-agent research system** (agent teams run ≈7× a standard session when teammates are in plan mode). That is why the base rules keep small, sequential and same-file work inline and delegate only work that is large, independent, or verbose enough to be worth isolating.
 
 > Figures are mechanism-based estimates, measured always-on costs and documented design targets (e.g. caveman's ~65%), **not audited benchmarks** — real savings depend on task shape.
 
 ### Worked example — reviewing a 6-file change
 
-*Task: review a ~1,500-line change across 6 files, apply fixes, then ~10 follow-up turns.* Modeled from **real constants** (caveman's ~65% target, the measured ≈2.8k-token `base` always-on cost, the ~2.7K-token median skill body measured in this repo) with the task assumptions stated — **not an instrumented benchmark**.
+*Task: review a ~1,500-line change across 6 files, apply fixes, then ~10 follow-up turns.* Modeled from **real constants** (caveman's ~65% target, the measured ≈2.9k-token `base` always-on cost, the ~2.7K-token median skill body measured in this repo) with the task assumptions stated — **not an instrumented benchmark**.
 
 | Cost driver | Vanilla Claude Code | This repo | Why |
 |---|---|---|---|
 | **Reading the change** (~30K tokens) | lands in the one window and is **re-sent every turn** → ~300K carried over ~10 turns | read inside the **`code-reviewer` subagent**; only a ~1K findings summary returns → ~10K carried | delegation keeps heavy reads out of the persistent context |
 | **Review + fix prose** (~8K) | full verbosity | **~2.8K** under `/caveman` | ~65% prose reduction |
-| **Always-on overhead** | none | **≈2.8k** (`base`, measured) | `claude plugin details base` |
+| **Always-on overhead** | none | **≈2.9k** (`base`, measured) | `claude plugin details base` |
 
 **Result for this scenario: ≈80–85% less main-context token growth and ≈65% smaller responses**, for a fixed listing cost and a *similar one-shot read* (the subagent still reads the code once — it just doesn't carry it forward across turns). The subagent's own overhead makes the *total* billed tokens higher than the main-context figure suggests, so the saving is in how much context each later turn re-sends. It scales with session length and baseline verbosity; a **one-line question** stays inline and sees mostly the ~65% shorter answer plus the fixed listing.
 
@@ -123,12 +123,12 @@ This repo guards itself the same way: its own `REGRESSIONS.md`, `.claude/guards.
 ├── .claude-plugin/
 │   └── marketplace.json          # marketplace listing the four plugins below
 ├── plugins/                      # the team — installed via /plugin (nothing loads until installed)
-│   ├── base/                     # MAIN: 24 zero-network engineering agents + 4 skills + 1 command + 1 SessionStart hook
+│   ├── base/                     # MAIN: 24 zero-network engineering agents + 5 skills + 1 command + 1 SessionStart hook
 │   │   ├── .claude-plugin/plugin.json
 │   │   ├── agents/*.md
 │   │   ├── commands/implement-plan.md
 │   │   ├── hooks/hooks.json      # one static SessionStart line (startup, /clear, compaction)
-│   │   ├── skills/*/SKILL.md     # caveman, secure-code-reviewer, work-quality-checker, regression-guard (+ references/)
+│   │   ├── skills/*/SKILL.md     # caveman, secure-code-reviewer, work-quality-checker, regression-guard, setup-advisor (+ references/)
 │   │   └── evals/                # `claude plugin eval` suite: skill triggering, routing, no over-delegation
 │   ├── marketing/                # ADDON: 7 marketing/content agents (incl. the only 2 network researchers) + 2 skills + 2 commands
 │   │   ├── .claude-plugin/plugin.json
@@ -180,6 +180,7 @@ This repo guards itself the same way: its own `REGRESSIONS.md`, `.claude/guards.
 - **`secure-code-reviewer`** (in the `base` plugin) — OWASP-focused defensive audit of code you paste or point at: severity-triaged report (Critical→Low) with secure-code fixes; explains risk without generating exploit payloads. Complements the `security-auditor` agent — the agent does delegated repo-wide scans, the skill audits inline what you show it.
 - **`work-quality-checker`** (in the `base` plugin) — ruthless pre-send QA for emails, decks, concept notes, proposals, and scripts: logic-gap audit, top-3 sentence rewrites, the three toughest boss/client questions with suggested answers, and a binary "Ship it" / "Fix these 2 things first" verdict. Also turns raw meeting notes into a decisions/owners/deadlines dashboard.
 - **`regression-guard`** (in the `base` plugin) — the fix-once procedure for any role: grep `REGRESSIONS.md` for the area before editing, turn every bug fix or correction into a guard (test > check > review) plus one ledger row, run the full guard set before "done" and lead the report with the `Guards:` evidence line. Short checklist; code, content and chat references load only when needed.
+- **`setup-advisor`** (in the `base` plugin) — "what should I install?" / "audit my Claude setup": inventories what's installed (`claude plugin list`, always-on cost via `claude plugin details`), reads the project's `CLAUDE.md`, ledger area tags, manifests and content dirs, merges Anthropic's `claude-code-setup` recommender when present (and proposes it when not), then reports the top 3–5 picks with evidence, always-on cost and the exact install command, and asks via a multi-select pop-up. Trusted sources only (these packs, Anthropic-authored plugins in `claude-plugins-official`, your account skills); additive only, with duplicates listed as optional cleanup for you to decide; read-only and network-free until you approve.
 - **`/implement-plan <plan-file…>`** (command in the `base` plugin) — execute a detailed plan file end-to-end: new branch off the current one, one subagent per plan item routed to the pack agent's declared model (subagents never run on fable — only the orchestrator), statuses marked done in the plan file itself, the full guard run and review gate (`code-reviewer` + `ponytail`, `security-auditor` when warranted), one commit per item, one push at the end.
 - **`ai-writing-tells`** (in the `marketing` plugin) — the shared banned-patterns list the writers and editor apply to every draft.
 - **`brand-voice`** (in the `marketing` plugin) — applies the project's `brand/voice.md` to drafts and reviews, and logs each voice correction so it holds for every writer.
@@ -202,10 +203,12 @@ Add the marketplace once, then install the `base` team plus any addons; toggle t
 
 ```text
 /plugin marketplace add .                    # local path to this repo's root (or <owner>/claude-md once pushed)
-/plugin install base@claude-md-packs         # MAIN:  24 engineering agents + 4 skills + /implement-plan
+/plugin install base@claude-md-packs         # MAIN:  24 engineering agents + 5 skills + /implement-plan
 /plugin install marketing@claude-md-packs    # addon: 7 marketing/content agents (+ Tavily/DataForSEO) + 2 skills + 2 commands
 /plugin install council@claude-md-packs      # addon: 6 council seats + /council skill
 /plugin install ecc@claude-md-packs          # addon, per project: 41 ECC agents + 116 skills + 34 commands
+/plugin marketplace add anthropics/claude-plugins-official   # Anthropic's official marketplace (skip if already listed)
+/plugin install claude-code-setup@claude-plugins-official    # Anthropic's read-only setup recommender; setup-advisor builds on it
 ```
 
 From a shell: `claude plugin marketplace add <owner>/claude-md`, then `claude plugin install base@claude-md-packs`. **Claude Desktop:** the Code tab's **+ → Plugins** installs from a known marketplace; on a machine without a terminal, merge `templates/user-settings.plugins.json` into `~/.claude/settings.json` and restart.
@@ -225,6 +228,7 @@ Copy-Item "$repo\plugins\base\skills\caveman"                "$dest\skills\" -Re
 Copy-Item "$repo\plugins\base\skills\secure-code-reviewer"   "$dest\skills\" -Recurse -Force
 Copy-Item "$repo\plugins\base\skills\work-quality-checker"   "$dest\skills\" -Recurse -Force
 Copy-Item "$repo\plugins\base\skills\regression-guard"       "$dest\skills\" -Recurse -Force
+Copy-Item "$repo\plugins\base\skills\setup-advisor"          "$dest\skills\" -Recurse -Force
 Copy-Item "$repo\plugins\council\skills\council"             "$dest\skills\" -Recurse -Force
 Copy-Item "$repo\plugins\marketing\skills\ai-writing-tells"  "$dest\skills\" -Recurse -Force
 Copy-Item "$repo\plugins\marketing\skills\brand-voice"       "$dest\skills\" -Recurse -Force
@@ -239,7 +243,7 @@ repo="<repo>"; dest="$HOME/.claude"
 mkdir -p "$dest/agents" "$dest/skills" "$dest/commands"
 cp "$repo"/plugins/*/agents/*.md "$dest/agents/"                  # all 78 across packs (use plugins/base/ for just the 24; ecc's skills/commands are NOT copied here)
 for s in base/skills/caveman base/skills/secure-code-reviewer base/skills/work-quality-checker base/skills/regression-guard \
-         council/skills/council marketing/skills/ai-writing-tells marketing/skills/brand-voice; do
+         base/skills/setup-advisor council/skills/council marketing/skills/ai-writing-tells marketing/skills/brand-voice; do
   cp -r "$repo/plugins/$s" "$dest/skills/"
 done
 cp "$repo/plugins/base/commands/implement-plan.md" "$dest/commands/"

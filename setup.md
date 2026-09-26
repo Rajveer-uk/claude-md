@@ -64,12 +64,16 @@ cp "$REPO"/.claude/hooks/*.sh "$DEST/hooks/" && chmod +x "$DEST"/hooks/*.sh
   claude plugin install base@claude-md-packs
   claude plugin install marketing@claude-md-packs     # only where you do marketing work (see "Account plugins sync" below)
   claude plugin install council@claude-md-packs       # optional decision council
+  claude plugin marketplace add anthropics/claude-plugins-official   # Anthropic's official marketplace; skip if `claude plugin marketplace list` already shows it
+  claude plugin install claude-code-setup@claude-plugins-official     # Anthropic's read-only setup recommender (base's setup-advisor builds on it)
   ```
-- **Desktop-only machine (no `claude` CLI):** merge the `extraKnownMarketplaces` + `enabledPlugins` keys from `templates/user-settings.plugins.json` into `~/.claude/settings.json` (replace `<owner>`), then check the file still parses (step 9). Claude Code clones the marketplace and installs the enabled plugins at the next session start — restart the Desktop app. **Or skip the JSON:** plugins enabled on your claude.ai account (step 8) sync into signed-in Desktop Code sessions as `<name>@synced` — verify with `/context` (or `claude plugin list` wherever the CLI is installed).
+- **Desktop-only machine (no `claude` CLI):** merge the `extraKnownMarketplaces` + `enabledPlugins` keys from `templates/user-settings.plugins.json` into `~/.claude/settings.json` (replace `<owner>`; they also register Anthropic's `claude-plugins-official` marketplace and enable `claude-code-setup` from it), then check the file still parses (step 9). Claude Code clones the marketplace and installs the enabled plugins at the next session start — restart the Desktop app. **Or skip the JSON:** plugins enabled on your claude.ai account (step 8) sync into signed-in Desktop Code sessions as `<name>@synced` — verify with `/context` (or `claude plugin list` wherever the CLI is installed).
 - **Desktop Code tab UI:** once the marketplace is known, **+** (next to the prompt box) → **Plugins** → **Add plugin** installs from it; **Manage plugins** enables, disables or uninstalls, at user, project or local scope. Desktop has no documented way to add a *custom* marketplace — use one of the routes above first. Not available in WSL or cloud sessions.
 - **Account plugins sync everywhere (security):** a plugin enabled on your claude.ai account (step 8) also loads in **every** Claude Code session signed in with that account (v2.1.273+) as `<name>@synced` — its skills, agents, hooks **and MCP servers**. A same-name local install wins, so nothing loads twice. So `marketing` on the account means its Tavily/DataForSEO servers start in every signed-in session, not only "where you do marketing work". To turn a synced pack off on one machine, add `"marketing@synced": false` (and/or `"council@synced": false`) under `enabledPlugins` in `~/.claude/settings.json` (the template already sets the `marketing` one), or run `claude plugin disable marketing@synced`; confirm with `claude plugin list`.
 - **Auto-update:** off by default for third-party marketplaces. Turn it on in `/plugin` → **Marketplaces**, or set `"autoUpdate": true` on the `claude-md-packs` entry under `extraKnownMarketplaces` (the template ships it `false`). **Trade-off:** auto-update deploys whatever is pushed to the marketplace repo — plugin hooks included — to every machine at its next start, without review. Opt in knowingly; otherwise update by hand (§I) after reading the diff.
 - **`ecc` per project only** — it adds ≈15k always-on tokens to every session. From that project's root: `claude plugin install ecc@claude-md-packs --scope local` (just you) or `--scope project` (teammates too). Never user-wide, never on the claude.ai account.
+- **What else to install — ask `setup-advisor`:** in a project, ask "what should I install?" or "audit my Claude setup". `base`'s `setup-advisor` skill inventories what's installed, reads the project, merges ideas from Anthropic's `claude-code-setup` (≈0.14k always-on), and proposes 3–5 additive installs from trusted sources only: the claude-md packs, Anthropic-authored plugins in `claude-plugins-official`, and your account skills. Each comes with its evidence, always-on cost and exact command. Nothing installs until you tick it in the pop-up, and it never proposes removing anything (§G).
+- **Official marketplace:** Claude Code normally registers `claude-plugins-official` on its own at the first interactive terminal session; the `claude plugin` commands never do. Hence the `marketplace add` line above (or the template entry on a Desktop-only machine).
 
 **5. Desktop environment variables** — Desktop doesn't inherit your shell exports (on macOS it reads only `PATH` and a fixed set of Claude Code variables from your profile; on Windows it doesn't read PowerShell profiles). Set the marketing researchers' keys — `TAVILY_API_KEY`, `DATAFORSEO_USERNAME`, `DATAFORSEO_PASSWORD` — in Desktop's **Local environment editor** (stored encrypted, applies to every local session). Terminal sessions keep using `setx` / `export` ([`council-and-network-config.md`](council-and-network-config.md) §2). Never put keys in a committed file.
 
@@ -109,10 +113,10 @@ python3 -m json.tool "$HOME/.claude/settings.json" >/dev/null && echo "settings 
 |-------|--------|
 | `settings.json` parse check (above) | `settings OK` — an error means the hand-merge broke the JSON (a missing comma or brace); fix it before starting a session |
 | `/context` | **Memory files** lists `~/.claude/CLAUDE.md` (+ the project's `CLAUDE.md`); custom agents with their source; skills |
-| `claude plugin list` (terminal) | `base@claude-md-packs` enabled (+ your addons); `@synced` copies show "not loaded" where a local copy exists; `marketing@synced` disabled if you turned it off |
-| `claude plugin details base` | the **Always-on** token line: base ≈2.8k (marketing ≈0.86k — ≈0.7k actually in context, since the tool counts the two manual-only commands Claude never sees; council ≈0.5k, ecc ≈15.4k) |
+| `claude plugin list` (terminal) | `base@claude-md-packs` enabled (+ your addons, and `claude-code-setup@claude-plugins-official`); `@synced` copies show "not loaded" where a local copy exists; `marketing@synced` disabled if you turned it off |
+| `claude plugin details base` | the **Always-on** token line: base ≈2.9k (marketing ≈0.86k — ≈0.7k actually in context, since the tool counts the two manual-only commands Claude never sees; council ≈0.5k, ecc ≈15.4k) |
 | `/hooks` (read-only view) | `guard` / `format` / `verify` as installed, plus `base`'s `SessionStart` hook |
-| `/skills` | `caveman`, `secure-code-reviewer`, `work-quality-checker`, `regression-guard` (+ addon skills); check the "claude.ai sync" group for duplicates |
+| `/skills` | `caveman`, `secure-code-reviewer`, `work-quality-checker`, `regression-guard`, `setup-advisor` (+ addon skills, and `claude-code-setup`'s `claude-automation-recommender`); check the "claude.ai sync" group for duplicates |
 | `/mcp` (marketing only) | `tavily` / `dataforseo` connected |
 | Ask "what did the SessionStart hook tell you?" | the one-line `claude-md:` working agreement |
 | **Claude app** (chat, Cowork): ask "what instructions and skills do you have?" | the rules from Instructions for Claude, plus the account plugins' skills (`caveman`, `regression-guard`, `council`, …) |
@@ -126,11 +130,11 @@ python3 -m json.tool "$HOME/.claude/settings.json" >/dev/null && echo "settings 
 
 | Piece | Scope | Location | Why |
 |------|-------|----------|-----|
-| `base` plugin — 24 agents + 4 skills + `/implement-plan` + 1 `SessionStart` hook | **Plugin** | via `/plugin`, Desktop **+ → Plugins**, or `claude plugin` | The main team — install from the marketplace (see §G) |
+| `base` plugin — 24 agents + 5 skills + `/implement-plan` + 1 `SessionStart` hook | **Plugin** | via `/plugin`, Desktop **+ → Plugins**, or `claude plugin` | The main team — install from the marketplace (see §G) |
 | Addons: `marketing` (7 agents + 2 skills + 2 commands), `council` (6 + `/council`), `ecc` (per project) | **Plugin** | via `/plugin` | Opt-in add-ons — install from the marketplace (see §G) |
 | `settings.json` (deny-list + ask list + modes) | **Global / user** | `~/.claude/settings.json` | The security baseline — **not** plugin-able; install it before the plugins |
 | `global/CLAUDE.md` | **Global / user** | `~/.claude/CLAUDE.md` (copy) | Working agreement for every project on this machine |
-| `templates/user-settings.plugins.json` (Desktop-only machines) | **Global / user** | merged into `~/.claude/settings.json` | Marketplace + `base` without the `claude` CLI; `marketing@synced` off; auto-update opt-in |
+| `templates/user-settings.plugins.json` (Desktop-only machines) | **Global / user** | merged into `~/.claude/settings.json` | Marketplace + `base` (+ Anthropic's `claude-code-setup`) without the `claude` CLI; `marketing@synced` off; auto-update opt-in |
 | Hooks `guard`/`format`/`verify` (`.ps1`+`.sh`, optional) | **Global / user** | `~/.claude/hooks/` | guard = enforce no-secret-read/egress + safe agent-gen, and ask before guard/ledger edits; format = auto-format edited file; verify = run the project's guards before finishing |
 | `templates/sandbox-settings.json` (optional; Linux/macOS/WSL2) | **Global / user** | merged into `~/.claude/settings.json` | OS-enforced network control for shell commands |
 | `managed-settings.json` (optional) | **Machine policy** | OS policy dir (see §E) | Unbreakable: locks bypass-disable + crown-jewel secret denies |
@@ -219,13 +223,13 @@ Then, **only if you installed the hooks**, add this to `~/.claude/settings.json`
 ```powershell
 Get-Content "$env:USERPROFILE\.claude\settings.json" -Raw | ConvertFrom-Json | Out-Null; "settings OK"
 claude plugin list           # after §G: base@claude-md-packs (+ addons) enabled
-claude plugin details base   # the Always-on token line (~2.8k for base)
+claude plugin details base   # the Always-on token line (~2.9k for base)
 # then inside Claude Code (CLI, Desktop Code tab or VS Code):
 #   /context  -> Memory files lists ~/.claude/CLAUDE.md; custom agents with source; skills
 #   /plugin   -> shows installed plugins (base / marketing / council) — CLI; Desktop: + -> Plugins
 #   /memory   -> opens/edits memory files (it lists locations, not what loaded — use /context for that)
 #   /hooks    -> guard / format / verify + base's SessionStart hook (read-only view)
-#   /skills   -> caveman, secure-code-reviewer, work-quality-checker, regression-guard (+ addon skills)
+#   /skills   -> caveman, secure-code-reviewer, work-quality-checker, regression-guard, setup-advisor (+ addon skills)
 #   /status   -> the settings files that loaded (user, project, managed)
 #   @agent-   -> typeahead lists the pack agents (/agents only prints a reminder now)
 ```
@@ -285,13 +289,13 @@ Then, **only if you installed the hooks**, add this to `~/.claude/settings.json`
 ```bash
 jq . "$HOME/.claude/settings.json" >/dev/null && echo "settings OK"
 claude plugin list           # after §G: base@claude-md-packs (+ addons) enabled
-claude plugin details base   # the Always-on token line (~2.8k for base)
+claude plugin details base   # the Always-on token line (~2.9k for base)
 # then inside Claude Code (CLI, Desktop Code tab or VS Code):
 #   /context  -> Memory files lists ~/.claude/CLAUDE.md; custom agents with source; skills
 #   /plugin   -> shows installed plugins (base / marketing / council) — CLI; Desktop: + -> Plugins
 #   /memory   -> opens/edits memory files (it lists locations, not what loaded — use /context for that)
 #   /hooks    -> guard / format / verify + base's SessionStart hook (read-only view)
-#   /skills   -> caveman, secure-code-reviewer, work-quality-checker, regression-guard (+ addon skills)
+#   /skills   -> caveman, secure-code-reviewer, work-quality-checker, regression-guard, setup-advisor (+ addon skills)
 #   /status   -> the settings files that loaded (user, project, managed)
 #   @agent-   -> typeahead lists the pack agents (/agents only prints a reminder now)
 ```
@@ -457,27 +461,32 @@ sudo cp "$REPO/managed/managed-settings.json" "/Library/Application Support/Clau
 
 ## G. Install the team — plugin marketplace (base + addons)
 
-The agent team ships as Claude Code **plugins**, listed in `.claude-plugin/marketplace.json`: install **`base`** (the main 24-agent team + 4 skills), then add the **`marketing`** and **`council`** addons as needed, and **`ecc`** per project. Nothing under `plugins/` loads until you install it. Same flow on every OS:
+The agent team ships as Claude Code **plugins**, listed in `.claude-plugin/marketplace.json`: install **`base`** (the main 24-agent team + 5 skills), then add the **`marketing`** and **`council`** addons as needed, and **`ecc`** per project. Nothing under `plugins/` loads until you install it. Same flow on every OS:
 
 ```text
 # 1. add this repo as a plugin marketplace (local path works; or <owner>/claude-md once it's pushed to GitHub)
 /plugin marketplace add <path-to-this-repo>
 
 # 2. install the base team, then whichever addons you want — toggle any of them anytime from /plugin
-/plugin install base@claude-md-packs         # MAIN: 24 engineering agents + 4 skills + /implement-plan
+/plugin install base@claude-md-packs         # MAIN: 24 engineering agents + 5 skills + /implement-plan
 /plugin install marketing@claude-md-packs    # addon: 7 marketing/content agents + 2 skills + /marketing:draft, /marketing:review
 /plugin install council@claude-md-packs      # addon: 6 council seats + the /council skill
 /plugin install ecc@claude-md-packs          # addon, per project only: 41 ECC agents + 116 skills + 34 commands
+
+# 3. Anthropic's official marketplace + its read-only setup recommender (base's setup-advisor builds on it)
+/plugin marketplace add anthropics/claude-plugins-official   # skip if /plugin marketplace list already shows claude-plugins-official
+/plugin install claude-code-setup@claude-plugins-official
 ```
 
 `/plugin install <plugin>` opens the plugin's page in the panel — confirm the install there; `/reload-plugins` applies changes to a running session. From a shell the equivalents are `claude plugin marketplace add <owner>/claude-md` and `claude plugin install <pack>@claude-md-packs` (add `--scope local` or `--scope project` for `ecc`); in the Desktop Code tab use **+ → Plugins** (Quick start step 4).
 
-- **`base`** is the main install — the 24 zero-network engineering agents, 4 skills (`/caveman`, `secure-code-reviewer`, `work-quality-checker`, `regression-guard`) and the `/implement-plan` command. Pair it with the `settings.json` security baseline (§A/§B), which is required and is not part of any plugin. It ships **one static, no-network `SessionStart` hook** (matcher `startup|clear|compact`, 10-second timeout) that adds one working-agreement line — small, sequential or same-file work inline; 10+ files, 3+ independent parts or an independent review → parallel subagents; use relevant skills unasked; apply `regression-guard` before calling work done. It **replaces the old per-prompt `UserPromptSubmit` hook**, which re-sent its directive with every prompt; for per-prompt reinforcement, merge the opt-in snippet from `.claude/settings.hooks.example.json` into your user settings. `/hooks` only shows it (read-only). To turn it off, disable `base` (`/plugin`, or `claude plugin disable base@claude-md-packs`), or set `"disableAllHooks": true` — which also silences `guard` and `verify`.
+- **`base`** is the main install — the 24 zero-network engineering agents, 5 skills (`/caveman`, `secure-code-reviewer`, `work-quality-checker`, `regression-guard`, `setup-advisor`) and the `/implement-plan` command. Pair it with the `settings.json` security baseline (§A/§B), which is required and is not part of any plugin. It ships **one static, no-network `SessionStart` hook** (matcher `startup|clear|compact`, 10-second timeout) that adds one working-agreement line — small, sequential or same-file work inline; 10+ files, 3+ independent parts or an independent review → parallel subagents; use relevant skills unasked; apply `regression-guard` before calling work done. It **replaces the old per-prompt `UserPromptSubmit` hook**, which re-sent its directive with every prompt; for per-prompt reinforcement, merge the opt-in snippet from `.claude/settings.hooks.example.json` into your user settings. `/hooks` only shows it (read-only). To turn it off, disable `base` (`/plugin`, or `claude plugin disable base@claude-md-packs`), or set `"disableAllHooks": true` — which also silences `guard` and `verify`.
 - **`marketing`** adds the 7 marketing/content agents, the `ai-writing-tells` and `brand-voice` skills, and the ledger-aware `/marketing:draft` and `/marketing:review` commands (they check the matching `mkt/` rows in `REGRESSIONS.md` and the project's `brand/` files). Two agents are network-enabled (`content-researcher` via Tavily, `seo-rank-monitor` via DataForSEO). Their MCP servers are declared at **plugin scope** in `plugins/marketing/.mcp.json`, because per-subagent inline `mcpServers` is ignored inside a plugin. Under a plugin install the tools are named **`mcp__plugin_marketing_tavily__tavily_search`**, `mcp__plugin_marketing_dataforseo__…`; the agents list these plus the classic `mcp__tavily__…` / `mcp__dataforseo__…` names used by a manual install. Set `TAVILY_API_KEY` / `DATAFORSEO_USERNAME` / `DATAFORSEO_PASSWORD` in your environment first (Desktop: its Local environment editor), then run `/mcp` to confirm the servers connect and the exact tool names. Full security model: [`council-and-network-config.md`](council-and-network-config.md). If your build doesn't pick up the plugin-scope `.mcp.json`, move those two servers into your global `~/.claude.json` instead. **Enabled on the claude.ai account, `marketing` also loads — MCP servers included — in every signed-in Claude Code session as `marketing@synced`**; to keep it to marketing machines, leave it off the account (or set `"marketing@synced": false` on every other machine) and install it per machine/project (Quick start steps 4 and 8).
 - **`council`** adds the 6 reasoning seats and the `/council` skill — pure reasoners, no network, no scripts. The seats start without `CLAUDE.md` (`omitClaudeMd`); the skill passes each one the question, the key constraints and the matching `REGRESSIONS.md` rows. Where sub-agents aren't available (claude.ai chat, mobile) the skill runs a single-model chat fallback.
 - **`ecc`** adds a curated, security-audited subset of [ECC](https://github.com/affaan-m/ECC) (MIT, snapshot `81af407`): 41 agents, 116 engineering skills, and 34 slash-commands — an engineering core plus 10 ECC agent-engineering knowledge skills (the broader ECC harness/command machinery was trimmed for token economy). It is **namespaced separately** so nothing collides with `base`, and is **pure markdown** — no bundled scripts, hooks, or installers. It adds ≈15k always-on tokens, so enable it **per project** (`--scope local` / `--scope project`), never user-wide. Web access stays blocked by the `settings.json` baseline; `ecc`'s `github-ops` skill uses the authenticated `gh` CLI, and `inherit-legacy-style` can install a user-gated hook (review before accepting). Provenance and the exact audit edits: [`plugins/ecc/ATTRIBUTION.md`](plugins/ecc/ATTRIBUTION.md).
+- **`setup-advisor`** (`base` skill) + **`claude-code-setup`** (Anthropic, `claude-plugins-official`, ≈0.14k always-on, read-only): ask "what should I install?", "audit my Claude setup" or "set up Claude for this project". The skill inventories what's installed (`claude plugin list`, `claude plugin details`), reads `CLAUDE.md`, the `REGRESSIONS.md` area tags, manifests and content dirs, and runs Anthropic's `claude-automation-recommender` for hook/MCP/subagent ideas when `claude-code-setup` is installed (it recommends installing it otherwise). It reports the top 3–5 picks as a table (evidence, always-on cost, exact command) and asks with a multi-select pop-up. **Trusted sources only**: the claude-md packs, Anthropic-authored plugins in `claude-plugins-official` (not the partner plugins that marketplace also lists), and your account skills. **Additive only**: duplicates are listed as optional cleanup for you to decide. It fetches nothing, and nothing installs until you tick it; each install still goes through the permission prompt. Claude Code normally registers `claude-plugins-official` on its own at the first interactive terminal session, but the `claude plugin` commands never do, so run step 3's `marketplace add` if `/plugin marketplace list` lacks it.
 - The **`marketing`/`council`/`ecc`** addon packs are **agents/skills/commands only — no hooks** (`base` ships one static, no-network `SessionStart` hook; see above; `marketing` also ships its two MCP servers) — so they keep the core's least-privilege posture. Disable or remove a pack anytime from `/plugin` (or `/plugin marketplace remove`).
-- **Measure the always-on cost** of an installed pack with `claude plugin details <pack>`: base ≈2.8k tokens, marketing ≈0.86k (≈0.7k actually in context — the tool also counts the two manual-only `/marketing:*` commands, whose descriptions Claude never sees), council ≈0.5k, ecc ≈15.4k.
+- **Measure the always-on cost** of an installed pack with `claude plugin details <pack>`: base ≈2.9k tokens, marketing ≈0.86k (≈0.7k actually in context — the tool also counts the two manual-only `/marketing:*` commands, whose descriptions Claude never sees), council ≈0.5k, ecc ≈15.4k; Anthropic's `claude-code-setup` ≈0.14k.
 - **Validate (maintainers, zero model tokens):** `claude plugin validate . --strict` for the marketplace, plus `claude plugin validate plugins/<pack> --strict` for each pack — the marketplace check doesn't open the packs' agent, skill, command or hook files. It catches broken frontmatter, which matters: a plugin agent whose frontmatter fails to parse loads with **every** field ignored, including its `tools:` allowlist. This repo's own `.claude/guards.sh` runs it as the `plugin-validate` step whenever the `claude` CLI is on PATH.
 - **Evals (maintainers, behavioural guards for the packs):** suites live in `plugins/base/evals/`, `plugins/marketing/evals/` and `plugins/council/evals/`. Run one from the repo root with `claude plugin eval plugins/<pack> --threshold 0.8 --max-cost-usd 10` — they check that skills trigger, routing picks the right agents, trivial prompts stay inline (no over-delegation), the researcher reaches Tavily and drafts avoid banned phrases. Run them before a version bump or after editing a `description` or `hooks/hooks.json`; each pack's `evals/README.md` has the cheap-pass and CI flags. Each run is real model usage on your account (every case runs with and without the plugin), so keep the `--max-cost-usd` cap. MCP servers are mocked by default, so the network cases need no keys; on native Windows, run any suite that grants shell tools under WSL2. Results go to `evals/results/` (gitignored).
 
@@ -494,11 +503,12 @@ Prefer not to use the plugin system? The agents, skills and commands are plain f
 $repo = "<repo>"; $dest = "$env:USERPROFILE\.claude"
 New-Item -ItemType Directory -Force "$dest\agents","$dest\skills","$dest\commands" | Out-Null
 Copy-Item "$repo\plugins\*\agents\*.md"          "$dest\agents\" -Force            # all 78 across packs (use \base\ for just the 24; ecc's skills/commands are NOT copied here)
-# skills — base (4), council (1), marketing (2); each lands as $dest\skills\<name>
+# skills — base (5), council (1), marketing (2); each lands as $dest\skills\<name>
 Copy-Item "$repo\plugins\base\skills\caveman"                "$dest\skills\" -Recurse -Force
 Copy-Item "$repo\plugins\base\skills\secure-code-reviewer"   "$dest\skills\" -Recurse -Force
 Copy-Item "$repo\plugins\base\skills\work-quality-checker"   "$dest\skills\" -Recurse -Force
 Copy-Item "$repo\plugins\base\skills\regression-guard"       "$dest\skills\" -Recurse -Force
+Copy-Item "$repo\plugins\base\skills\setup-advisor"          "$dest\skills\" -Recurse -Force
 Copy-Item "$repo\plugins\council\skills\council"             "$dest\skills\" -Recurse -Force
 Copy-Item "$repo\plugins\marketing\skills\ai-writing-tells"  "$dest\skills\" -Recurse -Force
 Copy-Item "$repo\plugins\marketing\skills\brand-voice"       "$dest\skills\" -Recurse -Force
@@ -513,9 +523,9 @@ Copy-Item "$repo\plugins\marketing\commands\review.md"      "$dest\commands\mark
 repo="<repo>"; dest="$HOME/.claude"
 mkdir -p "$dest/agents" "$dest/skills" "$dest/commands"
 cp "$repo"/plugins/*/agents/*.md "$dest/agents/"                  # all 78 across packs (use plugins/base/ for just the 24; ecc's skills/commands are NOT copied here)
-# skills — base (4), council (1), marketing (2); each lands as $dest/skills/<name>
+# skills — base (5), council (1), marketing (2); each lands as $dest/skills/<name>
 for s in base/skills/caveman base/skills/secure-code-reviewer base/skills/work-quality-checker base/skills/regression-guard \
-         council/skills/council marketing/skills/ai-writing-tells marketing/skills/brand-voice; do
+         base/skills/setup-advisor council/skills/council marketing/skills/ai-writing-tells marketing/skills/brand-voice; do
   cp -r "$repo/plugins/$s" "$dest/skills/"
 done
 # commands — marketing's are renamed so they can't shadow another /draft or /review
@@ -525,6 +535,7 @@ cp "$repo/plugins/marketing/commands/review.md"    "$dest/commands/marketing-rev
 ```
 
 - For just the base team, copy from `plugins/base/agents/` instead of `plugins/*/agents/` (and only the base skills and `implement-plan.md`).
+- `setup-advisor` works in a manual install too; Anthropic's `claude-code-setup`, which it builds on, ships only as a plugin, so install that from `claude-plugins-official` (§G step 3) or let `setup-advisor` propose it.
 - Command names in a manual install: `/implement-plan`, `/marketing-draft`, `/marketing-review` (the plugin install names them `/base:implement-plan`, `/marketing:draft`, `/marketing:review`).
 - The two `marketing` network agents keep their inline `mcpServers` blocks (pinned to the same versions as `plugins/marketing/.mcp.json`), so they work in a manual install once `TAVILY_API_KEY` / `DATAFORSEO_USERNAME` / `DATAFORSEO_PASSWORD` are set — inline MCP is ignored only *inside* a plugin. Tool names here are the classic `mcp__tavily__…` / `mcp__dataforseo__…`. Verify with `/mcp`.
 - No marketplace step is needed: the copied agents load immediately — check with `/context` (custom agents and their source) or the `@agent-` typeahead.
@@ -543,12 +554,17 @@ Updates flow from the **marketplace source** (the GitHub repo you added), so the
 /plugin marketplace update claude-md-packs
 
 # 2. update the packs you already have (or use the /plugin menu -> Update)
-/plugin install base@claude-md-packs          # e.g. picks up base 1.6.0 — regression-guard skill + the SessionStart hook
+/plugin install base@claude-md-packs          # e.g. picks up base 1.6.0 — regression-guard + setup-advisor skills + the SessionStart hook
 
 # 3. install any pack added since you set up (new packs do not appear on their own)
 /plugin install ecc@claude-md-packs           # per project: 41 agents + 116 skills + 34 commands
+
+# 4. Anthropic's plugins update from their own marketplace
+/plugin marketplace update claude-plugins-official
+/plugin install claude-code-setup@claude-plugins-official   # first time: add the marketplace first (§G step 3)
 ```
-From a shell: `claude plugin marketplace update claude-md-packs`, then `claude plugin update base@claude-md-packs` (repeat per pack). Run `/reload-plugins` in an open session to apply.
+From a shell: `claude plugin marketplace update claude-md-packs`, then `claude plugin update base@claude-md-packs` (repeat per pack); for Anthropic's plugins, `claude plugin marketplace update claude-plugins-official`, then `claude plugin update claude-code-setup@claude-plugins-official`. Run `/reload-plugins` in an open session to apply.
+- **New in base 1.6.0 — `setup-advisor`:** after updating, ask "what should I install?" in each active project. It reads what's installed and the project, then proposes additive installs from trusted sources (including `claude-code-setup` if it's missing) and installs only what you tick (§G).
 - If prompted to **trust `base`'s new `SessionStart` hook**, accept it, then confirm with `/hooks` (open `/hooks` once to reload if it does not fire). The old per-prompt hook is gone from the plugin; its opt-in snippet is in `.claude/settings.hooks.example.json`.
 - Plugin updates do **not** touch the `settings.json` security baseline (§A/§B) or `~/.claude/CLAUDE.md` — re-merge `.claude/settings.json` when a release note says the baseline changed (back up and merge; copying it over the file drops your merged `hooks` block and switches `guard` off), and **re-copy `global/CLAUDE.md`** after each pull (it's a copy, not a link; merge by hand if you've edited yours).
 - **claude.ai account:** click **Update** on the `claude-md` marketplace under Customize → Plugins; signed-in Claude Code picks up synced plugins at its next start. If `global/CLAUDE.md` changed, update the pasted block from `claude-ai/personal-preferences.md` too.
@@ -557,7 +573,7 @@ From a shell: `claude plugin marketplace update claude-md-packs`, then `claude p
 
 **Manual installs (§H):** `git pull` this repo, then re-run the §H copy commands (they overwrite in place). Delete any files removed upstream if you want an exact mirror.
 
-> Tip: to auto-update on startup, set `"autoUpdate": true` on the `claude-md-packs` entry under `extraKnownMarketplaces` in `~/.claude/settings.json` (or `/plugin` → Marketplaces → Enable auto-update). It's opt-in (`templates/user-settings.plugins.json` ships `false`) because it deploys whatever is pushed to the marketplace repo — plugin hooks included — to every machine without review; turn it on knowingly.
+> Tip: to auto-update on startup, set `"autoUpdate": true` on the `claude-md-packs` entry under `extraKnownMarketplaces` in `~/.claude/settings.json` (or `/plugin` → Marketplaces → Enable auto-update). It's opt-in (`templates/user-settings.plugins.json` ships `false`, and the same for its `claude-plugins-official` entry) because it deploys whatever is pushed to the marketplace repo — plugin hooks included — to every machine without review; turn it on knowingly.
 > The interactive `/plugin` menu is the reliable path — it surfaces update/install actions directly.
 
 ---

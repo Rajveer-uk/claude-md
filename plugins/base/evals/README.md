@@ -1,6 +1,6 @@
 # base — eval suite (regression guard for the pack)
 
-**Guards:** `regression-guard` fires on a bug fix and on an owner correction (with a test + ledger row) · `caveman` on "be terse" · `work-quality-checker` on "review this email" (verdict line) · a trivial question uses the Agent tool 0 times · a 3-part task routes to subagents. One directory per case: `prompt.md` + `graders/*.md` ([schema](https://code.claude.com/docs/en/plugin-evals)).
+**Guards:** `regression-guard` fires on a bug fix and on an owner correction (with a test + ledger row) · `caveman` on "be terse" · `work-quality-checker` on "review this email" (verdict line) · a trivial question uses the Agent tool 0 times · a 3-part task routes to subagents · `setup-advisor` recommends additions only (never removals) with evidence and costs. One directory per case: `prompt.md` + `graders/*.md` ([schema](https://code.claude.com/docs/en/plugin-evals)).
 
 **When:** only before a `plugins/base` version bump, or after editing a skill/agent `description` or `hooks/hooks.json`. Inert otherwise — `evals/` isn't a plugin component (0 session tokens).
 

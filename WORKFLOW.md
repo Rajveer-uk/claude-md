@@ -14,6 +14,7 @@ The owner's day-to-day guide: which app to open, how to confirm the config is li
 | **Marketing or strategy chat, quick drafts** | Claude app → that role's **Project** (L4) | Instructions for Claude, account plugins (skills and commands only; sub-agents and hooks are greyed out) and the Project's knowledge |
 | **File-based knowledge work** (folders of docs or content) | **Cowork** in the Claude app | Instructions for Claude and the account plugins (everything, including agents and hooks) |
 | **Decisions** (pricing, hiring, architecture, positioning) | `/council`, in Code (the seats run as agents) or in chat (a sequential fallback) | The `council` pack |
+| **What to install, or a setup audit** | Ask *"what should I install?"* in that project, in Code (CLI or Desktop Code tab) | `base`'s `setup-advisor` skill, plus Anthropic's `claude-code-setup` when installed. Evidence-based picks from trusted sources only; installs only what you tick, never removes anything |
 
 Mobile has no plugins. There you get account-uploaded skills and Remote Control.
 
@@ -48,7 +49,7 @@ There are four layers. You set each one up once, and it reaches the apps listed 
 |---------|----------|--------|
 | CLI · Desktop Code tab | `/context` | *Memory files* lists `~/.claude/CLAUDE.md` and the project `CLAUDE.md`. Custom agents appear with their source (`base:…`). Skills and token use are shown |
 | | `claude plugin list` (in a shell) | `base` enabled (plus `marketing`/`council` where installed). Any `<name>@synced` twin shows as not loaded, and `marketing@synced` as disabled where you opted out |
-| | `claude plugin details base` | *Always-on* ≈2.8k tokens (marketing ≈0.86k, council ≈0.5k, ecc ≈15.4k) |
+| | `claude plugin details base` | *Always-on* ≈2.9k tokens (marketing ≈0.86k, council ≈0.5k, ecc ≈15.4k) |
 | | `/hooks` | The `base` SessionStart hook, plus `guard`/`verify` if you installed them |
 | | `/skills` · `@agent-` typeahead | Pack skills and agents, none of them listed twice |
 | | Desktop only: **+ → Plugins → Manage plugins** | The packs, enabled |
@@ -136,7 +137,7 @@ Do one task per session and pick the model at the start (`opusplan` works). Sess
 | Pack | Always-on | Install |
 |------|-----------|---------|
 | Memory files | `global/CLAUDE.md` ≈1.9k tokens + a project `CLAUDE.md` ≈0.8k | Loaded every session and into most subagents (not Explore, Plan or `omitClaudeMd` agents) |
-| `base` | ≈2.8k tokens | Every machine and the account |
+| `base` | ≈2.9k tokens | Every machine and the account |
 | `marketing` | ≈0.86k per `claude plugin details` (≈0.7k in context) | Where content work happens; on the account only where its MCP servers are acceptable in every signed-in session |
 | `council` | ≈0.5k | Where decisions happen, and the account |
 | `ecc` | ≈15.4k | Only in projects that need it; never on the account |
@@ -180,6 +181,7 @@ Cloud sessions have no `/clear` (start a new session instead) and no `/plugin`.
 - Run **`/context`** in a fresh session and confirm the memory files, agents and skills load with no duplicates.
 - Run **`/doctor`** and act on its findings.
 - Run **`claude plugin details <pack>`** and compare the result with the §8 table. Drop any pack a project no longer uses.
+- Ask *"audit my Claude setup"* (`setup-advisor`) in each active project. It checks what's installed against the project's stacks and roles, lists duplicates as optional cleanup and installs only what you tick. Refresh Anthropic's plugins first: `claude plugin marketplace update claude-plugins-official`, then `claude plugin update claude-code-setup@claude-plugins-official`.
 - **Trim `CLAUDE.md`** to under 200 lines. Test each line with "Would removing this cause Claude to make mistakes?". Anything that fails the test goes; anything that must always happen becomes a hook or a `check:` step. Keep at most one "IMPORTANT".
 - **Promote `review:` rows** to `test:` or `check:` wherever they can be automated; `review:` is the weakest guard.
 - **When a pack's version is bumped,** run `claude plugin validate . --strict` and `claude plugin validate plugins/<pack> --strict`, then the pack evals: `claude plugin eval plugins/<pack> --max-cost-usd 10` (each pack's `evals/README.md` has its full command and cap).

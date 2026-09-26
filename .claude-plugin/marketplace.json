@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "base",
-      "description": "Core engineering team — 24 least-privilege, zero-network agents (planning, review, implementation, debugging, testing, devops, ops triage, docs, curated stack experts) plus 4 skills — regression-guard (fix-once: REGRESSIONS.md ledger + guard run before done), /caveman (terse output), secure-code-reviewer (OWASP audit), work-quality-checker (pre-send executive QA) — and the /implement-plan command (execute a plan file end-to-end via pack subagents, ledger-aware). The main install; pair it with the settings.json security baseline (see setup.md). Ships one static, no-network SessionStart hook (a working-agreement reminder at startup, /clear and compaction).",
+      "description": "Core engineering team — 24 least-privilege, zero-network agents (planning, review, implementation, debugging, testing, devops, ops triage, docs, curated stack experts) plus 5 skills — regression-guard (fix-once: REGRESSIONS.md ledger + guard run before done), /caveman (terse output), secure-code-reviewer (OWASP audit), work-quality-checker (pre-send executive QA), setup-advisor (recommends trusted, additive installs with evidence and token cost; installs only on approval) — and the /implement-plan command (execute a plan file end-to-end via pack subagents, ledger-aware). The main install; pair it with the settings.json security baseline (see setup.md). Ships one static, no-network SessionStart hook (a working-agreement reminder at startup, /clear and compaction).",
       "source": "./plugins/base",
       "category": "productivity"
     },
