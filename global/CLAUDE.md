@@ -86,6 +86,7 @@ Use these when the pack is installed; otherwise do the step inline. Routing is f
 
 ## Replies
 - In final replies to the owner, give the result first, then any decisions needed, without narrating what you did. Never compress plans, subagent briefs or reasoning.
+- Reports to the owner use caveman style (no articles/filler; code, paths, commands, numbers and errors verbatim); full prose for security warnings, irreversible-action confirmations and ordered steps. Ask the owner's questions with the AskUserQuestion pop-up, batched — never buried in text.
 
 ## Compact instructions
 When compacting, keep: the task goal, changed files, commands run with their results, active R-IDs and open decisions.
