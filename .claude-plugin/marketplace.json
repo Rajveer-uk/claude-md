@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "claude-md-packs",
-  "description": "The claude-md configuration as plugins: install the base engineering team, then add the marketing and council packs per project as needed. The security baseline (settings.json) is a separate classic install — see setup.md.",
+  "description": "The claude-md configuration as plugins: install the base engineering team, then add the marketing and council packs per project as needed; add ecc only in projects that need it (it costs about 15k always-on tokens). The security baseline (settings.json) is a separate classic install — see setup.md.",
   "owner": {
     "name": "Cintel-UK-LTD",
     "url": "https://github.com/Cintel-UK-LTD"
@@ -9,19 +9,19 @@
   "plugins": [
     {
       "name": "base",
-      "description": "Core engineering team — 24 least-privilege, zero-network agents (planning, review, implementation, debugging, testing, devops, ops triage, docs, curated stack experts) plus 3 skills — /caveman (terse output), secure-code-reviewer (OWASP audit), work-quality-checker (pre-send executive QA) — and the /implement-plan command (execute a plan file end-to-end via pack subagents). The main install; pair it with the settings.json security baseline (see setup.md). Ships one static, no-network auto-delegation prompt hook.",
+      "description": "Core engineering team — 24 least-privilege, zero-network agents (planning, review, implementation, debugging, testing, devops, ops triage, docs, curated stack experts) plus 4 skills — regression-guard (fix-once: REGRESSIONS.md ledger + guard run before done), /caveman (terse output), secure-code-reviewer (OWASP audit), work-quality-checker (pre-send executive QA) — and the /implement-plan command (execute a plan file end-to-end via pack subagents, ledger-aware). The main install; pair it with the settings.json security baseline (see setup.md). Ships one static, no-network SessionStart hook (a working-agreement reminder at startup, /clear and compaction).",
       "source": "./plugins/base",
       "category": "productivity"
     },
     {
       "name": "marketing",
-      "description": "7 marketing & content agents — conversion-copywriter, content-writer, content-editor, email-campaign-writer, growth-strategist, and the config's only two network-enabled agents: content-researcher (Tavily search) and seo-rank-monitor (DataForSEO), both read-only on files — plus the shared ai-writing-tells skill (the single banned-patterns list the writers cite).",
+      "description": "7 marketing & content agents — conversion-copywriter, content-writer, content-editor, email-campaign-writer, growth-strategist, and the config's only two network-enabled agents: content-researcher (Tavily search) and seo-rank-monitor (DataForSEO), both read-only on files — plus 2 skills: ai-writing-tells (the single banned-patterns list the writers cite) and brand-voice (applies brand/voice.md), and the /marketing:draft and /marketing:review commands. Ledger-aware: work is checked against brand/banned-phrases.txt and matching REGRESSIONS.md rows. Network only on the two read-only researchers.",
       "source": "./plugins/marketing",
       "category": "productivity"
     },
     {
       "name": "council",
-      "description": "The 6-seat decision council (optimist, pessimist, out-of-the-box, skeptic, pragmatist, chair) plus the /council skill that fans a question to the seats and synthesizes a verdict. Pure reasoners — no network, no file writes.",
+      "description": "The 6-seat decision council (optimist, pessimist, out-of-the-box, skeptic, pragmatist, chair) plus the /council skill that fans a question to the seats and synthesizes a verdict; each seat gets the question, the minimum project context and matching REGRESSIONS.md rows. Chat fallback: where sub-agents aren't available (Claude chat, the Desktop Chat tab), the skill runs the five seats sequentially and blind, then the chair synthesis. Pure reasoners — no network, no file writes.",
       "source": "./plugins/council",
       "category": "productivity"
     },
