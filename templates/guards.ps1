@@ -26,7 +26,7 @@ Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Continue'
 
 # ---------------------------------------------------------------- configuration
-# Full test suite (slow), PowerShell syntax. PS 5 has no '&&': use cmd /c "a && b" or separate lines.
+# Full test suite (slow), PowerShell syntax. PS 5 has no '&&': use cmd /c "a && b" or separate lines; no 'exit'.
 $TestCmd = ''
 # $TestCmd = 'npm test --silent'
 # $TestCmd = 'python -m pytest -q'
@@ -137,14 +137,24 @@ function Step {
   }
   $script:StepCode = $null
   $global:LASTEXITCODE = 0
-  $lines = @()
+  $lines = @(); $done = $false
   try {
     $lines = @(& $Body 2>&1 | ForEach-Object { "$_" })
     if ($null -ne $script:StepCode) { $code = [int]$script:StepCode }
     elseif ($LASTEXITCODE) { $code = [int]$LASTEXITCODE }
     else { $code = 0 }
+    $done = $true
   } catch {
-    $lines += "ERROR: $($_.Exception.Message)"; $code = 1
+    $lines += "ERROR: $($_.Exception.Message)"; $code = 1; $done = $true
+  } finally {
+    if (-not $done) {   # 'exit' in a step (or in $TestCmd/$LintCmd) ends the whole run: fail closed, never exit 0
+      $script:failed++; $script:failedNames += $Name
+      $msg = "ERROR ${Name}: the step called exit (or was stopped), so the remaining steps did not run - remove 'exit' (the step's exit code is read from `$LASTEXITCODE)"
+      $summary = "guards: FAIL - $($script:ok) ok, $($script:failed) failed ($($script:failedNames -join ', ')), $($script:skipped) skipped; stopped at $Name (log: .claude/guards.log)"
+      Write-Output $msg; Write-Output $summary
+      Write-Log @("--- $Name (called exit)", $msg, $summary)
+      exit 1
+    }
   }
   Write-Log (@("--- $Name (exit $code)") + $lines)
   if ($code -eq 0) {

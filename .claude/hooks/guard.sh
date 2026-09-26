@@ -249,13 +249,19 @@ if [ "$tool" = "Write" ] || [ "$tool" = "Edit" ]; then
   fi
 
   if [ -n "$content" ]; then
-    tools_line="$(printf '%s\n' "$content" | grep -m1 -E '^[[:space:]]*tools[[:space:]]*:')"
-    if [ -n "$tools_line" ]; then
-      decl="$(printf '%s' "$tools_line" | sed -E 's/^[[:space:]]*tools[[:space:]]*:[[:space:]]*//')"
+    tools_line="$(printf '%s\n' "$content" | grep -m1 -Ei '^[[:space:]]*tools[[:space:]]*:')"
+    if [ -z "$tools_line" ]; then
+      # A whole agent file with no tools: line inherits every tool (incl. Bash) - not allowed here.
+      [ "$tool" = "Write" ] && decide "deny" "Blocked: generated agent has no tools: line, so it would inherit every tool (incl. Bash). Declare tools: with only Read/Write/Edit/Grep/Glob."
+    else
+      decl="$(printf '%s' "$tools_line" | sed -E 's/^[[:space:]]*[Tt][Oo][Oo][Ll][Ss][[:space:]]*:[[:space:]]*//')"
+      if [ -z "$(printf '%s' "$decl" | tr -d '[:space:]')" ]; then
+        decide "ask" "Generated agent declares tools: as a multi-line list - put it on one line (Read, Write, Edit, Grep, Glob) so it can be checked, or review the file before enabling it."
+      fi
       bad=""
       old_ifs="$IFS"; IFS=','
       for t in $decl; do
-        t="$(printf '%s' "$t" | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//')"
+        t="$(printf '%s' "$t" | tr -d "\"'[:space:]" | sed 's/[][]//g')"   # also accepts [Read, Grep] / "Read"
         [ -z "$t" ] && continue
         case "$t" in
           Read|Write|Edit|Grep|Glob) : ;;

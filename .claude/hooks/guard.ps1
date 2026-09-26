@@ -234,10 +234,18 @@ if ($tool -eq 'Write' -or $tool -eq 'Edit') {
     $content = if ($tool -eq 'Write') { [string]$in.tool_input.content } else { [string]$in.tool_input.new_string }
     if ($content) {
         $toolsLine = ($content -split "`n") | Where-Object { $_ -match '^\s*tools\s*:' } | Select-Object -First 1
-        if ($toolsLine) {
-            $declared = ($toolsLine -replace '^\s*tools\s*:\s*','') -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ }
+        if (-not $toolsLine) {
+            # A whole agent file with no tools: line inherits every tool (incl. Bash) - not allowed here.
+            if ($tool -eq 'Write') { Decide 'deny' 'Blocked: generated agent has no tools: line, so it would inherit every tool (incl. Bash). Declare tools: with only Read/Write/Edit/Grep/Glob.' }
+        } else {
+            $val = $toolsLine -replace '^\s*tools\s*:\s*',''
+            if (-not $val.Trim()) {
+                Decide 'ask' 'Generated agent declares tools: as a multi-line list - put it on one line (Read, Write, Edit, Grep, Glob) so it can be checked, or review the file before enabling it.'
+            }
+            # Also accepts [Read, Grep] / "Read".
+            $declared = $val -split ',' | ForEach-Object { $_ -replace '[\[\]"''\s]','' } | Where-Object { $_ }
             $allowed  = @('Read','Write','Edit','Grep','Glob')
-            $bad = @($declared | Where-Object { $allowed -notcontains $_ })
+            $bad = @($declared | Where-Object { $allowed -cnotcontains $_ })
             if ($bad.Count -gt 0) {
                 Decide 'deny' ("Blocked: generated agent requests disallowed tool(s): " + ($bad -join ', ') + ". Generated specialists may use only Read/Write/Edit/Grep/Glob.")
             }
