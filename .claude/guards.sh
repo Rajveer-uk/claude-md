@@ -1038,6 +1038,17 @@ def st_user_installer():
             hard.append('%s no longer runs install-user-config.sh --cloud' % cs)
         if not re.search(r'(?m)^exit 0\s*$', code):
             hard.append('%s must end with exit 0 (a failure never blocks a cloud session)' % cs)
+    ps1 = 'scripts/install-user-config.ps1'
+    if not os.path.isfile(ps1):
+        hard.append('%s (the Windows twin) missing' % ps1)
+    else:
+        code = _code_only(read(ps1), True)
+        for what, needle in (('the -Cloud preset', '$Cloud'), ('the backup before a change', '.bak'),
+                             ('keeping an owner CLAUDE.md', 'claude-md-new'),
+                             ('bypass disabled', 'disableBypassPermissionsMode'),
+                             ('the Plan default only outside -Cloud', 'defaultMode')):
+            if needle not in code:
+                hard.append('%s: %s is gone from its code' % (ps1, what))
     base = load_or_fail('.claude/settings.json')
     bdeny, bask = base['permissions'].get('deny', []), base['permissions'].get('ask', [])
     tmp = tempfile.mkdtemp(prefix='installer-guard-')

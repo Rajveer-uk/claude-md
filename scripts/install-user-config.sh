@@ -120,7 +120,7 @@ else:
 for n in notes:
     print('NOTE ' + n)
 PY
-[ $? -eq 0 ] || rc=1
+[ $? -eq 0 ] || { rc=1; settings_bad=1; }
 
 # ---- 2. global working agreement -> CLAUDE.md
 md="$dest/CLAUDE.md"; src_md="$repo/global/CLAUDE.md"
@@ -183,6 +183,9 @@ else
 fi
 
 # ---- 4. optional hooks (local only): copy + register with absolute paths, never duplicated
+if [ -n "$hooks" ] && [ "${settings_bad:-0}" = 1 ]; then
+  warn "hooks not registered: settings.json could not be merged (see the ERROR above)"; hooks=""
+fi
 if [ -n "$hooks" ]; then
   mkdir -p "$dest/hooks"
   for h in $(printf '%s' "$hooks" | tr ',' ' '); do
@@ -191,8 +194,11 @@ if [ -n "$hooks" ]; then
   "$PY" - "$dest/settings.json" "$dest/hooks" "$hooks" "$stamp" <<'PY'
 import json, os, shutil, sys
 dst, hdir, names, stamp = sys.argv[1], sys.argv[2], sys.argv[3].split(','), sys.argv[4]
-with open(dst, 'rb') as f:
-    cur = json.loads(f.read().decode('utf-8-sig'))
+try:
+    with open(dst, 'rb') as f:
+        cur = json.loads(f.read().decode('utf-8-sig'))
+except (OSError, ValueError) as e:
+    print('ERROR hooks not registered: cannot read %s (%s)' % (dst, e)); sys.exit(1)
 spec = {'guard': ('PreToolUse', {'matcher': 'Bash|PowerShell|Monitor|Write|Edit'}, {}),
         'plan-gate': ('Stop', {}, {'timeout': 15})}
 hooks = cur.setdefault('hooks', {})
