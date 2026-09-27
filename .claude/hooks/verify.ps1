@@ -32,11 +32,16 @@
 #     red again and no file changed since the last red run (e.g. a question-only turn), it does
 #     not block but shows the owner the same kind of "checks still RED" message instead.
 #     Outside git (or without git) there is no hash, so it blocks as before;
-#   * no file changed THIS turn (needs the UserPromptSubmit registration): on UserPromptSubmit it
-#     stores the same tree hash as the turn-start marker for the session (never runs the checks,
-#     prints nothing, always exits 0; outside git no marker). At Stop, if the tree still equals
-#     that marker (e.g. a review-only turn in a project that was already red), Claude changed no
-#     files, so it exits 0 without running the checks. No marker (not registered) = as before.
+#   * no file changed since the checks last ran (needs the UserPromptSubmit registration): every
+#     Stop that runs the checks (pass, block or give-up) stores the tree hash they ran on as the
+#     session's "verified" state; the session's first prompt seeds it with the tree at that moment.
+#     On UserPromptSubmit it copies that state (not the current tree) into the turn-start marker
+#     (never runs the checks, prints nothing, always exits 0; outside git no marker). At Stop, if
+#     the tree still equals that marker (e.g. a review-only turn in a project that was already
+#     red), nothing changed since the last check run (or the session start), so it exits 0
+#     without running the checks (and keeps that tree as the verified state). Files written with
+#     no Stop in between (e.g. by a background subagent whose completion arrives as a new prompt)
+#     are still checked at the next Stop. No marker (not registered) = as before.
 #
 # Enable a TRUSTED project once:
 #   Add-Content "$env:USERPROFILE\.claude\verify-allowed.txt" "D:\path\to\project"
@@ -85,7 +90,7 @@ try {
     if ($key.Length -gt 100) { $key = $key.Substring(0, 100) }
     $mkey = $key                         # the turn-start marker needs a real session id
     if (-not $key) { $key = 'no-session' }
-    $state = $null; $tstate = $null; $mstate = $null
+    $state = $null; $tstate = $null; $mstate = $null; $vstate = $null
     try {
         $tmp = if ($env:TEMP) { $env:TEMP } else { [System.IO.Path]::GetTempPath() }
         $dir = Join-Path $tmp 'claude-verify'
@@ -93,9 +98,10 @@ try {
         if (Test-Path -LiteralPath $dir -PathType Container) {
             $state = Join-Path $dir "$key.count"
             $tstate = Join-Path $dir "$key.tree"   # tree hash after the last red run of this session
-            if ($mkey) { $mstate = Join-Path $dir "$mkey.start" }   # tree hash when this session's current turn started
+            if ($mkey) { $mstate = Join-Path $dir "$mkey.start" }   # turn-start marker: the tree this turn's Stops compare against
+            if ($mkey) { $vstate = Join-Path $dir "$mkey.verified" }   # tree the checks last ran on (seeded at the session's first prompt)
         }
-    } catch { $state = $null; $tstate = $null; $mstate = $null }
+    } catch { $state = $null; $tstate = $null; $mstate = $null; $vstate = $null }
 
     $count = 0
     if ($active) {                       # a continuation we (or another Stop hook) caused
@@ -140,7 +146,17 @@ try {
         if ($mstate) {
             Remove-Item -LiteralPath $mstate -Force -ErrorAction SilentlyContinue   # never leave the previous turn's marker behind
             $start = [string](Get-TreeState $cwd)
-            if ($start) { Set-Content -LiteralPath $mstate -Value $start -ErrorAction SilentlyContinue }
+            if ($start) {
+                # Marker = the tree the checks last ran on, NOT the current tree: files written since then with
+                # no Stop in between (e.g. a background subagent whose completion arrives as this prompt) must
+                # still be checked at the next Stop. No verified state yet (first prompt): the current tree.
+                if (Test-Path -LiteralPath $vstate) {
+                    $base = ([string](Get-Content -LiteralPath $vstate -TotalCount 1 -ErrorAction SilentlyContinue)).Trim()   # unreadable/empty: no marker (checks run)
+                } else {
+                    $base = $start; Set-Content -LiteralPath $vstate -Value $start -ErrorAction SilentlyContinue
+                }
+                if ($base) { Set-Content -LiteralPath $mstate -Value $base -ErrorAction SilentlyContinue }
+            }
         }
         exit 0
     }
@@ -151,12 +167,14 @@ try {
         $pre = [string](Get-TreeState $cwd)
         if (Test-Path -LiteralPath $tstate) { $last = ([string](Get-Content -LiteralPath $tstate -TotalCount 1 -ErrorAction SilentlyContinue)).Trim() }
     }
-    # Tree equals this turn's start marker: Claude changed no files this turn, so a block cannot help
-    # (e.g. a review-only turn in a project that was already red). Skip the checks.
+    # Tree equals this turn's start marker: no file changed since the checks last ran (or since the
+    # session started), so a block cannot help (e.g. a review-only turn in a project that was already
+    # red). Skip the checks.
     if ($pre -and $mstate -and (Test-Path -LiteralPath $mstate)) {
         $start = ([string](Get-Content -LiteralPath $mstate -TotalCount 1 -ErrorAction SilentlyContinue)).Trim()
         if ($pre -eq $start) {
             if ($state) { Remove-Item -LiteralPath $state -Force -ErrorAction SilentlyContinue }
+            if ($vstate) { Set-Content -LiteralPath $vstate -Value $pre -ErrorAction SilentlyContinue }   # back at (or still at) that state
             exit 0
         }
     }
@@ -166,6 +184,8 @@ try {
     $code = $LASTEXITCODE
     Pop-Location
     if ($null -eq $code) { exit 0 }      # could not tell - fail open
+    # The checks ran (pass, block or give-up): the tree they ran on is the next turn's marker.
+    if ($vstate -and $pre) { Set-Content -LiteralPath $vstate -Value $pre -ErrorAction SilentlyContinue }
     if ($code -eq 0) {
         if ($state) { Remove-Item -LiteralPath $state -Force -ErrorAction SilentlyContinue }
         if ($tstate) { Remove-Item -LiteralPath $tstate -Force -ErrorAction SilentlyContinue }

@@ -31,11 +31,16 @@
 #     red again and no file changed since the last red run (e.g. a question-only turn), it does
 #     not block but shows the owner the same kind of "checks still RED" message instead.
 #     Outside git (or without git) there is no hash, so it blocks as before;
-#   * no file changed THIS turn (needs the UserPromptSubmit registration): on UserPromptSubmit it
-#     stores the same tree hash as the turn-start marker for the session (never runs the checks,
-#     prints nothing, always exits 0; outside git no marker). At Stop, if the tree still equals
-#     that marker (e.g. a review-only turn in a project that was already red), Claude changed no
-#     files, so it exits 0 without running the checks. No marker (not registered) = as before.
+#   * no file changed since the checks last ran (needs the UserPromptSubmit registration): every
+#     Stop that runs the checks (pass, block or give-up) stores the tree hash they ran on as the
+#     session's "verified" state; the session's first prompt seeds it with the tree at that moment.
+#     On UserPromptSubmit it copies that state (not the current tree) into the turn-start marker
+#     (never runs the checks, prints nothing, always exits 0; outside git no marker). At Stop, if
+#     the tree still equals that marker (e.g. a review-only turn in a project that was already
+#     red), nothing changed since the last check run (or the session start), so it exits 0
+#     without running the checks (and keeps that tree as the verified state). Files written with
+#     no Stop in between (e.g. by a background subagent whose completion arrives as a new prompt)
+#     are still checked at the next Stop. No marker (not registered) = as before.
 #
 # Enable a TRUSTED project once:
 #   echo "/path/to/project" >> ~/.claude/verify-allowed.txt
@@ -88,12 +93,13 @@ max=$((10#$max))
 key="$(printf '%s' "$sid" | tr -cd 'A-Za-z0-9_-' | cut -c1-100)"
 mkey="$key"                                # the turn-start marker needs a real session id
 [ -z "$key" ] && key="no-session"
-state=""; tstate=""; mstate=""
+state=""; tstate=""; mstate=""; vstate=""
 sdir="${TMPDIR:-/tmp}"; sdir="${sdir%/}/claude-verify-$(id -u 2>/dev/null || echo 0)"
 if mkdir -p -m 700 "$sdir" 2>/dev/null && [ -d "$sdir" ] && [ ! -L "$sdir" ] && [ -O "$sdir" ]; then
   state="$sdir/$key.count"
   tstate="$sdir/$key.tree"                 # tree hash after the last red run of this session
-  [ -n "$mkey" ] && mstate="$sdir/$mkey.start"   # tree hash when this session's current turn started
+  [ -n "$mkey" ] && mstate="$sdir/$mkey.start"   # turn-start marker: the tree this turn's Stops compare against
+  [ -n "$mkey" ] && vstate="$sdir/$mkey.verified"   # tree the checks last ran on (seeded at the session's first prompt)
 fi
 count=0
 if [ "$active" = "true" ]; then            # a continuation we (or another Stop hook) caused
@@ -128,7 +134,17 @@ if [ "$event" = "UserPromptSubmit" ]; then
   if [ -n "$mstate" ]; then
     rm -f "$mstate" 2>/dev/null            # never leave the previous turn's marker behind
     start="$(tree_state)"
-    [ -n "$start" ] && printf '%s\n' "$start" > "$mstate" 2>/dev/null
+    if [ -n "$start" ]; then
+      # Marker = the tree the checks last ran on, NOT the current tree: files written since then with
+      # no Stop in between (e.g. a background subagent whose completion arrives as this prompt) must
+      # still be checked at the next Stop. No verified state yet (first prompt): the current tree.
+      if [ -f "$vstate" ]; then
+        base=""; { IFS= read -r base < "$vstate"; } 2>/dev/null   # unreadable/empty: no marker (checks run)
+      else
+        base="$start"; printf '%s\n' "$start" > "$vstate" 2>/dev/null
+      fi
+      [ -n "$base" ] && printf '%s\n' "$base" > "$mstate" 2>/dev/null
+    fi
   fi
   exit 0
 fi
@@ -138,16 +154,20 @@ if [ -n "$tstate" ]; then
   pre="$(tree_state)"
   [ -f "$tstate" ] && { IFS= read -r last < "$tstate" 2>/dev/null || true; }
 fi
-# Tree equals this turn's start marker: Claude changed no files this turn, so a block cannot help
-# (e.g. a review-only turn in a project that was already red). Skip the checks.
+# Tree equals this turn's start marker: no file changed since the checks last ran (or since the
+# session started), so a block cannot help (e.g. a review-only turn in a project that was already
+# red). Skip the checks.
 if [ -n "$pre" ] && [ -n "$mstate" ] && [ -f "$mstate" ]; then
   start=""; { IFS= read -r start < "$mstate"; } 2>/dev/null || true
   if [ "$pre" = "$start" ]; then
     [ -n "$state" ] && rm -f "$state" 2>/dev/null
+    [ -n "$vstate" ] && printf '%s\n' "$pre" > "$vstate" 2>/dev/null   # back at (or still at) that state
     exit 0
   fi
 fi
 out="$("$checks" 2>&1)"; code=$?
+# The checks ran (pass, block or give-up): the tree they ran on is the next turn's marker.
+[ -n "$vstate" ] && [ -n "$pre" ] && printf '%s\n' "$pre" > "$vstate" 2>/dev/null
 if [ "$code" -eq 0 ]; then
   [ -n "$state" ] && rm -f "$state" 2>/dev/null
   [ -n "$tstate" ] && rm -f "$tstate" 2>/dev/null
