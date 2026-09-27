@@ -1,6 +1,6 @@
 ---
 name: requirements-gate
-description: Change request with more than one step or implied follow-on work (prompt, issue, PR/review comment, TODO, plan file)? Lists AC1…ACn, asks about readings that change the work, maps every AC to evidence before done. Not for one-sentence edits, questions or reviews.
+description: Use before implementing any feature or change request that is short or vague, spans more than one file, or implies unstated follow-on work (tests, other callers, docs, config) — from a prompt, issue, ticket, PR or review comment, TODO or plan item. Lists AC1…ACn (asked + implied), asks only where readings change the work, and maps every AC to evidence before done. Skip one-line edits, questions and reviews.
 ---
 
 # Requirements gate — say what done means, then prove it
@@ -39,9 +39,10 @@ Smallest change that meets every AC. Subagent briefs carry their ACs verbatim. C
 ## 6. Audit before done
 After the guard run, one table:
 
-| AC | Status | Evidence |
-|----|--------|----------|
-| AC1 | met | `app/export.py:42`; `pytest tests/test_export.py::test_csv_header` → exit 0 |
+| AC | Source | Status | Evidence |
+|----|--------|--------|----------|
+| AC1 | asked | met | `app/export.py:42`; `pytest tests/test_export.py::test_csv_header` → exit 0 |
+| AC2 | implied: CSV must match the page filter | met | `pytest tests/test_export.py::test_csv_respects_status` → exit 0 |
 
 - Status: `met` · `partial` · `not met` · `deferred (owner OK)`. Evidence: `file:line`, a test name, or a command and its exit code; no evidence found = `not met`.
 - `Unrequested changes:` each changed file (`git diff --stat`) that maps to no AC — justify it in one line or revert it.
@@ -49,7 +50,7 @@ After the guard run, one table:
 - Multi-file work: hand the spec or plan path, this table and the `git diff --stat` summary to the `completion-auditor` agent and report its verdicts.
 
 ## 7. Report
-Line 1: the `Guards: …` line from `regression-guard`. Line 2: `Requirements: 5/5 met` or `Requirements: 4/5 — AC3 partial: <reason>`. Then the table.
+Line 1: the `Guards: …` line from `regression-guard`. Line 2: `Requirements: 5/5 met` or `Requirements: 4/5 — AC3 partial: <reason>`. Then the table, then `Assumptions:` — every default you picked that the owner hasn't confirmed — so the owner sees them in the done report, not only in the first reply. No edits possible (chat, repo not in the workspace)? The same table and Assumptions go with the code you hand over.
 
 ## 8. Fix once
 - Owner says "you missed X" → owner correction → `regression-guard` (guard for X + ledger row).
