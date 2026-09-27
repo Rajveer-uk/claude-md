@@ -1,6 +1,6 @@
 ---
 name: typescript-reviewer
-description: Expert TypeScript/JavaScript reviewer for type safety, async correctness, Node/web security, and idiomatic patterns. MUST BE USED for TypeScript/JavaScript code changes. Focuses on TS/JS-specific correctness; the holistic pre-merge review is the `code-reviewer` agent.
+description: Expert TypeScript/JavaScript reviewer for type safety, async correctness, Node/web security, and idiomatic patterns. Use proactively for TypeScript/JavaScript code changes. Focuses on TS/JS-specific correctness; the holistic pre-merge review is the `code-reviewer` agent.
 tools: ["Read", "Grep", "Glob", "Bash"]
 model: sonnet
 ---

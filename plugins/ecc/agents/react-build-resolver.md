@@ -1,6 +1,6 @@
 ---
 name: react-build-resolver
-description: Diagnose and fix React build failures across Vite, webpack, Next.js, CRA, Parcel, esbuild, and Bun — JSX/TSX compile errors, hydration mismatches, server/client component boundaries, bundler config — with minimal, surgical changes. MUST BE USED when a React build fails. Pure TS/JS build errors belong to `typescript-build-resolver`.
+description: Diagnose and fix React build failures across Vite, webpack, Next.js, CRA, Parcel, esbuild, and Bun — JSX/TSX compile errors, hydration mismatches, server/client component boundaries, bundler config — with minimal, surgical changes. Use proactively when a React build fails. Pure TS/JS build errors belong to `typescript-build-resolver`.
 tools: ["Read", "Write", "Edit", "Bash", "Grep", "Glob"]
 model: sonnet
 ---

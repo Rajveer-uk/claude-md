@@ -1,6 +1,6 @@
 ---
 name: swift-reviewer
-description: Expert Swift reviewer for protocol-oriented design, value semantics, ARC memory management, Swift Concurrency, and idiomatic patterns. MUST BE USED for Swift code changes. Focuses on Swift-specific correctness; the holistic pre-merge review is the `code-reviewer` agent.
+description: Expert Swift reviewer for protocol-oriented design, value semantics, ARC memory management, Swift Concurrency, and idiomatic patterns. Use proactively for Swift code changes. Focuses on Swift-specific correctness; the holistic pre-merge review is the `code-reviewer` agent.
 tools: ["Read", "Grep", "Glob", "Bash"]
 model: sonnet
 ---

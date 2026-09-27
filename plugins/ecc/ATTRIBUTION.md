@@ -76,6 +76,7 @@ The following files were edited from their upstream form (minimal, surgical chan
 | `skills/security-scan/SKILL.md` | Retargeted `everything-claude-code:security-reviewer` → `security-auditor` (later removed in the trim) |
 | (token-optimization trim) | Removed the inert ECC harness machinery — 7 agents, 51 commands, 65 skills — plus `angular-developer/references/`; kept 10 standalone knowledge skills (≈197K tokens saved) |
 | `agents/refactor-cleaner.md`, `agents/code-simplifier.md` | 2026-09-25 — Quoted the `description:` value: its unquoted `Boundary: ` broke the YAML frontmatter, so the agent loaded with every field ignored (including its `tools:` allowlist). Text unchanged (v1.1.1) |
+| 18 reviewer/resolver agents (`cpp`, `csharp`, `django`, `fastapi`, `flutter`, `fsharp`, `go`, `java`, `kotlin`, `mle`, `php`, `python`, `react`, `react-build-resolver`, `rust`, `swift`, `typescript`, `vue`) | 2026-09-27 — `description:` "MUST BE USED for …" → "Use proactively for …" (owner-approved). Anthropic's sub-agents docs recommend the lowercase phrase, and all-caps MUST wording over-triggers on current models, pulling a reviewer subagent into one-line edits. Rest of each description unchanged; routing checked by `evals/` (v1.1.2): a delegated Python review picked `python-reviewer` 2/2 with both the old and the new wording, and a one-line fix stayed inline |
 
 ## Notes for users
 

@@ -1,6 +1,6 @@
 ---
 name: php-reviewer
-description: Expert PHP reviewer for PSR-12, the PHP type system, Eloquent ORM patterns, security, and performance. MUST BE USED for PHP code changes. Focuses on PHP-specific correctness; the holistic pre-merge review is the `code-reviewer` agent.
+description: Expert PHP reviewer for PSR-12, the PHP type system, Eloquent ORM patterns, security, and performance. Use proactively for PHP code changes. Focuses on PHP-specific correctness; the holistic pre-merge review is the `code-reviewer` agent.
 tools: ["Read", "Grep", "Glob", "Bash"]
 model: sonnet
 ---

@@ -561,7 +561,7 @@ cp "$repo/plugins/marketing/commands/review.md"    "$dest/commands/marketing-rev
 
 ## I. Updating an existing install
 
-Updates flow from the **marketplace source** (the GitHub repo you added), so the new version must have been pushed there first. Each pack's `version` in `plugins/<pack>/.claude-plugin/plugin.json` governs updates: a push **without a version bump never reaches installed users**. Maintainers bump it on every release (and never set `version` in `marketplace.json` too). This release: `base` 1.7.0, `marketing` 1.1.0, `council` 1.1.0, `ecc` 1.1.1.
+Updates flow from the **marketplace source** (the GitHub repo you added), so the new version must have been pushed there first. Each pack's `version` in `plugins/<pack>/.claude-plugin/plugin.json` governs updates: a push **without a version bump never reaches installed users**. Maintainers bump it on every release (and never set `version` in `marketplace.json` too). This release: `base` 1.7.0, `marketing` 1.1.0, `council` 1.1.0, `ecc` 1.1.2.
 
 **Plugin installs (§G):**
 ```text

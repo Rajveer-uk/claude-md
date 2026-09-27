@@ -1,6 +1,6 @@
 ---
 name: python-reviewer
-description: Expert Python reviewer for PEP 8, Pythonic idioms, type hints, security, and performance. MUST BE USED for Python code changes. Focuses on Python-specific correctness; the holistic pre-merge review is the `code-reviewer` agent.
+description: Expert Python reviewer for PEP 8, Pythonic idioms, type hints, security, and performance. Use proactively for Python code changes. Focuses on Python-specific correctness; the holistic pre-merge review is the `code-reviewer` agent.
 tools: ["Read", "Grep", "Glob", "Bash"]
 model: sonnet
 ---
