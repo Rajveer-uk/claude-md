@@ -1,0 +1,21 @@
+{
+  "_comment": [
+    "TEMPLATE (claude-md/templates/features.json) - feature list for multi-session work on one spec.",
+    "Copy to specs/<slug>.features.json next to specs/<slug>.md: one entry per AC, or per slice of an AC.",
+    "Agents edit only passes and evidence. Set passes to true only with evidence: file:line, a test name, or a command and its exit code.",
+    "Entries are never removed. description and verify change only with the owner's OK.",
+    "The spec-integrity guard step enforces this against the base refs (owner OK = ALLOW_GUARD_CHANGE=1).",
+    "Public-safe: no secrets, hosts, IPs or client names. This _comment key can be deleted."
+  ],
+  "spec": "specs/<slug>.md",
+  "features": [
+    {
+      "id": "F-01",
+      "ac": "AC1",
+      "description": "When <trigger>, <component> shall <result>",
+      "verify": "test: <path>::<name>",
+      "passes": false,
+      "evidence": ""
+    }
+  ]
+}

@@ -12,6 +12,8 @@ step in `.claude/guards.sh` and `.claude/guards.ps1`).
 - EX-005 to EX-007 come from a data-pipeline project — in that project copy all three and add the two `check:`
   steps they name (`mysql-binlog-expiry`, `worker-topology`; commented out at the bottom of `templates/guards.sh`
   and `.ps1`); EX-006 stays a `review:` row until the throughput balance can be asserted from config.
+- EX-008 and EX-009 cite built-in steps of `templates/guards.sh` / `.ps1` (`no-stubs`, `spec-integrity`), so there
+  is no step to write; give each row your own area tag.
 
 | ID | Area | Rule (must stay true) | Guard | Added |
 |----|------|-----------------------|-------|-------|
@@ -22,5 +24,7 @@ step in `.claude/guards.sh` and `.claude/guards.ps1`).
 | EX-005 | ops/mysql | _(example from a data-pipeline project)_ MySQL binlog expiry stays at 1 day (`binlog_expire_logs_seconds=86400`) — 1.1GB binlogs have filled the disk before. | check: mysql-binlog-expiry | 2026-09-25 |
 | EX-006 | ops/queue | _(example from a data-pipeline project)_ Stream-worker vs queue-worker throughput stays balanced so the `jobs` table doesn't refill (past incident: 30M rows). | review: any change to stream-worker or queue-worker rate, batch size, concurrency or schedule states jobs/min produced vs consumed, and consumed ≥ produced | 2026-09-25 |
 | EX-007 | ops/workers | _(example from a data-pipeline project)_ Topology stays six stream workers (companies, officers, charges, psc, insolvency, filings) + one queue worker. | check: worker-topology | 2026-09-25 |
+| EX-008 | code/api | _(example)_ No added line carries a TODO/FIXME/XXX/HACK without a ticket ref (`TODO(#123)`), a not-implemented stub, an elision comment ("... rest of code unchanged"), a stub or placeholder comment, a newly skipped test or a conflict marker, unless the line says `stub-ok: <reason>` (past incident: "tests pass" hid a stubbed handler). | check: no-stubs | 2026-09-27 |
+| EX-009 | docs/specs | _(example)_ A spec AC marked `met` cites evidence (file:line, test name, or command + exit code) and every `test:` path it names exists; `specs/*.features.json` entries are never removed, their description/verify change only with owner OK, and `passes: true` carries evidence. | check: spec-integrity | 2026-09-27 |
 
 Public-safe: committed with the config repo — no secrets, hosts, IPs or client names in any row.

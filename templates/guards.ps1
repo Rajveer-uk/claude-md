@@ -12,15 +12,28 @@
 #                             when the branch has an upstream, its fork point (merge-base with @{u}),
 #                             so a committed-but-unpushed row deletion is caught too. CI sets
 #                             origin/<base branch> on pull requests and the pre-push commit on pushes.
-#         ALLOW_GUARD_CHANGE  1 = skip the append-only check. Owner's explicit OK only.
+#         ALLOW_GUARD_CHANGE  1 = skip the append-only check. Owner's explicit OK only. Also lets
+#                             spec-integrity accept removed features.json entries and edited description/verify.
 #         CONTENT_DIRS        override the content-lint folder list below
+#         STUB_SCAN           0 = skip no-stubs (owner opt-out; shows as SKIP in the summary)
+#
+# Built-in steps: ledger-integrity, content-lint, lint, tests (slow), plus
+#   no-stubs        lines added since the base refs (and untracked files) carry no TODO/FIXME/XXX/HACK
+#                   without a ticket ref - TODO(#123) or TODO(ABC-12) - no not-implemented marker, elision
+#                   comment ("... rest of code unchanged"), stub/placeholder comment, newly skipped test or
+#                   conflict marker. A line with "stub-ok: <reason>" is exempt. Docs, brand/, .claude/ skipped.
+#   spec-integrity  specs/*.md and SPEC.md: an AC row marked met needs Evidence and its test: paths must
+#                   exist (open rows never fail). specs/*.features.json (+ a root features.json): valid JSON,
+#                   passes: true needs evidence, no entry removed and description/verify unchanged vs the
+#                   base refs.
 #
 # Add a check: step for any invariant a test can't cover (config, ops, content rules):
 #   Step '<name>' [-Slow] { <commands> }   native exit code 0 = OK, other = ERROR. From PowerShell
 #       code, output "ERROR: <reason>" and set $script:StepCode = 1 (never call exit inside a step);
 #       "SKIP: <reason>" + $script:StepCode = 77 = SKIP.
 # Reference it in REGRESSIONS.md as "check: <name>". Steps read files in this repo only - no
-# network, no secrets, no production hosts. Needs PowerShell 5+; git is optional.
+# network, no secrets, no production hosts. Needs PowerShell 5+; git is optional (no-stubs skips
+# without it).
 param([switch]$Fast, [switch]$Help)
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Continue'
@@ -46,6 +59,14 @@ $ContentDirs = 'content blog posts copy marketing emails newsletters social land
 if ($env:CONTENT_DIRS) { $ContentDirs = $env:CONTENT_DIRS }
 $BannedFile = 'brand/banned-phrases.txt'
 $Ledger = 'REGRESSIONS.md'
+
+# Paths no-stubs never scans (git pathspec globs; * also matches /). Docs and the ledger are prose,
+# brand/ and .claude/ hold the rules; vendored, built, lock and minified files aren't hand-written.
+# Keep in sync with STUB_SKIP_PATHS in guards.sh.
+$StubSkipPaths = '*.md *.mdx *.rst *.txt REGRESSIONS.md brand/* .claude/*
+  vendor/* */vendor/* node_modules/* */node_modules/* dist/* */dist/* build/* */build/*
+  *.lock package-lock.json */package-lock.json npm-shrinkwrap.json */npm-shrinkwrap.json
+  pnpm-lock.yaml */pnpm-lock.yaml go.sum */go.sum *.min.js *.min.css'
 
 # ---------------------------------------------------------------- setup
 $Self = $MyInvocation.MyCommand.Path
@@ -89,7 +110,7 @@ foreach ($a in $args) {
   elseif ($a -eq '-h' -or $a -eq '--help') { $Help = $true }
   else { [Console]::Error.WriteLine('usage: powershell -NoProfile -ExecutionPolicy Bypass -File .claude\guards.ps1 [-Fast]'); exit 2 }
 }
-if ($Help) { Get-Content -LiteralPath $Self | Select-Object -Skip 1 -First 22; exit 0 }
+if ($Help) { Get-Content -LiteralPath $Self | Select-Object -Skip 1 -First 35; exit 0 }
 
 $null = New-Item -ItemType Directory -Force -Path '.claude'
 $Log = Join-Path $rootFull '.claude/guards.log'
@@ -398,10 +419,273 @@ function Invoke-LedgerIntegrity {
   $script:StepCode = 1
 }
 
+# no-stubs patterns - keep them identical in meaning to STUB_* in guards.sh (\s = [[:space:]] there).
+# Case-sensitive (-cmatch): (1) TODO/FIXME/XXX/HACK markers ($StubTicket refs are removed first, so
+# TODO(#123) and TODO(ABC-12) pass), (2) not-implemented markers, (5) newly skipped tests, (6) conflict
+# markers. Case-insensitive (-match): (3) LLM elision comments, (4) stub / placeholder comments.
+$StubTicket = '(TODO|FIXME|XXX|HACK)\((#?[0-9]+|[A-Z][A-Z0-9]+-[0-9]+)\)'
+$StubCase = '(^|[^A-Za-z0-9_])(TODO|FIXME|XXX|HACK)([^A-Za-z0-9_]|$)' +
+  '|NotImplemented(Error|Exception)|[Nn]ot[ _-][Ii]mplemented|notImplemented|unimplemented!\(|todo!\(' +
+  '|(^|[^A-Za-z0-9_])(it|test|describe|context)\.(skip|todo)\(|(^|[^A-Za-z0-9_])x(it|test|describe)\(' +
+  '|@pytest\.mark\.skip|@unittest\.skip|(^|[^A-Za-z0-9_])t\.Skip(Now)?\(|#\[ignore\]|markTestSkipped\(' +
+  '|@(Disabled|Ignore)([^A-Za-z0-9_]|$)|^(<<<<<<<|>>>>>>>)( |$)'
+$StubNoCase = '(^|[\s{])(//|#|--|/\*)\s*(\.\.\.|\u2026)\s*(rest|remaining|existing|same|other)\s.*(code|unchanged|implementation)' +
+  '|(^|[\s{])(//|#|--|/\*|<!--)\s*(stub|placeholder|dummy implementation)([^A-Za-z0-9_]|$)'
+$StubOk = 'stub-ok:\s*\S'
+
+function Invoke-NoStubs {
+  # Stub markers in lines added since the base refs, plus every line of untracked files.
+  if ($env:STUB_SCAN -eq '0') { 'SKIP: STUB_SCAN=0 (owner opt-out)'; $script:StepCode = 77; return }
+  if ((Invoke-GitText @('rev-parse', '--is-inside-work-tree') $rootFull).Code -ne 0) {
+    'SKIP: git not found or not a git work tree'; $script:StepCode = 77; return
+  }
+  $ord = [StringComparison]::Ordinal
+  $excl = @($StubSkipPaths -split '\s+' | Where-Object { $_ } | ForEach-Object { ":(exclude)$_" })
+  $recs = New-Object System.Collections.Generic.List[string]   # "<path>:<line><TAB><text>" per added line
+  $bases = 0
+  foreach ($b in @(Get-BaseRefs)) {   # every base: HEAD (+ upstream fork point), or GUARD_BASE_REF
+    $ref = $b.Ref
+    if ((Invoke-GitText @('rev-parse', '--verify', '--quiet', "$ref^{commit}") $rootFull).Code -ne 0) {
+      if ($env:GUARD_BASE_REF) { "ERROR: GUARD_BASE_REF $ref not found (CI: checkout with fetch-depth: 0)"; $script:StepCode = 1; return }
+      continue
+    }
+    $bases++
+    "added lines vs $($b.Label)"
+    $d = Invoke-GitText (@('-c', 'core.quotepath=off', 'diff', '-U0', '--no-color', '--no-ext-diff', '-M', '--src-prefix=a/', '--dst-prefix=b/', $ref, '--', '.') + $excl) $rootFull
+    $hdr = $false; $f = ''; $n = 0
+    foreach ($l in ($d.Out -split "`n")) {
+      if ($l.StartsWith('diff --git ', $ord)) { $hdr = $true; continue }
+      if ($hdr -and $l.StartsWith('+++ ', $ord)) { $f = $l.Substring(4) -replace '^b/', ''; continue }
+      if ($l.StartsWith('@@ ', $ord)) { $hdr = $false; $n = 0; if ($l -match '^@@ -[0-9,]+ \+([0-9]+)') { $n = [int]$Matches[1] }; continue }
+      if ($hdr) { continue }
+      if ($l.StartsWith('+', $ord)) { $recs.Add("${f}:$n`t" + ($l.Substring(1) -replace "`r$", '')); $n++ }
+    }
+  }
+  if ($bases -eq 0) { 'SKIP: no commit yet'; $script:StepCode = 77; return }
+  $u = Invoke-GitText (@('-c', 'core.quotepath=off', 'ls-files', '-o', '--exclude-standard', '--', '.') + $excl) $rootFull
+  $untracked = 0
+  foreach ($f in @($u.Out -split "`n" | ForEach-Object { $_ -replace "`r$", '' } | Where-Object { $_ })) {
+    $untracked++
+    $full = Join-Path $rootFull $f
+    if (-not (Test-Path -LiteralPath $full -PathType Leaf)) { continue }
+    if ((Get-Item -LiteralPath $full -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) { continue }
+    if (Test-Binary $full) { continue }
+    $i = 0
+    foreach ($l in @(Get-Content -LiteralPath $full -Encoding UTF8)) { $i++; $recs.Add("${f}:$i`t$l") }
+  }
+  "untracked files: $untracked"
+  $seen = New-Object 'System.Collections.Generic.HashSet[string]'
+  $hits = New-Object System.Collections.Generic.List[string]
+  foreach ($r in $recs) {
+    if (-not $seen.Add($r)) { continue }
+    $tab = $r.IndexOf("`t", $ord)
+    $t = $r.Substring($tab + 1)
+    $s = $t -creplace $StubTicket, ' '
+    if (($s -cmatch $StubCase -or $s -match $StubNoCase) -and $s -cnotmatch $StubOk) {
+      $h = $r.Substring(0, $tab) + ': ' + $t.TrimStart(' ', "`t")
+      if ($h.Length -gt 160) { $h = $h.Substring(0, 160) }
+      $hits.Add($h)
+    }
+  }
+  if ($hits.Count -eq 0) { return }
+  $shown = @($hits | Select-Object -First 10) -join '; '
+  if ($hits.Count -gt 10) { $shown += "; +$($hits.Count - 10) more" }
+  "ERROR: $($hits.Count) stub marker(s) added (finish it, cite a ticket as TODO(#123), or add `"stub-ok: <reason>`" to the line): $shown"
+  $hits | Select-Object -First 10
+  $script:StepCode = 1
+}
+
+function Get-SpecCell($Cells, [int]$I) { if ($I -ge 1 -and $I -lt $Cells.Count) { return [string]$Cells[$I] }; return '' }
+function Get-SpecNorm([string]$S) { return ($S -replace '[`*_]', '').Trim().ToLowerInvariant() }
+
+function Get-JsonProp($Obj, [string]$Name) {
+  # A parsed JSON object's property value (arrays come back whole), or $null. Names are case-sensitive.
+  if ($Obj -isnot [System.Management.Automation.PSCustomObject]) { return $null }
+  $p = $Obj.PSObject.Properties[$Name]
+  if ($null -eq $p -or $p.Name -cne $Name) { return $null }
+  return ,$p.Value
+}
+
+function ConvertFrom-FeatureJson([string]$Text) {
+  $t = $Text.TrimStart([char]0xFEFF)
+  if (-not $t.Trim()) { throw 'empty file' }
+  return ,($t | ConvertFrom-Json -ErrorAction Stop)
+}
+
+function Get-FeatureList($Doc) {
+  $fl = Get-JsonProp $Doc 'features'
+  if ($null -ne $fl -and $fl -is [array]) { return ,$fl }
+  return $null
+}
+
+function Get-FeatureIds($List) {
+  $h = New-Object System.Collections.Specialized.OrderedDictionary
+  foreach ($e in $List) {
+    $id = Get-JsonProp $e 'id'
+    if ($id -is [string] -and $id.Trim()) { $h[$id] = $e }
+  }
+  return ,$h
+}
+
+function Get-JsonText($V) {
+  if ($null -eq $V) { return '' }
+  if ($V -is [string]) { return $V }
+  return [string](ConvertTo-Json -InputObject $V -Compress -Depth 10)
+}
+
+function Invoke-SpecIntegrity {
+  # specs/*.md + SPEC.md Requirements rows; specs/*.features.json (+ a root features.json).
+  $problems = New-Object System.Collections.Generic.List[string]
+  $soft = New-Object System.Collections.Generic.List[string]   # changes vs a base ref: a NOTE under ALLOW_GUARD_CHANGE=1
+  $ord = [StringComparison]::Ordinal
+  $md = @()
+  if (Test-Path -LiteralPath 'SPEC.md' -PathType Leaf) { $md += 'SPEC.md' }
+  if (Test-Path -LiteralPath 'specs' -PathType Container) {
+    $md += @(Get-ChildItem -LiteralPath 'specs' -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -clike '*.md' } | Sort-Object Name | ForEach-Object { 'specs/' + $_.Name })
+  }
+  # Tables whose header has AC and Status columns. A row whose Status is met (or done) needs a non-empty
+  # Evidence cell, and each "test: <path>::<name>" in its Verify or Evidence cell must name an existing file.
+  $rows = 0
+  foreach ($f in $md) {
+    $inCom = $false; $fence = $false; $tbl = 0; $ac = 0; $st = 0; $ev = 0; $vf = 0
+    foreach ($raw in @(Get-Content -LiteralPath $f -Encoding UTF8)) {
+      $l0 = $raw -replace "`r$", ''
+      if ($inCom) { if ($l0.Contains('-->')) { $inCom = $false }; continue }
+      if ($l0 -match '^\s*(```|~~~)') { $fence = -not $fence; $tbl = 0; continue }
+      if ($fence) { continue }
+      $ci = $l0.IndexOf('<!--', $ord)
+      if ($ci -ge 0) { if ($l0.IndexOf('-->', $ci, $ord) -lt 0) { $inCom = $true }; continue }
+      if ($l0 -notmatch '^\s*\|') { $tbl = 0; continue }
+      $l = (($l0 -replace '\\\|', '%PIPE%') -replace '^\s*\|', '') -replace '\|\s*$', ''
+      $c = @('') + @($l -split '\|')   # 1-based, like awk
+      if ($tbl -eq 0) {
+        $ac = 0; $st = 0; $ev = 0; $vf = 0
+        for ($i = 1; $i -lt $c.Count; $i++) {
+          $h = Get-SpecNorm $c[$i]
+          if ($h -ceq 'ac') { $ac = $i } elseif ($h -ceq 'status') { $st = $i } elseif ($h -ceq 'evidence') { $ev = $i } elseif ($h.StartsWith('verify', $ord)) { $vf = $i }
+        }
+        if ($ac -and $st) { $tbl = 1 } else { $tbl = 2 }
+        continue
+      }
+      if ($tbl -eq 2 -or $l -match '^[-:|\s]+$') { continue }
+      $s = Get-SpecNorm (Get-SpecCell $c $st)
+      if ($s -cnotmatch '^(met|done)([^a-z]|$)') { continue }
+      $id = ((Get-SpecCell $c $ac) -replace '[`*_]', '').Trim()
+      if ($s.StartsWith('met', $ord)) { $w = 'met' } else { $w = 'done' }
+      $rows++
+      $e = Get-SpecCell $c $ev
+      if ((($e -replace '[\u2013\u2014]', '') -replace '[-`*_\s]', '') -eq '') { $problems.Add("${f}: $id is $w but its Evidence cell is empty") }
+      $x = (Get-SpecCell $c $vf) + ' ' + $e
+      $seenPath = New-Object 'System.Collections.Generic.HashSet[string]'
+      while ($true) {
+        $m = [regex]::Match($x, 'test:\s*[^\s`|:]+::')
+        if (-not $m.Success) { break }
+        $bc = ' '
+        if ($m.Index -gt 0) { $bc = $x.Substring($m.Index - 1, 1) }
+        $p = $m.Value; $x = $x.Substring($m.Index + $m.Length)
+        if ($bc -cmatch '[A-Za-z0-9_]') { continue }
+        $p = (($p -replace '^test:\s*', '') -replace '::$', '') -replace '^\./', ''
+        if (-not $seenPath.Add($p)) { continue }
+        $exists = $false
+        try { $exists = Test-Path -LiteralPath $p -PathType Leaf } catch { $exists = $false }
+        if (-not $exists) { $problems.Add("${f}: $id is $w but test file $p not found") }
+      }
+    }
+  }
+
+  # Feature lists: valid JSON, unique ids, passes: true needs evidence; vs every base ref no entry removed
+  # and description/verify unchanged.
+  $cur = @{}
+  $jpaths = @()
+  if (Test-Path -LiteralPath 'specs' -PathType Container) {
+    $jpaths += @(Get-ChildItem -LiteralPath 'specs' -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -clike '*.features.json' } | Sort-Object Name | ForEach-Object { 'specs/' + $_.Name })
+  }
+  if (Test-Path -LiteralPath 'features.json' -PathType Leaf) { $jpaths += 'features.json' }
+  $feats = 0
+  foreach ($p in $jpaths) {
+    try {
+      $d = ConvertFrom-FeatureJson ([string](Get-Content -LiteralPath $p -Raw -Encoding UTF8 -ErrorAction Stop))
+    } catch { $problems.Add("${p}: not valid JSON ($($_.Exception.Message))"); $cur[$p] = $null; continue }
+    $fl = Get-FeatureList $d
+    if ($null -eq $fl) {
+      if ($p -eq 'features.json') {
+        "$p has no `"features`" list - not a feature file, skipped"
+        $cur[$p] = New-Object System.Collections.Specialized.OrderedDictionary; continue
+      }
+      $problems.Add("${p}: needs a `"features`" list"); $cur[$p] = $null; continue
+    }
+    $feats++
+    $seen = New-Object 'System.Collections.Generic.HashSet[string]'
+    $i = 0
+    foreach ($e in $fl) {
+      $i++
+      $fid = Get-JsonProp $e 'id'
+      if (-not ($fid -is [string] -and $fid.Trim())) { $problems.Add("${p}: feature $i has no `"id`""); continue }
+      if (-not $seen.Add($fid)) { $problems.Add("${p}: duplicate id $fid") }
+      $pass = Get-JsonProp $e 'passes'
+      $evi = Get-JsonProp $e 'evidence'
+      if ($null -ne $pass -and $pass -isnot [bool]) { $problems.Add("${p}: $fid `"passes`" must be true or false") }
+      elseif ($pass -is [bool] -and $pass -and -not (($evi -is [string] -and $evi.Trim()) -or $evi -is [datetime])) {
+        $problems.Add("${p}: $fid has `"passes`": true but no `"evidence`"")
+      }
+    }
+    $cur[$p] = Get-FeatureIds $fl
+  }
+  $badRef = ''
+  if ((Invoke-GitText @('rev-parse', '--is-inside-work-tree') $rootFull).Code -eq 0) {
+    foreach ($b in @(Get-BaseRefs)) {
+      $ref = $b.Ref
+      if ((Invoke-GitText @('rev-parse', '--verify', '--quiet', "$ref^{commit}") $rootFull).Code -ne 0) {
+        if ($env:GUARD_BASE_REF) { $badRef = $ref }
+        continue
+      }
+      $ls = Invoke-GitText @('ls-tree', '-r', '--name-only', $ref, '--', 'specs', 'features.json') $rootFull
+      foreach ($bp in @($ls.Out -split "`n" | Where-Object { $_ -cmatch '^(specs/[^/]+\.features\.json|features\.json)$' })) {
+        $old = $null
+        $sh = Invoke-GitText @('show', "${ref}:$bp") $rootFull
+        if ($sh.Code -eq 0) { try { $old = Get-FeatureList (ConvertFrom-FeatureJson $sh.Out) } catch { $old = $null } }
+        if ($null -eq $old) { continue }
+        if (-not $cur.ContainsKey($bp)) { $soft.Add("$bp deleted since $($b.Label)"); continue }
+        $now = $cur[$bp]
+        if ($null -eq $now) { continue }
+        $was = Get-FeatureIds $old
+        foreach ($fid in @($was.Keys)) {
+          if (-not $now.Contains($fid)) { $soft.Add("${bp}: $fid removed since $($b.Label)"); continue }
+          foreach ($k in @('description', 'verify')) {
+            if ((Get-JsonText (Get-JsonProp $was[$fid] $k)) -cne (Get-JsonText (Get-JsonProp $now[$fid] $k))) {
+              $soft.Add("${bp}: $fid `"$k`" changed since $($b.Label)")
+            }
+          }
+        }
+      }
+    }
+  }
+  if ($badRef -and $feats -gt 0) { $problems.Add("GUARD_BASE_REF $badRef not found (CI: checkout with fetch-depth: 0)") }
+
+  if ($md.Count -eq 0 -and $feats -eq 0 -and $problems.Count -eq 0 -and $soft.Count -eq 0) {
+    'SKIP: no specs (specs/*.md, SPEC.md or *.features.json)'; $script:StepCode = 77; return
+  }
+  "spec files: $($md.Count), met AC rows: $rows, feature files: $feats"
+  $note = ''
+  if ($soft.Count -gt 0) {
+    $soft
+    if ($env:ALLOW_GUARD_CHANGE -eq '1') { $note = "ALLOW_GUARD_CHANGE=1 approved $($soft.Count) features.json change(s), listed in .claude/guards.log" }
+    else { foreach ($s in @($soft)) { $problems.Add("$s (owner OK = ALLOW_GUARD_CHANGE=1)") } }
+  }
+  if ($problems.Count -gt 0) {
+    "ERROR: $($problems.Count) spec problem(s): " + ($problems -join '; ')
+    $problems
+    $script:StepCode = 1; return
+  }
+  if ($note) { "NOTE: $note" }
+}
+
 # ---------------------------------------------------------------- steps (order = output order)
 Step 'ledger-integrity' { Invoke-LedgerIntegrity }
 Step 'content-lint' { Invoke-ContentLint }
 Step 'lint' { Invoke-Configured 'LintCmd' }
+Step 'no-stubs' { Invoke-NoStubs }
+Step 'spec-integrity' { Invoke-SpecIntegrity }
 
 # ---- project check: steps. Uncomment/adapt, add the same step to guards.sh, and reference it
 # ---- in REGRESSIONS.md as "check: <name>".
