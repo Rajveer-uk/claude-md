@@ -1022,6 +1022,91 @@ def st_completeness_chain():
     done(hard=hard)
 
 
+def st_user_installer():
+    """Runs scripts/install-user-config.sh on throwaway homes: the merge only ever adds."""
+    import shutil, tempfile
+    inst = os.path.abspath('scripts/install-user-config.sh')
+    hard = []
+    if not os.path.isfile(inst):
+        done(hard=['scripts/install-user-config.sh missing'])
+    cs = 'templates/cloud-setup.sh'
+    if not os.path.isfile(cs):
+        hard.append('%s missing' % cs)
+    else:
+        code = _code_only(read(cs), False)
+        if not re.search(r'install-user-config\.sh"?\s+--cloud', code):
+            hard.append('%s no longer runs install-user-config.sh --cloud' % cs)
+        if not re.search(r'(?m)^exit 0\s*$', code):
+            hard.append('%s must end with exit 0 (a failure never blocks a cloud session)' % cs)
+    base = load_or_fail('.claude/settings.json')
+    bdeny, bask = base['permissions'].get('deny', []), base['permissions'].get('ask', [])
+    tmp = tempfile.mkdtemp(prefix='installer-guard-')
+
+    def home(name, settings=None, md=None):
+        h = os.path.join(tmp, name)
+        os.makedirs(os.path.join(h, '.claude'))
+        if settings is not None:
+            with open(os.path.join(h, '.claude', 'settings.json'), 'w') as f:
+                f.write(settings if isinstance(settings, str) else json.dumps(settings))
+        if md is not None:
+            with open(os.path.join(h, '.claude', 'CLAUDE.md'), 'w') as f:
+                f.write(md)
+        return h
+
+    def run(h, *args):
+        env = dict(os.environ, HOME=h)
+        r = subprocess.run(['bash', inst, '--files'] + list(args), stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                           env=env, cwd=tmp, timeout=120)
+        return r.returncode
+
+    def settings(h):
+        with open(os.path.join(h, '.claude', 'settings.json')) as f:
+            return json.load(f)
+    try:
+        stop = [{'hooks': [{'type': 'command', 'command': '/opt/harness/stop.sh'}]}]
+        h = home('local', {'customKey': 1, 'hooks': {'Stop': stop},
+                           'permissions': {'defaultMode': 'acceptEdits', 'deny': ['Bash(custom:*)']}}, '# My own notes\n')
+        rc1 = run(h)
+        s1 = settings(h)
+        p = s1.get('permissions', {})
+        checks = (
+            ('exit 0 on a valid install', rc1 == 0),
+            ('an unrelated key is kept', s1.get('customKey') == 1),
+            ('an existing hook is kept', s1.get('hooks', {}).get('Stop') == stop),
+            ('an existing deny entry is kept', 'Bash(custom:*)' in p.get('deny', [])),
+            ('every baseline deny entry is added', all(x in p.get('deny', []) for x in bdeny)),
+            ('every baseline ask entry is added', all(x in p.get('ask', []) for x in bask)),
+            ('a non-plan defaultMode is kept', p.get('defaultMode') == 'acceptEdits'),
+            ('bypass mode is disabled', p.get('disableBypassPermissionsMode') == 'disable'),
+            ('a backup is written before the change', any('.bak' in n for n in os.listdir(os.path.join(h, '.claude')))),
+            ("the owner's own CLAUDE.md is kept", read(os.path.join(h, '.claude', 'CLAUDE.md')) == '# My own notes\n'),
+            ('the new CLAUDE.md goes next to it', os.path.isfile(os.path.join(h, '.claude', 'CLAUDE.md.claude-md-new'))),
+            ('the base agents are copied', os.path.isfile(os.path.join(h, '.claude', 'agents', 'completion-auditor.md'))),
+        )
+        hard += ['local install: ' + what for what, good in checks if not good]
+        rc2 = run(h)
+        s2 = settings(h)
+        if rc2 != 0 or s2 != s1 or len(s2['permissions']['deny']) != len(set(s2['permissions']['deny'])):
+            hard.append('a re-run must change nothing and add no duplicate')
+        h = home('cloud', {'hooks': {'Stop': stop}})
+        if run(h, '--cloud') != 0:
+            hard.append('cloud install: exit is not 0')
+        else:
+            sc = settings(h)
+            if 'defaultMode' in sc.get('permissions', {}):
+                hard.append('cloud install: must not set a Plan default (phone sessions and routines would stall)')
+            if not os.path.isfile(os.path.join(h, '.claude', 'CLAUDE.md')):
+                hard.append('cloud install: global CLAUDE.md not installed')
+        h = home('broken', '{"permissions": [')
+        if run(h) != 1 or read(os.path.join(h, '.claude', 'settings.json')) != '{"permissions": [':
+            hard.append('an unparseable settings.json must be left untouched with exit 1')
+    except (OSError, ValueError, subprocess.SubprocessError) as ex:
+        hard.append('installer fixture failed to run: %s' % ex)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+    done(hard=hard)
+
+
 TEMPLATE_RUNNERS = (('templates/guards.sh', re.compile(r'^step\s+([A-Za-z0-9._-]+)', re.M)),
                     ('templates/guards.ps1', re.compile(r"^Step\s+'([A-Za-z0-9._-]+)'", re.M)))
 TEMPLATE_STEPS_REQUIRED = {'ledger-integrity', 'content-lint', 'lint', 'tests', 'no-stubs', 'spec-integrity'}
@@ -1050,6 +1135,7 @@ def st_template_guard_steps():
 STEPS = {
     'prompt-hygiene': st_prompt_hygiene, 'plan-gate-bounds': st_plan_gate_bounds,
     'completeness-chain': st_completeness_chain, 'template-guard-steps': st_template_guard_steps,
+    'user-installer': st_user_installer,
     'json-parse': st_json_parse, 'frontmatter': st_frontmatter,
     'settings-baseline': st_settings_baseline, 'settings-deny': st_settings_deny,
     'managed-settings': st_managed_settings, 'network-agents': st_network_agents,
@@ -1211,6 +1297,7 @@ step prompt-hygiene -- py prompt-hygiene
 step plan-gate-bounds -- py plan-gate-bounds
 step completeness-chain -- py completeness-chain
 step template-guard-steps -- py template-guard-steps
+step user-installer -- py user-installer
 step plugin-validate slow -- plugin_validate
 
 # ---------------------------------------------------------------- summary

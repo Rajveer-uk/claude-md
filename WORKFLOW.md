@@ -10,7 +10,7 @@ The owner's day-to-day guide: which app to open, how to confirm the config is li
 |-----|------|---------------------|
 | **Coding in a repo** | Desktop app **Code** tab (Local) or the CLI. VS Code and JetBrains work too | Every local surface reads the same per-machine config: L1 + L2. Use whichever you prefer; there's nothing extra to set up |
 | **Away from the machine** | **Remote Control** from your phone or the web. It drives your local session | Full L1 + L2, because it is the local session |
-| **Parallel or offline code work** | A **cloud** session (claude.ai/code, mobile, or the Desktop cloud environment) | Only what the repo commits (L2) plus the skills enabled on your claude.ai account. No `~/.claude` and no plugins |
+| **Parallel or offline code work** | A **cloud** session (claude.ai/code, mobile, or the Desktop cloud environment) | Only what the repo commits (L2) plus the skills enabled on your claude.ai account. No `~/.claude` and no plugins — unless the cloud environment's Setup script installs your user layer into each container (L1c below): then global `CLAUDE.md`, the baseline rules and the `base` pack load too, in every repo. A cloud session you continue on your phone is the same container, so it keeps them |
 | **Marketing or strategy chat, quick drafts** | Claude app → that role's **Project** (L4) | Instructions for Claude, account plugins (skills and commands only; sub-agents and hooks are greyed out) and the Project's knowledge |
 | **File-based knowledge work** (folders of docs or content) | **Cowork** in the Claude app | Instructions for Claude and the account plugins (everything, including agents and hooks) |
 | **Decisions** (pricing, hiring, architecture, positioning) | `/council`, in Code (the seats run as agents) or in chat (a sequential fallback) | The `council` pack |
@@ -28,6 +28,7 @@ There are four layers. You set each one up once, and it reaches the apps listed 
 |-------|------|-------|---------|
 | **L1 Machine** | `settings.json` (hardened baseline) · `CLAUDE.md`, a **copy** of `global/CLAUDE.md` (never a symlink) · plugins: `base` everywhere, `marketing`/`council` where needed, `ecc` only in projects that need it · hooks: `guard` (recommended), `format`/`verify` (optional) | `~/.claude/` | CLI, Desktop Code tab, VS Code, JetBrains (SSH sessions use the remote host's `~/.claude`). Phone and web reach it through Remote Control |
 | **L2 Repo / folder** (committed) | `CLAUDE.md` · `REGRESSIONS.md` · `.claude/guards.sh` + `.claude/guards.ps1` · per-area `CLAUDE.md` · `.claude/settings.json` · CI workflow · optional: `.claude/rules/content.md`, `brand/voice.md`, `brand/banned-phrases.txt`, `PROGRESS.md` · for cloud sessions, copies of the agents and skills they need in `.claude/agents/` and `.claude/skills/` | the repo | Every surface, including cloud. Chat gets it when you upload the files as Project knowledge |
+| **L1c Cloud environment** | The environment's **Setup script** = `templates/cloud-setup.sh` (installs from your public claude-md `main`: the baseline without the Plan default, a copy of `global/CLAUDE.md`, the `base` plugin) | the cloud environment's settings (session title bar → environment menu → Edit) | Every **new** cloud Code session in that environment, in any repo: web, the Claude app on your phone, Desktop's cloud environment, `claude --cloud` |
 | *Local only* (gitignored) | `.claude/checks.sh` / `.claude/checks.cmd`: a one-line wrapper that calls the guard runner · the project's path added to `~/.claude/verify-allowed.txt` | this machine | The `verify` Stop hook |
 | **L3 claude.ai account** | **Instructions for Claude** (Settings → General), pasted from `claude-ai/personal-preferences.md` · account plugins via Customize → Plugins → Add marketplace `<owner>/claude-md`: `base` and `council`; `marketing` only where its Tavily/DataForSEO servers are acceptable in every signed-in Claude Code session; never `ecc` · skill zips from `scripts/package-claude-ai.sh` / `.ps1`, only for mobile, the API and cloud Code sessions | claude.ai | Web and Desktop chat (skills and commands), Cowork (everything), and **every** signed-in local Claude Code session, where they sync as `<name>@synced`, MCP servers included (a local install with the same name wins) |
 | **L4 claude.ai Projects** (one per role) | Instructions from `claude-ai/project-marketing.md` or `claude-ai/project-generic.md`, plus knowledge files: brand voice, banned phrases, that role's `REGRESSIONS.md`, example pieces | claude.ai | Chat inside that Project, synced across devices |
@@ -54,7 +55,7 @@ There are four layers. You set each one up once, and it reaches the apps listed 
 | | `/skills` · `@agent-` typeahead | Pack skills and agents, none of them listed twice |
 | | Desktop only: **+ → Plugins → Manage plugins** | The packs, enabled |
 | Claude app (chat / Cowork) | Ask *"What instructions and skills do you have?"* · open **Customize → Plugins** | Your Instructions for Claude (plus the Project's instructions), with `base`/`marketing`/`council` installed |
-| Cloud session | `/context` · ask *"List your subagents and skills"* | The repo `CLAUDE.md`, the committed agents and skills, and account skills (`anthropic-skills:*`). No pack plugins and no base hook |
+| Cloud session | `/context` · ask *"List your subagents and skills"* | The repo `CLAUDE.md`, the committed agents and skills, and account skills (`anthropic-skills:*`). No pack plugins and no base hook — with the L1c Setup script: also `~/.claude/CLAUDE.md` ("Working agreement"), the `base:` agents and skills and the base SessionStart rule |
 
 - The docs imply, but don't state, that the Desktop Code tab loads `~/.claude/CLAUDE.md`. Verify with `/context`.
 - If Desktop answers "isn't available in this environment" to a panel command such as `/hooks`, run that command in the CLI. Verify on your build.
@@ -202,6 +203,7 @@ For a spec or plan, the same recipe with the requirements added:
 | Desktop local → cloud | **Continue in → Claude Code on the Web** |
 | Terminal → new cloud session | `claude --cloud "<task>"`; push your branch first |
 | Cloud → terminal | `claude --teleport`, or `/tp` |
+| Cloud session → phone | Open it in the Claude app (Code). It's the same container, so the same packs and rules (L1c) |
 
 Cloud sessions have no `/clear` (start a new session instead) and no `/plugin`.
 
@@ -223,7 +225,7 @@ Cloud sessions have no `/clear` (start a new session instead) and no `/plugin`.
 | ☐ Check | Why | Fix |
 |---------|-----|-----|
 | Did you edit it during the session? | Edits take effect only after `/clear`, `/compact` or a restart | Run `/clear` (in cloud, start a new session) |
-| Is this a **cloud** session? | Cloud sessions don't load `~/.claude`: no global `CLAUDE.md`, no plugins, no user hooks | Put project rules in the repo `CLAUDE.md` and commit the needed agents and skills to `.claude/`. Use the `/goal` recipe, or Remote Control for the full config |
+| Is this a **cloud** session? | Cloud sessions don't load `~/.claude`: no global `CLAUDE.md`, no plugins, no user hooks | Add the L1c Setup script (`templates/cloud-setup.sh`, setup.md Quick start step 10) for your own sessions in every repo, or put project rules in the repo `CLAUDE.md` and commit the needed agents and skills to `.claude/`. Use the `/goal` recipe, or Remote Control for the full config |
 | Is it a multi-repo cloud session? | Repo `.claude/settings.json` applies only in single-repo sessions | Use one repo per session |
 | Is this **chat**? | Chat never reads `CLAUDE.md` | Use Instructions for Claude plus the Project's instructions and knowledge |
 | Is this **Cowork**? | Cowork never reads `~/.claude` skills or plugins, and the docs don't say whether it reads a folder `CLAUDE.md` | Rely on Instructions for Claude and the account plugins. Verify by asking it to list its instruction sources |

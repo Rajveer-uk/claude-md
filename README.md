@@ -71,6 +71,7 @@ Set each layer up once; every app picks up the layers it can read — no per-app
 | Layer | Set once | Reaches |
 |---|---|---|
 | **Machine** `~/.claude` | `settings.json` baseline, a copy of `global/CLAUDE.md`, plugins, hooks | CLI, **Desktop app Code tab** (local + SSH), VS Code, JetBrains — one config per machine |
+| **Cloud environment** (Setup script) | `templates/cloud-setup.sh`: the baseline (no Plan default), a copy of `global/CLAUDE.md` and the `base` plugin, installed into each new cloud container | every cloud Code session in any repo — web, the phone app (a continued session keeps it) and Desktop's cloud environment |
 | **Repo** (committed) | `CLAUDE.md`, `REGRESSIONS.md`, `.claude/guards.*`, `.claude/settings.json`, CI, `.claude/agents/` + `.claude/skills/` copies | every surface, including cloud Code sessions (web, mobile, Desktop cloud) |
 | **claude.ai account** | Instructions for Claude (`claude-ai/personal-preferences.md`); account plugins `base`, `council`, plus `marketing` only where its Tavily/DataForSEO servers are acceptable in every signed-in session | chat (web + Desktop), Cowork, and synced into **every** signed-in Claude Code session as `<name>@synced`, MCP servers included |
 | **claude.ai Projects** | one per role (`claude-ai/project-*.md`) + knowledge files | chat |
@@ -195,6 +196,8 @@ This repo guards itself the same way: its own `REGRESSIONS.md`, `.claude/guards.
 ## Install
 
 Three steps on a machine, one per project, one per claude.ai account — the full, ordered list (with Windows and Ubuntu commands) is [`setup.md`](setup.md) → **Quick start**. **Step 1** is the same either way; for **Step 2**, pick plugins (recommended) **or** a manual copy.
+
+**One command** (steps 1 and 2 plus the plugins; safe to re-run; merges `settings.json` add-only with a backup): `bash <repo>/scripts/install-user-config.sh --packs base,council --hooks guard` · Windows: `powershell -NoProfile -ExecutionPolicy Bypass -File <repo>\scripts\install-user-config.ps1 -Packs base,council -Hooks guard`. **Cloud sessions (web + phone):** paste `templates/cloud-setup.sh` into the cloud environment's Setup script ([`setup.md`](setup.md) Quick start step 10).
 
 ### Step 1 — Security baseline + global memory (required, both methods)
 

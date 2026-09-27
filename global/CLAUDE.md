@@ -7,7 +7,8 @@ Maintainer notes: HTML block comments are stripped before loading, so this block
     Windows:      Copy-Item global\CLAUDE.md "$HOME\.claude\CLAUDE.md" -Force
 - Where it applies: local Claude Code on this machine, meaning the CLI, the Desktop app Code tab (local and SSH
   sessions), VS Code and JetBrains. Don't count on it in claude.ai chat, Cowork or cloud Code sessions: chat and
-  cloud never read ~/.claude, and whether Cowork reads this file is undocumented. Those surfaces get the same core
+  cloud never read this machine's ~/.claude (a cloud environment's Setup script can install this file into each
+  new cloud container: templates/cloud-setup.sh, setup.md Quick start step 10), and whether Cowork reads this file is undocumented. Those surfaces get the same core
   from claude-ai/personal-preferences.md (Settings -> General -> "Instructions for Claude"), and cloud sessions also
   get the repo's own CLAUDE.md.
 - Mirror: claude-ai/personal-preferences.md holds the role-neutral core of this file. When you change one, change the other.
