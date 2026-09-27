@@ -2,7 +2,7 @@
 
 ## Bug fix → test guard
 1. Write the test first and run it. It must fail **for the expected reason** — the assertion about the bug, not an import error, typo, missing fixture or wrong path. Quote the failing line.
-2. Fix the code, not the test. The new test passes and the rest of the suite stays green.
+2. Fix the code, not the test. The new test passes and the rest of the suite stays green. The fix covers every input of the kind that failed — no branch on the test's exact values and no returned constant that only matches its assertion. A test that looks wrong itself → stop and say why instead of fixing around it.
 3. Tag it with the ledger ID so `grep -rn R-012` finds the guard: a comment on the line above (`# R-012: last page must include the final item`) or, for frameworks with string titles, in the title (`it('R-012 last page includes final item')`).
 4. Row: `| R-012 | code/api | paginate() returns the final item on the last page | test: tests/test_paginate.py::test_last_page_includes_final_item | 2026-09-25 |`
    - `<path>` is relative to the project root; `<name>` must appear literally in that file. Class or parameter forms are fine (`path::TestX::test_y`, `test_y[case]`) — the runner looks for the last segment without `[…]`.

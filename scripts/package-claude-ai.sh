@@ -9,7 +9,8 @@
 #
 # Usage (from anywhere):
 #   bash scripts/package-claude-ai.sh              # default set: regression-guard, work-quality-checker,
-#                                                  #   ai-writing-tells, brand-voice, secure-code-reviewer
+#                                                  #   ai-writing-tells, brand-voice, secure-code-reviewer,
+#                                                  #   requirements-gate
 #   bash scripts/package-claude-ai.sh <skill> ...  # instead: skill folder paths, or bare names found
 #                                                  #   under plugins/*/skills/ (e.g. caveman, council)
 #
@@ -33,6 +34,7 @@ default_skills=(
   plugins/marketing/skills/ai-writing-tells
   plugins/marketing/skills/brand-voice
   plugins/base/skills/secure-code-reviewer
+  plugins/base/skills/requirements-gate
 )
 
 case "${1:-}" in

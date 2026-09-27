@@ -10,7 +10,8 @@
 #
 # Usage (from anywhere):
 #   powershell -NoProfile -ExecutionPolicy Bypass -File scripts\package-claude-ai.ps1
-#       default set: regression-guard, work-quality-checker, ai-writing-tells, brand-voice, secure-code-reviewer
+#       default set: regression-guard, work-quality-checker, ai-writing-tells, brand-voice, secure-code-reviewer,
+#                    requirements-gate
 #   powershell -NoProfile -ExecutionPolicy Bypass -File scripts\package-claude-ai.ps1 <skill> ...
 #       instead: skill folder paths, or bare names found under plugins\*\skills\ (e.g. caveman, council)
 #
@@ -37,7 +38,8 @@ $defaultSkills = @(
   'plugins/base/skills/work-quality-checker',
   'plugins/marketing/skills/ai-writing-tells',
   'plugins/marketing/skills/brand-voice',
-  'plugins/base/skills/secure-code-reviewer'
+  'plugins/base/skills/secure-code-reviewer',
+  'plugins/base/skills/requirements-gate'
 )
 $safeFields = @('name', 'description', 'license', 'allowed-tools', 'metadata', 'compatibility', 'version')
 $junkFiles = @('.DS_Store', 'Thumbs.db', 'desktop.ini')

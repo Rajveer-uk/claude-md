@@ -3,9 +3,9 @@
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin%20marketplace-6f42c1)
 ![Packs](https://img.shields.io/badge/packs-4-1f6feb)
-![Agents](https://img.shields.io/badge/agents-78-1f6feb)
-![Skills](https://img.shields.io/badge/skills-124-1f6feb)
-![Commands](https://img.shields.io/badge/commands-37-1f6feb)
+![Agents](https://img.shields.io/badge/agents-79-1f6feb)
+![Skills](https://img.shields.io/badge/skills-125-1f6feb)
+![Commands](https://img.shields.io/badge/commands-38-1f6feb)
 ![Security](https://img.shields.io/badge/security-audited-2ea44f)
 ![OS](https://img.shields.io/badge/OS-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
 ![Apps](https://img.shields.io/badge/apps-CLI%20%7C%20Desktop%20%7C%20IDE%20%7C%20claude.ai-lightgrey)
@@ -28,7 +28,7 @@ Bodies of agents/skills/commands load **on demand**, not up front — so the com
 |---|---|---|
 | **Always-on overhead** | ~none | **Measured per pack:** `base` ≈2.9k tokens · `marketing` ≈0.86k (≈0.7k in context) · `council` ≈0.5k · `ecc` ≈15.4k — so `ecc` goes on only in projects that need it. Commands marked `disable-model-invocation` (`/marketing:draft`, `/marketing:review`) add nothing until you run them |
 | **Working agreement** | — | One static `SessionStart` line at startup, `/clear` and compaction — not re-sent with every prompt |
-| **Response prose** | full verbosity | **`/caveman` cuts ~65%** of prose tokens (its design target) while keeping code, errors, and paths verbatim; built-in `outputStyle: "Concise"` is a lighter option |
+| **Response prose** | full verbosity | **`/caveman` cuts ~65%** of prose tokens (its design target, on chat-style prose; an independent test on agentic coding measured ~8.5% fewer output tokens with no quality change — JetBrains, 2026-07) while keeping code, errors, and paths verbatim; built-in `outputStyle: "Concise"` is a lighter option |
 | **Large multi-file tasks** | all grows in one window | **delegated to subagents** only when it pays (10+ files to read, 3+ independent parts, an independent review): their exploration / review / audit runs in *separate* context windows and only a short result returns — the main thread stays lean |
 | **Small or sequential tasks** | inline | **inline too** — no subagent overhead where it doesn't pay |
 | **Generated code** | as written | **`ponytail`** strips it to the minimal version that works |
@@ -86,6 +86,7 @@ Every bug fix or owner correction — code, marketing copy, ops, docs, strategy 
 - **Procedure** — the `regression-guard` skill (`base`): grep the rows for the area, reproduce, fix the code or content (never the test), add the guard and the row, pass matching rows into every subagent hand-off.
 - **Enforcement** — the `verify` Stop hook (allowlisted projects), the CI template (zero model tokens), and the `guard` hook, which asks only when an edit would change or remove an existing ledger row, a guard runner or a banned phrase (appends to the ledger or banned list pass). Wording corrections become lines in `brand/banned-phrases.txt`; voice corrections go into `brand/voice.md`.
 - **In chat** (no shell) the ledger is a Project knowledge file, and Claude outputs the new row for you to paste.
+- **Complete, not just green** — for incomplete prompts, issues or review comments: the `requirements-gate` skill turns a multi-step ask into `AC1…ACn` (asked + implied work), asks with a pop-up only where readings change the work, and ends with an AC → evidence table (`Requirements: n/m met` is the report's second line). `/spec` → `/implement-plan` adds a written spec, a resume-safe run and the read-only `completion-auditor`; the `no-stubs` and `spec-integrity` guard steps and the optional `plan-gate` Stop hook make "looks done" fail mechanically. Which flow when: [`WORKFLOW.md`](WORKFLOW.md#4-daily-loop--development).
 
 This repo guards itself the same way: its own `REGRESSIONS.md`, `.claude/guards.sh` and `.github/workflows/guards.yml`. Where each piece is enforced: [`WORKFLOW.md`](WORKFLOW.md#9-where-fix-once-is-enforced).
 
@@ -123,12 +124,12 @@ This repo guards itself the same way: its own `REGRESSIONS.md`, `.claude/guards.
 ├── .claude-plugin/
 │   └── marketplace.json          # marketplace listing the four plugins below
 ├── plugins/                      # the team — installed via /plugin (nothing loads until installed)
-│   ├── base/                     # MAIN: 24 zero-network engineering agents + 5 skills + 1 command + 1 SessionStart hook
+│   ├── base/                     # MAIN: 25 zero-network engineering agents + 6 skills + 2 commands + 1 SessionStart hook
 │   │   ├── .claude-plugin/plugin.json
 │   │   ├── agents/*.md
-│   │   ├── commands/implement-plan.md
+│   │   ├── commands/implement-plan.md, spec.md
 │   │   ├── hooks/hooks.json      # one static SessionStart line (startup, /clear, compaction)
-│   │   ├── skills/*/SKILL.md     # caveman, secure-code-reviewer, work-quality-checker, regression-guard, setup-advisor (+ references/)
+│   │   ├── skills/*/SKILL.md     # caveman, secure-code-reviewer, work-quality-checker, regression-guard, setup-advisor, requirements-gate (+ references/)
 │   │   └── evals/                # `claude plugin eval` suite: skill triggering, routing, no over-delegation
 │   ├── marketing/                # ADDON: 7 marketing/content agents (incl. the only 2 network researchers) + 2 skills + 2 commands
 │   │   ├── .claude-plugin/plugin.json
@@ -159,14 +160,14 @@ This repo guards itself the same way: its own `REGRESSIONS.md`, `.claude/guards.
 ## Design principles
 
 - **Stack-agnostic + dynamic.** Universal specialists handle any ecosystem; `project-analyst` detects the stack, `team-configurator` prefers a framework-specific agent and generates a `<framework>-expert` on demand. Curated experts ship for the recurring stacks (Laravel, React+Tailwind/shadcn, Frappe, n8n).
-- **Least privilege, zero network by default.** Every agent declares an explicit minimal `tools` list. **The `base` plugin's 24 agents are all air-gapped — zero network tools.** The only two network-capable agents (`content-researcher`, `seo-rank-monitor`) ship in the optional `marketing` addon, so a base-only install has no network surface at all — as long as `marketing` is neither installed locally nor enabled on your claude.ai account (account plugins sync into every signed-in Claude Code session); across the full 37-agent roster, 35 have zero network. Network is opt-in, per-agent, and never inherited (see the connector below).
+- **Least privilege, zero network by default.** Every agent declares an explicit minimal `tools` list. **The `base` plugin's 25 agents are all air-gapped — zero network tools.** The only two network-capable agents (`content-researcher`, `seo-rank-monitor`) ship in the optional `marketing` addon, so a base-only install has no network surface at all — as long as `marketing` is neither installed locally nor enabled on your claude.ai account (account plugins sync into every signed-in Claude Code session); across the full 38-agent roster, 36 have zero network. Network is opt-in, per-agent, and never inherited (see the connector below).
 - **OS-agnostic, app-agnostic, layered & lean, self-improving.** Identical files across Windows/macOS/Linux and across the Claude apps; a small root `CLAUDE.md` points to on-demand per-package files; HTML-comment maintainer notes cost zero tokens; corrections become guards and ledger rows; a project-specific lesson becomes one line in that project's (or area's) `CLAUDE.md`, and a general lesson a proposed one-line diff to `~/.claude/CLAUDE.md`, applied only with your approval.
 
-## The agent team (37)
+## The agent team (38)
 
-**37 agents — 24 in the `base` plugin, 7 in `marketing`, 6 in `council`** (plus 41 in the optional `ecc` pack).
+**38 agents — 25 in the `base` plugin, 7 in `marketing`, 6 in `council`** (plus 41 in the optional `ecc` pack).
 
-**Engineering (24) — the `base` plugin.** Planning/deep review on `opus` (`tech-lead-orchestrator`, `api-architect`, `security-auditor`, `ponytail` — an over-engineering reviewer that lists what to delete); execution/analysis on `sonnet` (`code-reviewer`, `backend-developer`, `frontend-developer`, `database-expert`, `ui-ux-designer`, `test-engineer`, `debugger`, `devops-troubleshooter`, `performance-optimizer`, `deployment-engineer`, `code-archaeologist`); curated stack experts (`laravel-expert`, `react-tailwind-expert`, `frappe-expert`, `n8n-expert`); fast/cheap on `haiku` (`project-analyst`, `team-configurator`, `dependency-manager`, `ops-triage` — read-only ops triage for logs/disk/queues/containers — and `documentation-specialist`). All zero-network. Plus one static, no-network `SessionStart` working-agreement hook (see setup.md §G).
+**Engineering (25) — the `base` plugin.** Planning/deep review on `opus` (`tech-lead-orchestrator`, `api-architect`, `security-auditor`, `ponytail` — an over-engineering reviewer that lists what to delete); execution/analysis on `sonnet` (`code-reviewer`, `completion-auditor` — a read-only check that every AC has evidence, `backend-developer`, `frontend-developer`, `database-expert`, `ui-ux-designer`, `test-engineer`, `debugger`, `devops-troubleshooter`, `performance-optimizer`, `deployment-engineer`, `code-archaeologist`); curated stack experts (`laravel-expert`, `react-tailwind-expert`, `frappe-expert`, `n8n-expert`); fast/cheap on `haiku` (`project-analyst`, `team-configurator`, `dependency-manager`, `ops-triage` — read-only ops triage for logs/disk/queues/containers — and `documentation-specialist`). All zero-network. Plus one static, no-network `SessionStart` working-agreement hook (see setup.md §G).
 
 **Marketing & content (7) — `marketing` plugin.** Draft/strategy, no network: `conversion-copywriter`, `content-writer`, `content-editor` (haiku), `email-campaign-writer`, `growth-strategist` (opus). 🌐 **Network-enabled (read-only):** `content-researcher` (Tavily web search) and `seo-rank-monitor` (DataForSEO SEO metrics) — the **only** two agents with any network access. Ships the `ai-writing-tells` and `brand-voice` skills and the ledger-aware `/marketing:draft` and `/marketing:review` commands. Install only if you do marketing work: `/plugin install marketing@claude-md-packs`.
 
@@ -176,12 +177,14 @@ This repo guards itself the same way: its own `REGRESSIONS.md`, `.claude/guards.
 
 ## Skills
 
-- **`/caveman [lite|full|ultra]`** (in the `base` plugin) — ultra-terse output mode that cuts ~65% of response tokens while keeping code, errors, and technical facts exact; auto-reverts to full prose for security warnings and irreversible-action confirmations. The prose counterpart to the `ponytail` reviewer (which strips *code* to the minimal version that works).
+- **`/caveman [lite|full|ultra]`** (in the `base` plugin) — ultra-terse output mode that cuts ~65% of response tokens (design target, chat-style prose; ~8.5% measured on agentic coding) while keeping code, errors, and technical facts exact; auto-reverts to full prose for security warnings and irreversible-action confirmations. The prose counterpart to the `ponytail` reviewer (which strips *code* to the minimal version that works).
 - **`secure-code-reviewer`** (in the `base` plugin) — OWASP-focused defensive audit of code you paste or point at: severity-triaged report (Critical→Low) with secure-code fixes; explains risk without generating exploit payloads. Complements the `security-auditor` agent — the agent does delegated repo-wide scans, the skill audits inline what you show it.
 - **`work-quality-checker`** (in the `base` plugin) — ruthless pre-send QA for emails, decks, concept notes, proposals, and scripts: logic-gap audit, top-3 sentence rewrites, the three toughest boss/client questions with suggested answers, and a binary "Ship it" / "Fix these 2 things first" verdict. Also turns raw meeting notes into a decisions/owners/deadlines dashboard.
 - **`regression-guard`** (in the `base` plugin) — the fix-once procedure for any role: grep `REGRESSIONS.md` for the area before editing, turn every bug fix or correction into a guard (test > check > review) plus one ledger row, run the full guard set before "done" and lead the report with the `Guards:` evidence line. Short checklist; code, content and chat references load only when needed.
 - **`setup-advisor`** (in the `base` plugin) — "what should I install?" / "audit my Claude setup": inventories what's installed (`claude plugin list`, always-on cost via `claude plugin details`), reads the project's `CLAUDE.md`, ledger area tags, manifests and content dirs, merges Anthropic's `claude-code-setup` recommender when present (and proposes it when not), then reports the top 3–5 picks with evidence, always-on cost and the exact install command, and asks via a multi-select pop-up. Trusted sources only (these packs, Anthropic-authored plugins in `claude-plugins-official`, your account skills); additive only, with duplicates listed as optional cleanup for you to decide; read-only and network-free until you approve.
-- **`/implement-plan <plan-file…>`** (command in the `base` plugin) — execute a detailed plan file end-to-end: new branch off the current one, one subagent per plan item routed to the pack agent's declared model (subagents never run on fable — only the orchestrator), statuses marked done in the plan file itself, the full guard run and review gate (`code-reviewer` + `ponytail`, `security-auditor` when warranted), one commit per item, one push at the end.
+- **`/implement-plan <plan-file…>`** (command in the `base` plugin) — execute a detailed plan file end-to-end: new branch off the current one, one subagent per plan item routed to the pack agent's declared model (subagents never run on fable — only the orchestrator), statuses marked done in the plan file itself, the full guard run and review gate (`code-reviewer` + `ponytail`, `security-auditor` when warranted), one commit per item, one push at the end. It also builds the AC list and checks every AC maps to a task before branching, resumes an existing branch and skips done items, lets subagents return `NEEDS_CONTEXT` so the orchestrator asks you, proves every AC with evidence through `completion-auditor` before the reviewers, escalates to you after 2 unclean rounds, and reports `Requirements: n/m met` on line 2. `--strict` adds a per-task done-criteria contract for high-stakes work; a `specs/<slug>.features.json` file switches it to one-feature-per-session mode.
+- **`/spec <request>`** (command in the `base` plugin) — turns a vague or incomplete request into `specs/<slug>.md` (from `templates/SPEC.md`): explores the repo, interviews you with batched pop-ups, writes requirements `AC1…` with how each is verified, out of scope, files and interfaces, an end-to-end check and a task plan in which every task covers ACs. No code edits; hand-off is `/implement-plan specs/<slug>.md` in a fresh session.
+- **`requirements-gate`** (in the `base` plugin) — the everyday version for any multi-step prompt, issue or review comment: lists the ask as `AC1…` including implied work (tests, other callers, docs, config, paired files), asks only where readings change the work, and before "done" maps every AC to evidence; an AC not met means not done.
 - **`ai-writing-tells`** (in the `marketing` plugin) — the shared banned-patterns list the writers and editor apply to every draft.
 - **`brand-voice`** (in the `marketing` plugin) — applies the project's `brand/voice.md` to drafts and reviews, and logs each voice correction so it holds for every writer.
 - **`/marketing:draft <brief>`** (command in the `marketing` plugin) — draft copy end-to-end: matching `mkt/` ledger rows, parallel research where facts are needed, the right writer, an editor pass, the content-lint guard run and a quality verdict.
@@ -203,7 +206,7 @@ Add the marketplace once, then install the `base` team plus any addons; toggle t
 
 ```text
 /plugin marketplace add .                    # local path to this repo's root (or <owner>/claude-md once pushed)
-/plugin install base@claude-md-packs         # MAIN:  24 engineering agents + 5 skills + /implement-plan
+/plugin install base@claude-md-packs         # MAIN:  25 engineering agents + 6 skills + /implement-plan + /spec
 /plugin install marketing@claude-md-packs    # addon: 7 marketing/content agents (+ Tavily/DataForSEO) + 2 skills + 2 commands
 /plugin install council@claude-md-packs      # addon: 6 council seats + /council skill
 /plugin install ecc@claude-md-packs          # addon, per project: 41 ECC agents + 116 skills + 34 commands
@@ -223,16 +226,18 @@ The agents, skills and commands are plain files — copy them straight into `~/.
 ```powershell
 $repo = "<repo>"; $dest = "$env:USERPROFILE\.claude"
 New-Item -ItemType Directory -Force "$dest\agents","$dest\skills","$dest\commands" | Out-Null
-Copy-Item "$repo\plugins\*\agents\*.md"          "$dest\agents\" -Force            # all 78 across packs (use \base\ for just the 24; ecc's skills/commands are NOT copied here)
+Copy-Item "$repo\plugins\*\agents\*.md"          "$dest\agents\" -Force            # all 79 across packs (use \base\ for just the 25; ecc's skills/commands are NOT copied here)
 Copy-Item "$repo\plugins\base\skills\caveman"                "$dest\skills\" -Recurse -Force
 Copy-Item "$repo\plugins\base\skills\secure-code-reviewer"   "$dest\skills\" -Recurse -Force
 Copy-Item "$repo\plugins\base\skills\work-quality-checker"   "$dest\skills\" -Recurse -Force
 Copy-Item "$repo\plugins\base\skills\regression-guard"       "$dest\skills\" -Recurse -Force
 Copy-Item "$repo\plugins\base\skills\setup-advisor"          "$dest\skills\" -Recurse -Force
+Copy-Item "$repo\plugins\base\skills\requirements-gate"      "$dest\skills\" -Recurse -Force
 Copy-Item "$repo\plugins\council\skills\council"             "$dest\skills\" -Recurse -Force
 Copy-Item "$repo\plugins\marketing\skills\ai-writing-tells"  "$dest\skills\" -Recurse -Force
 Copy-Item "$repo\plugins\marketing\skills\brand-voice"       "$dest\skills\" -Recurse -Force
 Copy-Item "$repo\plugins\base\commands\implement-plan.md"   "$dest\commands\" -Force
+Copy-Item "$repo\plugins\base\commands\spec.md"             "$dest\commands\" -Force
 Copy-Item "$repo\plugins\marketing\commands\draft.md"       "$dest\commands\marketing-draft.md"  -Force
 Copy-Item "$repo\plugins\marketing\commands\review.md"      "$dest\commands\marketing-review.md" -Force
 ```
@@ -241,12 +246,13 @@ Copy-Item "$repo\plugins\marketing\commands\review.md"      "$dest\commands\mark
 ```bash
 repo="<repo>"; dest="$HOME/.claude"
 mkdir -p "$dest/agents" "$dest/skills" "$dest/commands"
-cp "$repo"/plugins/*/agents/*.md "$dest/agents/"                  # all 78 across packs (use plugins/base/ for just the 24; ecc's skills/commands are NOT copied here)
+cp "$repo"/plugins/*/agents/*.md "$dest/agents/"                  # all 79 across packs (use plugins/base/ for just the 25; ecc's skills/commands are NOT copied here)
 for s in base/skills/caveman base/skills/secure-code-reviewer base/skills/work-quality-checker base/skills/regression-guard \
-         base/skills/setup-advisor council/skills/council marketing/skills/ai-writing-tells marketing/skills/brand-voice; do
+         base/skills/setup-advisor base/skills/requirements-gate council/skills/council marketing/skills/ai-writing-tells marketing/skills/brand-voice; do
   cp -r "$repo/plugins/$s" "$dest/skills/"
 done
 cp "$repo/plugins/base/commands/implement-plan.md" "$dest/commands/"
+cp "$repo/plugins/base/commands/spec.md"           "$dest/commands/"
 cp "$repo/plugins/marketing/commands/draft.md"     "$dest/commands/marketing-draft.md"
 cp "$repo/plugins/marketing/commands/review.md"    "$dest/commands/marketing-review.md"
 ```

@@ -93,6 +93,7 @@ In Desktop, a mode you pick in the mode selector (Manual, Accept edits, Auto) is
 - `.claude/settings.json` — a copy of this repo's `.claude/settings.json` (the same baseline you installed in `~/.claude`) — single-repo cloud sessions don't read `~/.claude`, so this carries the deny-list and Plan default there. Routines have no mode picker and may stall on a Plan default: test with **Run now**, and leave `defaultMode` out of repos you run routines on if it stalls. Headless runs (`claude -p`, CI, scripts) also start in Plan and can't leave it — pass `--permission-mode acceptEdits` (or `default`) when a non-interactive run must edit files (verified in a live headless test).
 - Cloud sessions skip plugins that repo settings declare (`enabledPlugins` / `extraKnownMarketplaces`): commit copies of the agents/skills a cloud session needs into `.claude/agents/` and `.claude/skills/` (§H commands, with the project's `.claude` as the destination).
 - Optional `PROGRESS.md` (`templates/PROGRESS.md`) for work that spans sessions.
+- Specs: `/spec` writes `specs/<slug>.md` from `templates/SPEC.md` (plugin installs carry the section list inside the command), and, for multi-session work, `specs/<slug>.features.json` from `templates/features.json`. The template runner's `no-stubs` and `spec-integrity` steps guard them; `STUB_SCAN=0` turns `no-stubs` off for one run.
 
 **8. Claude app (chat + Cowork) — once per claude.ai account:**
 - **Settings → General → "Instructions for Claude":** paste the block from `claude-ai/personal-preferences.md`. It applies to every chat, Cowork and scheduled tasks — not to Claude Code, which reads step 2's file.
@@ -130,12 +131,12 @@ python3 -m json.tool "$HOME/.claude/settings.json" >/dev/null && echo "settings 
 
 | Piece | Scope | Location | Why |
 |------|-------|----------|-----|
-| `base` plugin — 24 agents + 5 skills + `/implement-plan` + 1 `SessionStart` hook | **Plugin** | via `/plugin`, Desktop **+ → Plugins**, or `claude plugin` | The main team — install from the marketplace (see §G) |
+| `base` plugin — 25 agents + 6 skills + `/implement-plan` + `/spec` + 1 `SessionStart` hook | **Plugin** | via `/plugin`, Desktop **+ → Plugins**, or `claude plugin` | The main team — install from the marketplace (see §G) |
 | Addons: `marketing` (7 agents + 2 skills + 2 commands), `council` (6 + `/council`), `ecc` (per project) | **Plugin** | via `/plugin` | Opt-in add-ons — install from the marketplace (see §G) |
 | `settings.json` (deny-list + ask list + modes) | **Global / user** | `~/.claude/settings.json` | The security baseline — **not** plugin-able; install it before the plugins |
 | `global/CLAUDE.md` | **Global / user** | `~/.claude/CLAUDE.md` (copy) | Working agreement for every project on this machine |
 | `templates/user-settings.plugins.json` (Desktop-only machines) | **Global / user** | merged into `~/.claude/settings.json` | Marketplace + `base` (+ Anthropic's `claude-code-setup`) without the `claude` CLI; `marketing@synced` off; auto-update opt-in |
-| Hooks `guard`/`format`/`verify` (`.ps1`+`.sh`, optional) | **Global / user** | `~/.claude/hooks/` | guard = enforce no-secret-read/egress + safe agent-gen, and ask before guard/ledger edits; format = auto-format edited file; verify = run the project's guards before finishing |
+| Hooks `guard`/`format`/`verify`/`plan-gate` (`.ps1`+`.sh`, optional) | **Global / user** | `~/.claude/hooks/` | guard = enforce no-secret-read/egress + safe agent-gen, and ask before guard/ledger edits; format = auto-format edited file; verify = run the project's guards before finishing; plan-gate = don't finish an `/implement-plan` run with plan items or ACs still open |
 | `templates/sandbox-settings.json` (optional; Linux/macOS/WSL2) | **Global / user** | merged into `~/.claude/settings.json` | OS-enforced network control for shell commands |
 | `managed-settings.json` (optional) | **Machine policy** | OS policy dir (see §E) | Unbreakable: locks bypass-disable + crown-jewel secret denies |
 | `CLAUDE.md` | **Per project** | `<project>/CLAUDE.md` | Project description, package map, conventions |
@@ -148,6 +149,7 @@ python3 -m json.tool "$HOME/.claude/settings.json" >/dev/null && echo "settings 
 | `templates/banned-phrases.txt`, `templates/brand-voice.md` | **Per project** (content) | `<project>/brand/banned-phrases.txt`, `brand/voice.md` | Automated wording guard + brand voice |
 | `templates/github/regression-guards.yml` | **Per project** (CI) | `<project>/.github/workflows/regression-guards.yml` | Guards on every PR/push + weekly |
 | `templates/PROGRESS.md` (optional) | **Per project** | `<project>/PROGRESS.md` | State for multi-session work |
+| `templates/SPEC.md`, `templates/features.json` (optional) | **Per project** | `<project>/specs/<slug>.md`, `specs/<slug>.features.json` | Written by `/spec`: requirements AC1… with evidence, and the multi-session feature list |
 | `.gitignore` | **Per project** | `<project>/.gitignore` | Keep secrets & local Claude state out of git |
 | `claude-ai/personal-preferences.md` | **claude.ai account** | Settings → General → Instructions for Claude | The core rules in chat and Cowork |
 | `claude-ai/project-*.md` | **claude.ai Project** | Project instructions | One Project per role |
@@ -200,7 +202,8 @@ Then, **only if you installed the hooks**, add this to `~/.claude/settings.json`
     { "hooks": [ { "type": "command", "command": "powershell.exe", "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "C:/Users/<you>/.claude/hooks/verify.ps1"], "timeout": 30 } ] }
   ],
   "Stop": [
-    { "hooks": [ { "type": "command", "command": "powershell.exe", "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "C:/Users/<you>/.claude/hooks/verify.ps1"] } ] }
+    { "hooks": [ { "type": "command", "command": "powershell.exe", "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "C:/Users/<you>/.claude/hooks/verify.ps1"] } ] },
+    { "hooks": [ { "type": "command", "command": "powershell.exe", "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "C:/Users/<you>/.claude/hooks/plan-gate.ps1"], "timeout": 15 } ] }
   ]
 }
 ```
@@ -219,11 +222,12 @@ Then, **only if you installed the hooks**, add this to `~/.claude/settings.json`
     { "hooks": [ { "type": "command", "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"C:\\Users\\<you>\\.claude\\hooks\\verify.ps1\"", "timeout": 30 } ] }
   ],
   "Stop": [
-    { "hooks": [ { "type": "command", "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"C:\\Users\\<you>\\.claude\\hooks\\verify.ps1\"" } ] }
+    { "hooks": [ { "type": "command", "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"C:\\Users\\<you>\\.claude\\hooks\\verify.ps1\"" } ] },
+    { "hooks": [ { "type": "command", "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"C:\\Users\\<you>\\.claude\\hooks\\plan-gate.ps1\"", "timeout": 15 } ] }
   ]
 }
 ```
-> Adjust the path if your home directory differs (`$env:USERPROFILE`). Install only the hooks you want — `guard` (security) is the recommended one; `format`/`verify` are convenience. The same registrations, plus an **opt-in per-prompt delegation directive** (the old `base` prompt hook), are in `.claude/settings.hooks.example.json`. **`guard`** blocks secret reads through `Bash`, `PowerShell` and `Monitor` (including interpreters such as python/node), prompts on network egress, and **asks** before an edit changes or removes existing `REGRESSIONS.md` rows (appends pass), before any edit to `.claude/guards.*` or `.claude/checks.*`, and before lines are removed from `brand/banned-phrases.txt`. **Trust note:** `format` auto-runs the project's local formatter binaries and `verify` auto-runs the project's `.claude\checks.cmd`, so enable them only on repos you trust. **`verify` is allowlist-gated:** it runs a project's `.claude\checks.cmd` (the local wrapper from `templates/checks.cmd` that calls the committed `.claude\guards.ps1`) only when that project's path is also listed in `%USERPROFILE%\.claude\verify-allowed.txt`, so a cloned repo can't auto-run code. After a trusted project's first green `guards` run (§C), create its `.claude\checks.cmd` and enable it with `Add-Content "$env:USERPROFILE\.claude\verify-allowed.txt" "<project path>"`.
+> Adjust the path if your home directory differs (`$env:USERPROFILE`). Install only the hooks you want — `guard` (security) is the recommended one; `format`/`verify` are convenience. The same registrations, plus an **opt-in per-prompt delegation directive** (the old `base` prompt hook), are in `.claude/settings.hooks.example.json`. **`guard`** blocks secret reads through `Bash`, `PowerShell` and `Monitor` (including interpreters such as python/node), prompts on network egress, and **asks** before an edit changes or removes existing `REGRESSIONS.md` rows (appends pass), before any edit to `.claude/guards.*` or `.claude/checks.*`, and before lines are removed from `brand/banned-phrases.txt`. **Trust note:** `format` auto-runs the project's local formatter binaries and `verify` auto-runs the project's `.claude\checks.cmd`, so enable them only on repos you trust. **`verify` is allowlist-gated:** it runs a project's `.claude\checks.cmd` (the local wrapper from `templates/checks.cmd` that calls the committed `.claude\guards.ps1`) only when that project's path is also listed in `%USERPROFILE%\.claude\verify-allowed.txt`, so a cloned repo can't auto-run code. After a trusted project's first green `guards` run (§C), create its `.claude\checks.cmd` and enable it with `Add-Content "$env:USERPROFILE\.claude\verify-allowed.txt" "<project path>"`. **`plan-gate`** (optional, convenience) keeps Claude from finishing while an `/implement-plan` run still has open plan items or ACs, up to 3 nudges, then warns "plan NOT complete". It reads only the plan files named in `.claude\plan-gate.local.json`, a marker `/implement-plan` writes for the current session, and runs no project code, so it needs no allowlist; without a marker it exits at once. All Stop hooks share Claude Code's cap of 8 consecutive continuations (verify 3 + plan-gate 3 fits).
 
 **Verify (PowerShell):**
 ```powershell
@@ -234,8 +238,8 @@ claude plugin details base   # the Always-on token line (~2.9k for base)
 #   /context  -> Memory files lists ~/.claude/CLAUDE.md; custom agents with source; skills
 #   /plugin   -> shows installed plugins (base / marketing / council) — CLI; Desktop: + -> Plugins
 #   /memory   -> opens/edits memory files (it lists locations, not what loaded — use /context for that)
-#   /hooks    -> guard / format / verify + base's SessionStart hook (read-only view)
-#   /skills   -> caveman, secure-code-reviewer, work-quality-checker, regression-guard, setup-advisor (+ addon skills)
+#   /hooks    -> guard / format / verify / plan-gate + base's SessionStart hook (read-only view)
+#   /skills   -> caveman, secure-code-reviewer, work-quality-checker, regression-guard, setup-advisor, requirements-gate (+ addon skills)
 #   /status   -> the settings files that loaded (user, project, managed)
 #   @agent-   -> typeahead lists the pack agents (/agents only prints a reminder now)
 ```
@@ -288,12 +292,13 @@ Then, **only if you installed the hooks**, add this to `~/.claude/settings.json`
     { "hooks": [ { "type": "command", "command": "/home/<you>/.claude/hooks/verify.sh", "timeout": 30 } ] }
   ],
   "Stop": [
-    { "hooks": [ { "type": "command", "command": "/home/<you>/.claude/hooks/verify.sh" } ] }
+    { "hooks": [ { "type": "command", "command": "/home/<you>/.claude/hooks/verify.sh" } ] },
+    { "hooks": [ { "type": "command", "command": "/home/<you>/.claude/hooks/plan-gate.sh", "timeout": 15 } ] }
   ]
 }
 ```
 > `verify` is registered twice on purpose: on `UserPromptSubmit` it only records a marker — the tree state it last checked, or the current tree on the session's first prompt (never runs checks, always exits 0); on `Stop` it skips only when nothing changed since that marker, so files written in between (e.g. by a background subagent) are still checked — so a question or review turn in a project whose checks are already red isn't blocked into unrelated fixes. Without the `UserPromptSubmit` entry it still works, just without that skip.
-> Use absolute paths: replace `/home/<you>` with your real home (`echo $HOME`; macOS is `/Users/<you>`) — user-scope hooks get no `$CLAUDE_PROJECT_DIR` and `$HOME` isn't expanded reliably in hook commands. The exec form also works: `"command": "/home/<you>/.claude/hooks/guard.sh", "args": []`. Shell-form commands run via `sh -c` on Linux and macOS. Install only the hooks you want — `guard` is the recommended security one; it also **asks** before an edit changes or removes existing `REGRESSIONS.md` rows (appends pass), before any edit to `.claude/guards.*` / `.claude/checks.*`, and before lines are removed from `brand/banned-phrases.txt`. The opt-in per-prompt delegation directive (the old `base` prompt hook) is in `.claude/settings.hooks.example.json`. **Trust note:** `format` auto-runs the project's local formatter binaries and `verify` auto-runs the project's executable `.claude/checks.sh`, so enable them only on repos you trust. **`verify` is allowlist-gated:** it runs a project's executable `.claude/checks.sh` (the local wrapper from `templates/checks.sh` that calls the committed `.claude/guards.sh`) only when that project's path is listed in `~/.claude/verify-allowed.txt`, so a cloned repo can't auto-run code. After a trusted project's first green `guards` run (§C), create its executable `.claude/checks.sh` and enable it with `echo "/path/to/project" >> ~/.claude/verify-allowed.txt`.
+> Use absolute paths: replace `/home/<you>` with your real home (`echo $HOME`; macOS is `/Users/<you>`) — user-scope hooks get no `$CLAUDE_PROJECT_DIR` and `$HOME` isn't expanded reliably in hook commands. The exec form also works: `"command": "/home/<you>/.claude/hooks/guard.sh", "args": []`. Shell-form commands run via `sh -c` on Linux and macOS. Install only the hooks you want — `guard` is the recommended security one; it also **asks** before an edit changes or removes existing `REGRESSIONS.md` rows (appends pass), before any edit to `.claude/guards.*` / `.claude/checks.*`, and before lines are removed from `brand/banned-phrases.txt`. The opt-in per-prompt delegation directive (the old `base` prompt hook) is in `.claude/settings.hooks.example.json`. **Trust note:** `format` auto-runs the project's local formatter binaries and `verify` auto-runs the project's executable `.claude/checks.sh`, so enable them only on repos you trust. **`verify` is allowlist-gated:** it runs a project's executable `.claude/checks.sh` (the local wrapper from `templates/checks.sh` that calls the committed `.claude/guards.sh`) only when that project's path is listed in `~/.claude/verify-allowed.txt`, so a cloned repo can't auto-run code. After a trusted project's first green `guards` run (§C), create its executable `.claude/checks.sh` and enable it with `echo "/path/to/project" >> ~/.claude/verify-allowed.txt`. **`plan-gate`** (optional, convenience) keeps Claude from finishing while an `/implement-plan` run still has open plan items or ACs, up to 3 nudges, then warns "plan NOT complete". It reads only the plan files named in `.claude/plan-gate.local.json`, a marker `/implement-plan` writes for the current session, and runs no project code, so it needs no allowlist; without a marker it exits at once. All Stop hooks share Claude Code's cap of 8 consecutive continuations (verify 3 + plan-gate 3 fits). An opt-in, per-project soft check (`_optional_promptCompletionCheck`, a small-model Stop hook) is documented in `.claude/settings.hooks.example.json`.
 
 **Verify (bash):**
 ```bash
@@ -304,8 +309,8 @@ claude plugin details base   # the Always-on token line (~2.9k for base)
 #   /context  -> Memory files lists ~/.claude/CLAUDE.md; custom agents with source; skills
 #   /plugin   -> shows installed plugins (base / marketing / council) — CLI; Desktop: + -> Plugins
 #   /memory   -> opens/edits memory files (it lists locations, not what loaded — use /context for that)
-#   /hooks    -> guard / format / verify + base's SessionStart hook (read-only view)
-#   /skills   -> caveman, secure-code-reviewer, work-quality-checker, regression-guard, setup-advisor (+ addon skills)
+#   /hooks    -> guard / format / verify / plan-gate + base's SessionStart hook (read-only view)
+#   /skills   -> caveman, secure-code-reviewer, work-quality-checker, regression-guard, setup-advisor, requirements-gate (+ addon skills)
 #   /status   -> the settings files that loaded (user, project, managed)
 #   @agent-   -> typeahead lists the pack agents (/agents only prints a reminder now)
 ```
@@ -471,14 +476,14 @@ sudo cp "$REPO/managed/managed-settings.json" "/Library/Application Support/Clau
 
 ## G. Install the team — plugin marketplace (base + addons)
 
-The agent team ships as Claude Code **plugins**, listed in `.claude-plugin/marketplace.json`: install **`base`** (the main 24-agent team + 5 skills), then add the **`marketing`** and **`council`** addons as needed, and **`ecc`** per project. Nothing under `plugins/` loads until you install it. Same flow on every OS:
+The agent team ships as Claude Code **plugins**, listed in `.claude-plugin/marketplace.json`: install **`base`** (the main 25-agent team + 6 skills), then add the **`marketing`** and **`council`** addons as needed, and **`ecc`** per project. Nothing under `plugins/` loads until you install it. Same flow on every OS:
 
 ```text
 # 1. add this repo as a plugin marketplace (local path works; or <owner>/claude-md once it's pushed to GitHub)
 /plugin marketplace add <path-to-this-repo>
 
 # 2. install the base team, then whichever addons you want — toggle any of them anytime from /plugin
-/plugin install base@claude-md-packs         # MAIN: 24 engineering agents + 5 skills + /implement-plan
+/plugin install base@claude-md-packs         # MAIN: 25 engineering agents + 6 skills + /implement-plan + /spec
 /plugin install marketing@claude-md-packs    # addon: 7 marketing/content agents + 2 skills + /marketing:draft, /marketing:review
 /plugin install council@claude-md-packs      # addon: 6 council seats + the /council skill
 /plugin install ecc@claude-md-packs          # addon, per project only: 41 ECC agents + 116 skills + 34 commands
@@ -490,7 +495,7 @@ The agent team ships as Claude Code **plugins**, listed in `.claude-plugin/marke
 
 `/plugin install <plugin>` opens the plugin's page in the panel — confirm the install there; `/reload-plugins` applies changes to a running session. From a shell the equivalents are `claude plugin marketplace add <owner>/claude-md` and `claude plugin install <pack>@claude-md-packs` (add `--scope local` or `--scope project` for `ecc`); in the Desktop Code tab use **+ → Plugins** (Quick start step 4).
 
-- **`base`** is the main install — the 24 zero-network engineering agents, 5 skills (`/caveman`, `secure-code-reviewer`, `work-quality-checker`, `regression-guard`, `setup-advisor`) and the `/implement-plan` command. Pair it with the `settings.json` security baseline (§A/§B), which is required and is not part of any plugin. It ships **one static, no-network `SessionStart` hook** (matcher `startup|clear|compact`, 10-second timeout) that adds one working-agreement line — small, sequential or same-file work inline; 10+ files, 3+ independent parts or an independent review → parallel subagents; use relevant skills unasked; apply `regression-guard` before calling work done. It **replaces the old per-prompt `UserPromptSubmit` hook**, which re-sent its directive with every prompt; for per-prompt reinforcement, merge the opt-in snippet from `.claude/settings.hooks.example.json` into your user settings. `/hooks` only shows it (read-only). To turn it off, disable `base` (`/plugin`, or `claude plugin disable base@claude-md-packs`), or set `"disableAllHooks": true` — which also silences `guard` and `verify`.
+- **`base`** is the main install — the 25 zero-network engineering agents, 6 skills (`/caveman`, `secure-code-reviewer`, `work-quality-checker`, `regression-guard`, `setup-advisor`, `requirements-gate`) and the `/implement-plan` and `/spec` commands. Pair it with the `settings.json` security baseline (§A/§B), which is required and is not part of any plugin. It ships **one static, no-network `SessionStart` hook** (matcher `startup|clear|compact`, 10-second timeout) that adds one working-agreement line — small, sequential or same-file work inline; 10+ files, 3+ independent parts or an independent review → parallel subagents; use relevant skills unasked; apply `regression-guard` before calling work done. It **replaces the old per-prompt `UserPromptSubmit` hook**, which re-sent its directive with every prompt; for per-prompt reinforcement, merge the opt-in snippet from `.claude/settings.hooks.example.json` into your user settings. `/hooks` only shows it (read-only). To turn it off, disable `base` (`/plugin`, or `claude plugin disable base@claude-md-packs`), or set `"disableAllHooks": true` — which also silences `guard` and `verify`.
 - **`marketing`** adds the 7 marketing/content agents, the `ai-writing-tells` and `brand-voice` skills, and the ledger-aware `/marketing:draft` and `/marketing:review` commands (they check the matching `mkt/` rows in `REGRESSIONS.md` and the project's `brand/` files). Two agents are network-enabled (`content-researcher` via Tavily, `seo-rank-monitor` via DataForSEO). Their MCP servers are declared at **plugin scope** in `plugins/marketing/.mcp.json`, because per-subagent inline `mcpServers` is ignored inside a plugin. Under a plugin install the tools are named **`mcp__plugin_marketing_tavily__tavily_search`**, `mcp__plugin_marketing_dataforseo__…`; the agents list these plus the classic `mcp__tavily__…` / `mcp__dataforseo__…` names used by a manual install. Set `TAVILY_API_KEY` / `DATAFORSEO_USERNAME` / `DATAFORSEO_PASSWORD` in your environment first (Desktop: its Local environment editor), then run `/mcp` to confirm the servers connect and the exact tool names. Full security model: [`council-and-network-config.md`](council-and-network-config.md). If your build doesn't pick up the plugin-scope `.mcp.json`, move those two servers into your global `~/.claude.json` instead. **Enabled on the claude.ai account, `marketing` also loads — MCP servers included — in every signed-in Claude Code session as `marketing@synced`**; to keep it to marketing machines, leave it off the account (or set `"marketing@synced": false` on every other machine) and install it per machine/project (Quick start steps 4 and 8).
 - **`council`** adds the 6 reasoning seats and the `/council` skill — pure reasoners, no network, no scripts. The seats start without `CLAUDE.md` (`omitClaudeMd`); the skill passes each one the question, the key constraints and the matching `REGRESSIONS.md` rows. Where sub-agents aren't available (claude.ai chat, mobile) the skill runs a single-model chat fallback.
 - **`ecc`** adds a curated, security-audited subset of [ECC](https://github.com/affaan-m/ECC) (MIT, snapshot `81af407`): 41 agents, 116 engineering skills, and 34 slash-commands — an engineering core plus 10 ECC agent-engineering knowledge skills (the broader ECC harness/command machinery was trimmed for token economy). It is **namespaced separately** so nothing collides with `base`, and is **pure markdown** — no bundled scripts, hooks, or installers. It adds ≈15k always-on tokens, so enable it **per project** (`--scope local` / `--scope project`), never user-wide. Web access stays blocked by the `settings.json` baseline; `ecc`'s `github-ops` skill uses the authenticated `gh` CLI, and `inherit-legacy-style` can install a user-gated hook (review before accepting). Provenance and the exact audit edits: [`plugins/ecc/ATTRIBUTION.md`](plugins/ecc/ATTRIBUTION.md).
@@ -556,7 +561,7 @@ cp "$repo/plugins/marketing/commands/review.md"    "$dest/commands/marketing-rev
 
 ## I. Updating an existing install
 
-Updates flow from the **marketplace source** (the GitHub repo you added), so the new version must have been pushed there first. Each pack's `version` in `plugins/<pack>/.claude-plugin/plugin.json` governs updates: a push **without a version bump never reaches installed users**. Maintainers bump it on every release (and never set `version` in `marketplace.json` too). This release: `base` 1.6.0, `marketing` 1.1.0, `council` 1.1.0, `ecc` 1.1.1.
+Updates flow from the **marketplace source** (the GitHub repo you added), so the new version must have been pushed there first. Each pack's `version` in `plugins/<pack>/.claude-plugin/plugin.json` governs updates: a push **without a version bump never reaches installed users**. Maintainers bump it on every release (and never set `version` in `marketplace.json` too). This release: `base` 1.7.0, `marketing` 1.1.0, `council` 1.1.0, `ecc` 1.1.1.
 
 **Plugin installs (§G):**
 ```text
@@ -564,7 +569,7 @@ Updates flow from the **marketplace source** (the GitHub repo you added), so the
 /plugin marketplace update claude-md-packs
 
 # 2. update the packs you already have (or use the /plugin menu -> Update)
-/plugin install base@claude-md-packs          # e.g. picks up base 1.6.0 — regression-guard + setup-advisor skills + the SessionStart hook
+/plugin install base@claude-md-packs          # e.g. picks up base 1.7.0 — requirements-gate, /spec, completion-auditor (1.6.0: regression-guard + setup-advisor + the SessionStart hook)
 
 # 3. install any pack added since you set up (new packs do not appear on their own)
 /plugin install ecc@claude-md-packs           # per project: 41 agents + 116 skills + 34 commands
@@ -574,6 +579,7 @@ Updates flow from the **marketplace source** (the GitHub repo you added), so the
 /plugin install claude-code-setup@claude-plugins-official   # first time: add the marketplace first (§G step 3)
 ```
 From a shell: `claude plugin marketplace update claude-md-packs`, then `claude plugin update base@claude-md-packs` (repeat per pack); for Anthropic's plugins, `claude plugin marketplace update claude-plugins-official`, then `claude plugin update claude-code-setup@claude-plugins-official`. Run `/reload-plugins` in an open session to apply.
+- **New in base 1.7.0 — completeness:** the `requirements-gate` skill, the `/spec` command and the read-only `completion-auditor` agent; `/implement-plan` now audits every AC against evidence, resumes an existing branch, and has `--strict` and multi-session modes. Copy the optional `plan-gate` hook with the others (§A/§B) and re-copy `templates/guards.*` into projects to get the `no-stubs` and `spec-integrity` steps.
 - **New in base 1.6.0 — `setup-advisor`:** after updating, ask "what should I install?" in each active project. It reads what's installed and the project, then proposes additive installs from trusted sources (including `claude-code-setup` if it's missing) and installs only what you tick (§G).
 - If prompted to **trust `base`'s new `SessionStart` hook**, accept it, then confirm with `/hooks` (open `/hooks` once to reload if it does not fire). The old per-prompt hook is gone from the plugin; its opt-in snippet is in `.claude/settings.hooks.example.json`.
 - Plugin updates do **not** touch the `settings.json` security baseline (§A/§B) or `~/.claude/CLAUDE.md` — re-merge `.claude/settings.json` when a release note says the baseline changed (back up and merge; copying it over the file drops your merged `hooks` block and switches `guard` off), and **re-copy `global/CLAUDE.md`** after each pull (it's a copy, not a link; merge by hand if you've edited yours).

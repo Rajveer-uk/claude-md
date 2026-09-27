@@ -885,7 +885,171 @@ def st_readme_agent_badge():
     done(hard=['README.md: agents badge says %s, plugins/*/agents/*.md has %d' % (b, n) for b in badges if int(b) != n])
 
 
+# ---- prompt hygiene: model-loaded prompt files never gain CAPS emphasis or verification/thinking rituals
+PROMPT_RE = re.compile(r'^(?:global/CLAUDE\.md|CLAUDE\.md|claude-ai/[^/]+\.md|templates/(?:CLAUDE\.package|SPEC)\.md'
+                       r'|plugins/base/hooks/hooks\.json|plugins/(?:base|marketing|council)/(?!.*/evals/).+\.md)$')
+PROMPT_SKIP = ('README.md', 'ATTRIBUTION.md', 'CHANGELOG.md')
+CAPS_RE = re.compile(r'\b(MUST|NEVER|ALWAYS|IMPORTANT|CRITICAL)\b')
+RITUAL_RE = re.compile(r'double[- ]check|verify twice|re-verify|verify (?:it |your work )?before finali[sz]|'
+                       r'maximally thorough|think step[- ]by[- ]step|think hard(?:er)?\b|ultrathink|megathink', re.I)
+
+
+def hygiene_hits(text):
+    t = re.sub(r'(?s)<!--.*?-->', '', (text or '').replace('\r\n', '\n'))   # maintainer comments cost 0 tokens
+    hits = []
+    for line in t.split('\n'):
+        for m in CAPS_RE.finditer(line):
+            if m.group(1) == 'CRITICAL' and 'HIGH' in line:   # severity vocabulary (CRITICAL / HIGH / ...)
+                continue
+            hits.append(line.strip())
+        hits += [line.strip() for _ in RITUAL_RE.finditer(line)]
+    return hits
+
+
+def st_prompt_hygiene():
+    soft, n = [], 0
+    for p in work_paths():
+        if not PROMPT_RE.match(p) or p.rsplit('/', 1)[-1] in PROMPT_SKIP:
+            continue
+        n += 1
+        cur = hygiene_hits(read(p))
+        was = hygiene_hits(base_text(p)) if cur else []
+        if len(cur) > len(was):
+            new = [h for h in cur if h not in was] or cur
+            soft.append('%s: %d CAPS-emphasis/ritual hit(s), %d at %s - write it in normal case, without the ritual: %s'
+                        % (p, len(cur), len(was), SHOW, new[0][:120]))
+    print('%d prompt files checked' % n)
+    done(soft=soft)
+
+
+# ---- plan-gate Stop hook keeps its bounds; the completeness chain keeps its load-bearing parts
+def st_plan_gate_bounds():
+    hard = []
+    for p in ('.claude/hooks/plan-gate.sh', '.claude/hooks/plan-gate.ps1'):
+        if not os.path.isfile(p):
+            hard.append('%s missing' % p)
+            continue
+        code = _code_only(read(p), p.endswith('.ps1'))
+        for what, pat in (('the plan-mode exit', r'''permission_?[Mm]ode[\s\S]{0,400}?["']plan["']'''),
+                          ('the session-matched marker', r'plan-gate\.local\.json'),
+                          ('the session_id match', r'session_?[Ii]d'),
+                          ('the CLAUDE_PLAN_GATE_MAX_BLOCKS cap', r'CLAUDE_PLAN_GATE_MAX_BLOCKS')):
+            if not re.search(pat, code):
+                hard.append('%s: %s is gone from its code' % (p, what))
+    d = load_or_fail(HOOKS_EXAMPLE)
+    if not any(re.search(r'plan-gate\.(sh|ps1)', c) for e in hook_entries(d, 'Stop') for c in entry_commands(e)):
+        hard.append('%s: Stop no longer registers the plan-gate hook' % HOOKS_EXAMPLE)
+    if os.path.isfile('.claude/hooks/plan-gate.sh') and sh(['bash', '-c', 'true'])[0] == 0:
+        hard += ['.claude/hooks/plan-gate.sh: ' + x for x in _plan_gate_behaviour(os.path.abspath('.claude/hooks/plan-gate.sh'))]
+    done(hard=hard)
+
+
+def _plan_gate_behaviour(script):
+    """Runs the hook on throwaway fixtures (own TMPDIR, so no shared state): the bounds must hold in behaviour too."""
+    import shutil, tempfile
+    tmp = tempfile.mkdtemp(prefix='plangate-guard-')
+    probs = []
+    try:
+        proj = os.path.join(tmp, 'proj')
+        os.makedirs(os.path.join(proj, '.claude'))
+        os.makedirs(os.path.join(tmp, 't'))
+        plan = os.path.join(proj, 'plan.md')
+        env = dict(os.environ, TMPDIR=os.path.join(tmp, 't'))
+        env.pop('CLAUDE_PLAN_GATE_MAX_BLOCKS', None)
+
+        def put(text, session='s1'):
+            with open(plan, 'w') as f:
+                f.write(text)
+            with open(os.path.join(proj, '.claude', 'plan-gate.local.json'), 'w') as f:
+                json.dump({'session': session, 'plans': ['plan.md']}, f)
+
+        def run(sid, mode='default', active=False, extra=None):
+            e = dict(env, **(extra or {}))
+            inp = json.dumps({'hook_event_name': 'Stop', 'session_id': sid, 'cwd': proj, 'permission_mode': mode,
+                              'stop_hook_active': active, 'last_assistant_message': 'Task 1 is finished.'})
+            r = subprocess.run(['bash', script], input=inp.encode(), stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE, env=e, cwd=proj, timeout=60)
+            return r.returncode
+
+        put('# Plan\n- [ ] task one\n')
+        for what, want, got in (('plan mode with an open item', 0, run('s1', mode='plan')),
+                                ('marker from another session', 0, run('s2')),
+                                ('own session with an open item', 2, run('s1'))):
+            if got != want:
+                probs.append('%s -> exit %s, expected %s' % (what, got, want))
+        put('# Plan\n- [x] task one\nStatus: blocked - waiting on the owner\n', session='s3')
+        if run('s3') != 0:
+            probs.append('every item done or blocked -> should exit 0')
+        put('# Plan\n- [ ] task one\n', session='s4')
+        cap = {'CLAUDE_PLAN_GATE_MAX_BLOCKS': '1'}
+        first = run('s4', extra=cap)
+        put('# Plan\n- [ ] task one\n- [x] task two\n', session='s4')   # the plan moved, so only the cap can stop a block
+        second = run('s4', active=True, extra=cap)
+        if (first, second) != (2, 0):
+            probs.append('CLAUDE_PLAN_GATE_MAX_BLOCKS=1 -> exits %s then %s, expected 2 then 0' % (first, second))
+    except (OSError, subprocess.SubprocessError) as ex:
+        probs.append('behaviour fixture failed to run: %s' % ex)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+    return probs
+
+
+COMPLETENESS = (
+    ('plugins/base/skills/requirements-gate/SKILL.md', ('AskUserQuestion', 'AC1', 'Requirements:', 'NEEDS_CONTEXT')),
+    ('plugins/base/commands/spec.md', ('AskUserQuestion', 'templates/SPEC.md', '/implement-plan')),
+    ('plugins/base/agents/completion-auditor.md', ('Unrequested', 'Requirements:')),
+    ('plugins/base/commands/implement-plan.md', ('completion-auditor', 'Requirements:', 'plan-gate.local.json',
+                                                 'NEEDS_CONTEXT', '--strict', 'features.json')),
+    ('templates/SPEC.md', ('## Requirements', '## Plan', '## Evidence', 'Out of scope')),
+    ('global/CLAUDE.md', ('requirements-gate', 'Requirements:')),
+    ('CLAUDE.md', ('requirements-gate', 'Requirements:')),
+)
+
+
+def st_completeness_chain():
+    hard = []
+    for p, needles in COMPLETENESS:
+        if not os.path.isfile(p):
+            hard.append('%s missing' % p)
+            continue
+        t = read(p)
+        hard += ['%s: no longer contains %r' % (p, w) for w in needles if w not in t]
+    p = 'plugins/base/agents/completion-auditor.md'
+    if os.path.isfile(p):
+        tools = effective_tools(read(p))[0]
+        if tools is None or {tname(t) for t in tools} & WRITE_EXEC or any(is_net(t) for t in tools):
+            hard.append('%s: must keep an explicit read-only tools: list with no write, shell or network tool' % p)
+    done(hard=hard)
+
+
+TEMPLATE_RUNNERS = (('templates/guards.sh', re.compile(r'^step\s+([A-Za-z0-9._-]+)', re.M)),
+                    ('templates/guards.ps1', re.compile(r"^Step\s+'([A-Za-z0-9._-]+)'", re.M)))
+TEMPLATE_STEPS_REQUIRED = {'ledger-integrity', 'content-lint', 'lint', 'tests', 'no-stubs', 'spec-integrity'}
+
+
+def st_template_guard_steps():
+    hard, soft, sets = [], [], {}
+    for p, rx in TEMPLATE_RUNNERS:
+        if not os.path.isfile(p):
+            hard.append('%s missing' % p)
+            continue
+        sets[p] = cur = set(rx.findall(read(p)))
+        hard += ['%s: step %s missing' % (p, s) for s in sorted(TEMPLATE_STEPS_REQUIRED - cur)]
+        bt = base_text(p)
+        was = set(rx.findall(bt)) if bt is not None else set()
+        soft += ['%s: step %s removed (vs %s)' % (p, s, SHOW) for s in sorted(was - cur)]
+    if len(sets) == 2:
+        a, b = (sets[p] for p, _ in TEMPLATE_RUNNERS)
+        if a != b:
+            hard.append('templates/guards.sh and guards.ps1 define different steps: only sh %s, only ps1 %s'
+                        % (sorted(a - b), sorted(b - a)))
+    print('template steps: %s' % ', '.join(sorted(set().union(*sets.values())) if sets else '-'))
+    done(hard=hard, soft=soft)
+
+
 STEPS = {
+    'prompt-hygiene': st_prompt_hygiene, 'plan-gate-bounds': st_plan_gate_bounds,
+    'completeness-chain': st_completeness_chain, 'template-guard-steps': st_template_guard_steps,
     'json-parse': st_json_parse, 'frontmatter': st_frontmatter,
     'settings-baseline': st_settings_baseline, 'settings-deny': st_settings_deny,
     'managed-settings': st_managed_settings, 'network-agents': st_network_agents,
@@ -1043,6 +1207,10 @@ step readme-agent-badge -- py readme-agent-badge
 step inventory -- py inventory
 step hook-registrations -- py hook-registrations
 step hook-optin-snippet -- py hook-optin-snippet
+step prompt-hygiene -- py prompt-hygiene
+step plan-gate-bounds -- py plan-gate-bounds
+step completeness-chain -- py completeness-chain
+step template-guard-steps -- py template-guard-steps
 step plugin-validate slow -- plugin_validate
 
 # ---------------------------------------------------------------- summary

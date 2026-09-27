@@ -32,6 +32,7 @@ The ledger `REGRESSIONS.md` (project/folder root) is the durable memory: one row
 - First line of the report, exactly one of:
   - `Guards: <command> → exit 0, <summary line>; R-00x ✓ R-00y ✓`
   - `Guards: RED — <step>: <reason>` — then say what's left; don't claim done.
+- Task has an AC list (`requirements-gate`)? Line 2 is `Requirements: n/m met`; an unmet AC means not done, like RED.
 - No runner in this project yet → run its test + lint commands, report them in the same format, and offer to add `.claude/guards.sh` (template `templates/guards.sh` in the claude-md repo).
 - No verify hook on this surface (cloud session, Desktop without user hooks) → suggest the owner types:
   `/goal The conversation shows bash .claude/guards.sh run after the last edit with exit 0 and its summary line, and every REGRESSIONS.md row for the touched areas marked ✓ — or stop after 20 turns` (switch out of Plan first — `/goal` doesn't change the permission mode)

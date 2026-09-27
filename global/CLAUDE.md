@@ -25,6 +25,7 @@ Maintainer notes: HTML block comments are stripped before loading, so this block
 
 ## Scope
 - These rules cover every project on this machine. A project's `CLAUDE.md` adds specifics and wins where the two conflict.
+- Deliver what was asked, at the scope meant; don't quietly narrow, widen or transform it. Multi-step ask (prompt, issue, PR or review comment, TODO, plan) → skill `requirements-gate`: list AC1…, ask only where readings change the work, and it's not done until every AC has evidence (report line 2: `Requirements: n/m met`).
 
 ## Task size & delegation
 - Do small, sequential or same-file work inline, without subagents — except deliverables a pack specialist owns with its own guardrails, even when small: marketing copy (blog, landing page, email) → the marketing writers; security audits → security-auditor.
@@ -71,7 +72,7 @@ Use these when the pack is installed; otherwise do the step inline. Routing is f
 | Content | `content-researcher` → `content-writer` / `conversion-copywriter` / `email-campaign-writer` → `content-editor` (with the `brand-voice` skill) |
 | Growth / SEO / docs | `growth-strategist` · `seo-rank-monitor` (rankings, SERP) · `documentation-specialist` |
 | Email, deck or proposal before it goes out | `work-quality-checker` skill |
-| High-stakes decision · plan file | `/council` · `/implement-plan` |
+| High-stakes decision · plan file · vague multi-file feature | `/council` · `/implement-plan` · `/spec` → `/implement-plan` (completion audit) |
 
 ## Self-improvement
 - When the owner corrects you, add a guard and a ledger row (see Fix once). For a general lesson, propose a one-line diff to this file that passes "would removing this cause mistakes?", and apply it only after approval. A project-specific lesson becomes one line in that project's or area's `CLAUDE.md`.

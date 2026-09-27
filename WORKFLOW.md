@@ -64,10 +64,11 @@ There are four layers. You set each one up once, and it reaches the apps listed 
 Do one task per session and pick the model at the start (`opusplan` works). Sessions start in Plan mode.
 
 1. **Explore.** Run `grep -i "code/<area>" REGRESSIONS.md` and read only the matching rows. Grep or glob before reading anything. If there are 10+ files to read, use a subagent (`project-analyst`, `code-archaeologist`) that returns a short summary. For multi-file work, run the guards once first as a baseline, so failures that already exist aren't blamed on your change.
-2. **Plan.** Plan multi-file or risky changes and review the plan before any edit. Skip this step when you can describe the diff in one sentence.
+2. **Plan.** Plan multi-file or risky changes and review the plan before any edit. Skip this step when you can describe the diff in one sentence. For a multi-step ask, the `requirements-gate` skill first lists it as `AC1…ACn` (what was asked plus the implied work: tests, other callers, docs, config, paired `.sh`/`.ps1` files), asks with a pop-up only where different readings would change the work, and records the rest as assumptions.
 3. **Implement.** Do small, sequential or same-file work inline. Use parallel subagents only for independent parts on **disjoint files**, launched in one message, with each brief carrying the matching ledger rows. Running the guards with `--fast` is fine mid-task.
 4. **Guard.** Run the full guard set once, in the main thread (not in a subagent, which would hide the detail): `bash .claude/guards.sh`, or on Windows `powershell -NoProfile -ExecutionPolicy Bypass -File .claude\guards.ps1`. The report's first line is the evidence:
    `Guards: bash .claude/guards.sh → exit 0, <summary line>; R-004 ✓ R-011 ✓`. If it reads `Guards: RED — <step>: <reason>`, the task is **not** done.
+   When the task has an AC list, line 2 is `Requirements: 5/5 met` (or `Requirements: 4/5 — AC3 partial: <reason>`), backed by one piece of evidence per AC (`file:line`, a test name, or a command and its exit code). An AC that isn't met means the task is **not** done, exactly like RED.
 5. **Review.** `code-reviewer` runs last. Add `security-auditor` when the change touches auth, secrets, input handling or dependencies, and `ponytail` for big diffs.
 6. **Commit.** Use a Conventional Commit, and never commit on red.
 
@@ -77,9 +78,20 @@ Do one task per session and pick the model at the start (`opusplan` works). Sess
 |----|------|-----------------------|-------|-------|
 | R-012 | code/api | A retried webhook never charges twice | `test: tests/test_webhooks.py::test_retry_is_idempotent` | 2026-09-25 |
 
-**Big feature.** Ask Claude to interview you. It then writes `SPEC.md`, covering the files and interfaces involved, what is out of scope, and an end-to-end verification step. Start a **fresh session** and run `/implement-plan SPEC.md`: it creates a branch, runs one agent per task and a review gate, commits each task, and pushes once.
+**Big feature.** Ask Claude to interview you, or run **`/spec <request>`**, which does it with batched pop-ups. It then writes the spec (`specs/<slug>.md` from `templates/SPEC.md`; a root `SPEC.md` works too), covering the requirements `AC1…ACn` and how each is verified, the files and interfaces involved, what is out of scope, an end-to-end verification step, and a task plan in which every task names the ACs it covers. Approve it, then start a **fresh session** (or approve with the clear-context option) and run `/implement-plan specs/<slug>.md` (or `/implement-plan SPEC.md`): it creates a branch (or resumes it), runs one agent per task and a review gate, proves every AC with evidence through the `completion-auditor` agent, commits each task, and pushes once.
 
-**Multi-session work.** Keep a `PROGRESS.md` (from `templates/PROGRESS.md`) with status, what's done, what's next and failed approaches. At the start of a session, read it along with `git log --oneline -10`. At the end, update it, then `/clear`. Anything you fix graduates into a ledger row; `PROGRESS.md` itself is disposable.
+**Incomplete prompt or comment → partial delivery.** This is the failure where a short prompt, issue or review comment gets its literal half built and the rest silently dropped. Four layers catch it, from cheapest to strictest:
+
+| Layer | What it catches | Cost |
+|-------|-----------------|------|
+| `requirements-gate` skill (base, triggers on any multi-step ask) | Unstated companion work, and forks Claude would otherwise resolve narrowly. It lists `AC1…`, asks with a pop-up, and ends with an AC → evidence table | ≈0.5–1.5k tokens per multi-step task; 0 on one-line edits |
+| `/spec` → `/implement-plan` → `completion-auditor` | Requirements with no task, items marked done with no proof, scope drift, unbounded review loops, and a lost place after compaction (the command is resume-safe) | ≈10–25% over a plain `/implement-plan` run |
+| Guard steps `no-stubs` + `spec-integrity` (`templates/guards.*`) | TODO/stub/placeholder markers, "rest of code unchanged" elisions and newly skipped tests in the diff; an AC marked `met` with no evidence; a feature list edited to pass | 0 model tokens (they run in the guards, the verify hook and CI) |
+| `plan-gate` Stop hook (optional, local) | Claude ending the turn while plan items or ACs are still open | 0 tokens unless it blocks (≈100 per nudge, at most 3) |
+
+**Which orchestrator:** **A (default)** `/spec` → `/implement-plan` with the completion audit. **B (`/implement-plan --strict`)** for auth, payments, client data or FCA-facing output: each task agrees its done-criteria with `completion-auditor` before any code and is audited on its own; it costs about 1.5–2.5× a normal run. **C (multi-session)** for work spanning days or more than ~15 ACs: `/spec` also writes `specs/<slug>.features.json`, and each session implements one feature whose `passes` is false (see the next paragraph). Community orchestrators (ruflo/claude-flow, claude-squad, Task Master, BMAD, spec-kit) were reviewed and not installed: none publishes a reproducible benchmark that beats this loop, and each adds fetch-and-execute installs, network access or heavy per-feature ceremony.
+
+**Multi-session work.** Keep a `PROGRESS.md` (from `templates/PROGRESS.md`) with status, what's done, what's next and failed approaches. At the start of a session, read it along with `git log --oneline -10`. At the end, update it, then `/clear`. Anything you fix graduates into a ledger row; `PROGRESS.md` itself is disposable. For a feature with a feature list (`specs/<slug>.features.json`, from `templates/features.json`), that file is the source of truth: each session picks one entry whose `passes` is false, implements it, runs its `verify`, and sets only `passes` and `evidence`. The `spec-integrity` guard step fails if an entry is removed, its description or check is edited without your OK, or `passes` is true with no evidence. Never run these loops with `--dangerously-skip-permissions`.
 
 ## 5. Daily loop — marketing
 
@@ -119,6 +131,7 @@ Do one task per session and pick the model at the start (`opusplan` works). Sess
 
 - Subagents, except a fork, don't see the conversation. Each brief needs an objective, inputs (paths plus the matching `REGRESSIONS.md` rows), boundaries, the output (≤200 words, with details in a file) and the tools/model.
 - The built-in **Explore** agent runs on the main model; it's cheap only because it skips `CLAUDE.md`. For haiku-tier search, use `project-analyst` or `documentation-specialist`.
+- Keep `ultracode` out of your settings: it runs every substantive task as a workflow at `xhigh` effort and switches off the Large-workflow warning and the concurrent-subagent limit. Optional guard rails: `"workflowSizeGuideline": "small"` in `~/.claude/settings.json`, and turn off the ultracode keyword trigger in `/config` if you type the word by accident. You can still say "use a workflow" whenever you want one.
 
 ## 8. Token rules
 
@@ -129,8 +142,9 @@ Do one task per session and pick the model at the start (`opusplan` works). Sess
 5. Pick the model at session start. `opusplan` means Opus plans and Sonnet executes; each switch between planning and execution re-sends the context once. Agents keep their tiers (opus for planning and security, sonnet for implementation, haiku for search and docs). Leave effort at its default.
 6. Do one task per session. `/clear` between tasks (in cloud, start a new session) and after two failed corrections on the same issue. Use `/rewind` to abandon a path, `/btw` for side questions, `/compact <focus>` at natural breaks and `/context` when the session feels heavy.
 7. The guards are the memory. They cost ~0 tokens when green, so don't re-explain history in chat.
-8. Final replies to the owner give the result and any decisions needed, without narration (`/caveman lite` or `outputStyle: "Concise"` if you want it shorter). Never compress plans, briefs or reasoning.
+8. Final replies to the owner give the result and any decisions needed, without narration (`/caveman lite` or `outputStyle: "Concise"` if you want it shorter). Never compress plans, briefs or reasoning. Expect caveman's big saving (~65%, its design target) on chat-style prose only: an independent test on agentic coding measured ~8.5% fewer output tokens with no quality change (JetBrains, 2026-07). The real levers are the rules above: context isolation, `/clear`, green guards and the default effort.
 9. Install only the packs a project needs.
+10. Watch context and cost for free. Run `/statusline show model, context used %, effort, prompt cache warm and minutes to expiry, 5-hour limit %` once and review the script it writes; the status line runs locally and uses no API tokens (a custom one hides some footer hints). Use `/usage` (alias `/cost`) for the cache-hit line, and `/insights` monthly for recurring failure patterns to turn into ledger rows. Avoid `npx` status lines and `npx ccusage@latest`: they fetch and run unpinned code, and ccusage reads every transcript and fetches pricing online.
 
 **Published multiples:** agents use ≈4× the tokens of chat, agent teams ≈7× a standard session (teammates in plan mode), and Anthropic's multi-agent research system ≈15×. **Measured always-on cost per pack** (check with `claude plugin details <pack>`) **and for the memory files** (check with `/context`):
 
@@ -155,12 +169,27 @@ A skill with `disable-model-invocation: true` costs nothing always-on, and you c
 | **Reviewers** (`code-reviewer`, `content-editor`) | Grep the ledger for the areas a change touches and flag violations by ID | Code and Cowork |
 | **`regression-guard` skill** (base) | The procedure: grep the rows, fix, guard, write the row, show the evidence line. In chat, it outputs the row for you to paste | Everywhere the base pack or its skill reaches |
 | **`/goal` recipe** | A gate for sessions where user hooks don't run (cloud sessions, or Desktop without the hooks installed) | Code surfaces only, not chat or Cowork |
+| **`plan-gate` Stop hook** (optional) | While `/implement-plan` runs, blocks finishing when the plan file still has open items (`- [ ]`, `Status: todo`, an AC row still `open`), up to 3 times, then shows a "plan NOT complete" warning. It reads only the plan files named in a marker that `/implement-plan` writes for the current session, and runs no project code, so it needs no allowlist | Local, once installed |
+| **Guard steps `no-stubs` and `spec-integrity`** | Fail on stub markers, elisions and newly skipped tests added in the diff, and on an AC marked `met` without evidence or a feature list edited to pass | Wherever the template runner is copied: local, cloud and CI |
+| **`completion-auditor` agent** (base) | Read-only audit of every AC against its evidence, plus the changed files no AC asked for | Code surfaces |
+
+All Stop hooks share Claude Code's cap of 8 consecutive continuations, which is why verify stops at 3 blocks, plan-gate at 3 and the opt-in prompt check (below) at 1.
 
 **`/goal` recipe** (Code surfaces only: cloud sessions and Desktop without user hooks; not chat or Cowork). Switch out of Plan first, because `/goal` doesn't change the permission mode. You type the goal yourself. A small model checks the condition after each turn and reads only the conversation, so the condition has to name output that appears in the chat:
 
 ```text
 /goal The conversation shows `bash .claude/guards.sh` run after the last edit with exit 0 and its summary line, and every REGRESSIONS.md row for the touched areas marked ✓ — or stop after 20 turns
 ```
+
+For a spec or plan, the same recipe with the requirements added:
+
+```text
+/goal The conversation shows the requirements table with every AC met and its evidence, every plan item marked done or Status: blocked, and `bash .claude/guards.sh` run after the last edit with exit 0 and its summary line — or stop after 30 turns
+```
+
+**Opt-in soft check.** `.claude/settings.hooks.example.json` also documents `_optional_promptCompletionCheck`, a prompt-type Stop hook that asks a small model whether the last reply admits unfinished work ("next I would…", "left a TODO"). Register it per project in `.claude/settings.local.json` only: it costs a small-model call at every turn end (≈0.6–2k input tokens and 1–5 s).
+
+**Not used, on purpose:** agent-type Stop hooks (experimental; up to 50 tool turns at every turn end, and they can run commands in any project, which bypasses verify's allowlist); "unfinished todo" gates built on TodoWrite or TaskCompleted (current models don't get the task tools unless `CLAUDE_CODE_ENABLE_TODO_TOOLS=1`, so these gates silently do nothing; the plan file plus plan-gate is the checklist); and community hook packs installed with `npx …@latest` or `uv run` (the useful patterns are re-implemented in this repo's own hooks and guard steps).
 
 ## 10. Use it from anywhere
 
@@ -179,7 +208,9 @@ Cloud sessions have no `/clear` (start a new session instead) and no `/plugin`.
 ## 11. Monthly upkeep
 
 - Run **`/context`** in a fresh session and confirm the memory files, agents and skills load with no duplicates.
-- Run **`/doctor`** and act on its findings.
+- Run **`/doctor`** and act on its findings. Decline its offers to make auto mode your default or to move Fix-once or Safety lines out of `CLAUDE.md` into skills.
+- Run **`/doctor prompt-audit`** (v2.1.283+; on older builds, `/claude-api prompt-audit`) on this repo and on each active project. Accept diffs that drop CAPS emphasis, verification rituals, undocumented thinking keywords or dated settings. Decline any diff that deletes, moves out of always-on text, or softens a Fix-once, Safety or guard line, changes a `REGRESSIONS.md` row, or switches the plan-mode default. The `prompt-hygiene` guard step keeps this repo from drifting back.
+- Run **`/insights`** and turn each recurring failure pattern into a ledger row with a guard.
 - Run **`claude plugin details <pack>`** and compare the result with the §8 table. Drop any pack a project no longer uses.
 - Ask *"audit my Claude setup"* (`setup-advisor`) in each active project. It checks what's installed against the project's stacks and roles, lists duplicates as optional cleanup and installs only what you tick. Refresh Anthropic's plugins first: `claude plugin marketplace update claude-plugins-official`, then `claude plugin update claude-code-setup@claude-plugins-official`.
 - **Trim `CLAUDE.md`** to under 200 lines. Test each line with "Would removing this cause Claude to make mistakes?". Anything that fails the test goes; anything that must always happen becomes a hook or a `check:` step. Keep at most one "IMPORTANT".
