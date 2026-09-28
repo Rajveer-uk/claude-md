@@ -47,7 +47,7 @@ After each subagent returns:
 
 1. Verify the change does what the plan item says; run the area's tests/lint plus the `test:`/`check:` guards of its matching ledger rows — never commit on red.
 2. Update the plan file's status for that item using its own convention (`- [ ]` → `- [x]`, `Status: done`, table cell, …). A failed or blocked item gets `Status: blocked — <one-line reason>`; never mark it done, never skip it silently.
-3. Commit the task's changes **plus its status update** as one Conventional Commit referencing the plan item.
+3. Commit the task's changes **plus its status update** as one Conventional Commit referencing the plan item — after the per-task review gate: `code-reviewer` + `ponytail` review the task's staged diff (inline checklist for ≤10 changed lines), resume the implementer to fix every blocking finding, record the review (`review-gate.sh --record agents|inline` if the hook is installed; it denies the commit otherwise), then commit. Any edit after recording needs a new review.
 4. With an AC list: add the trailer `Refs: AC2, AC5` for the ACs the task covers. Flip an AC's status only with evidence (test name, `file:line`, or command + exit code) written into its Evidence cell in the same edit — an implementer's `DONE` is not evidence.
 
 ## 5. Review gate (runs last)

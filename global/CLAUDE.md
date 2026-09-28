@@ -54,7 +54,7 @@ Maintainer notes: HTML block comments are stripped before loading, so this block
 
 ## Conventions
 - Commits: use Conventional Commits (`type(scope): summary`) in the imperative mood, one logical change each.
-- Before every commit, run the area's test and lint and fix any failures. Never commit on red.
+- Before every commit, run the area's test and lint and fix any failures. Never commit on red or unreviewed: `code-reviewer` + `ponytail` review the diff (inline checklist for ≤10 changed lines), fix every blocking finding, record it (`review-gate.sh --record agents|inline` if the hook is installed), then commit.
 - Match the surrounding code: follow the file's existing style, naming and structure. Don't introduce a new convention for one change.
 - Make the smallest viable change: keep diffs minimal and don't refactor unrelated code.
 - No secrets: never hardcode keys, tokens, passwords, connection strings, real hosts, IPs or client names. Read them from the environment or a secret store, and use placeholders (`<CLIENT>`, `<APP_NAME>`, `<VPS_HOST>`, `<DOMAIN>`) in docs.
@@ -69,7 +69,7 @@ Use these when the pack is installed; otherwise do the step inline. Routing is f
 | Unfamiliar repo or stack | `project-analyst` detects the stack first |
 | Bug, exception, failing test | `debugger` → `test-engineer` writes the regression test |
 | Ops: logs, disk, queues, workers | `ops-triage` (read-only) → `devops-troubleshooter` for deploy, CI or runtime failures |
-| Code review (runs last) | `code-reviewer`, plus `security-auditor` when auth, input handling, secrets, dependencies or payments are touched, plus `ponytail` for large diffs |
+| Code review (runs last) | `code-reviewer`, plus `security-auditor` when auth, input handling, secrets, dependencies or payments are touched, plus `ponytail` for diffs over 10 lines |
 | Content | `content-researcher` → `content-writer` / `conversion-copywriter` / `email-campaign-writer` → `content-editor` (with the `brand-voice` skill) |
 | Growth / SEO / docs | `growth-strategist` · `seo-rank-monitor` (rankings, SERP) · `documentation-specialist` |
 | Email, deck or proposal before it goes out | `work-quality-checker` skill |

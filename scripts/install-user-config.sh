@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # install-user-config.sh - install the claude-md user layer into ~/.claude in one command: the
 # security baseline (merged, never overwritten), the global working agreement (CLAUDE.md), the
-# plugin packs, and optionally the guard / plan-gate hooks. Same script for a local machine
+# plugin packs, and optionally the guard / plan-gate / review-gate hooks. Same script for a local machine
 # (CLI + Desktop Code tab + IDEs share ~/.claude) and for cloud sessions (run from the cloud
 # environment's Setup script - see templates/cloud-setup.sh). Windows: install-user-config.ps1.
 #
 # Usage (from anywhere):
 #   bash scripts/install-user-config.sh                        # local: base pack, Plan default
 #   bash scripts/install-user-config.sh --packs base,council   # more packs (base marketing council ecc)
-#   bash scripts/install-user-config.sh --hooks guard,plan-gate   # also install + register these hooks
-#   bash scripts/install-user-config.sh --cloud                # cloud preset: no Plan default, no hooks,
+#   bash scripts/install-user-config.sh --hooks guard,plan-gate,review-gate   # also install + register these hooks
+#   bash scripts/install-user-config.sh --cloud                # cloud preset: no Plan default, only the review-gate hook,
 #                                                              #   marketplace = this clone (pinned ref)
 # Options: --dest <dir> (default ~/.claude) · --marketplace <owner/repo | path> (default: this repo's
 #          GitHub origin, else this folder) · --files (copy agents/skills/commands instead of installing
@@ -39,7 +39,7 @@ while [ $# -gt 0 ]; do
     --files) files=1; shift ;;
     --replace-claude-md) replace_md=1; shift ;;
     -h|--help) sed -n '2,/^set -u$/p' "$0" | grep '^#' | sed 's/^# \{0,1\}//'; exit 0 ;;
-    *) echo "usage: bash scripts/install-user-config.sh [--packs a,b] [--hooks guard,plan-gate] [--cloud] [--files] [--dest dir] [--marketplace src] [--replace-claude-md]" >&2; exit 2 ;;
+    *) echo "usage: bash scripts/install-user-config.sh [--packs a,b] [--hooks guard,plan-gate,review-gate] [--cloud] [--files] [--dest dir] [--marketplace src] [--replace-claude-md]" >&2; exit 2 ;;
   esac
 done
 
@@ -53,9 +53,13 @@ for p in $(printf '%s' "$packs" | tr ',' ' '); do
   case "$p" in base|marketing|council|ecc) ;; *) echo "unknown pack: $p (base marketing council ecc)" >&2; exit 2 ;; esac
 done
 for h in $(printf '%s' "$hooks" | tr ',' ' '); do
-  case "$h" in guard|plan-gate) ;; *) echo "unknown hook: $h (guard plan-gate; format/verify run project code - register them by hand, see setup.md)" >&2; exit 2 ;; esac
+  case "$h" in guard|plan-gate|review-gate) ;; *) echo "unknown hook: $h (guard plan-gate review-gate; format/verify run project code - register them by hand, see setup.md)" >&2; exit 2 ;; esac
 done
-[ "$cloud" = 1 ] && [ -n "$hooks" ] && { warn "--hooks is ignored with --cloud"; hooks=""; }
+if [ "$cloud" = 1 ] && [ -n "$hooks" ]; then   # cloud: only review-gate (runs no project code, needs no allowlist)
+  kept=""; for h in $(printf '%s' "$hooks" | tr ',' ' '); do
+    if [ "$h" = review-gate ]; then kept="review-gate"; else warn "--hooks $h is ignored with --cloud"; fi
+  done; hooks="$kept"
+fi
 
 PY=""
 for c in python3 python; do
@@ -67,7 +71,7 @@ mkdir -p "$dest" || { echo "ERROR cannot create $dest"; exit 1; }
 stamp="$(date +%Y%m%d-%H%M%S)"
 
 # ---- 1. security baseline -> settings.json (merge, add-only)
-"$PY" - "$repo/.claude/settings.json" "$dest/settings.json" "$cloud" "$stamp" <<'PY'
+"$PY" - "$repo/.claude/settings.json" "$dest/settings.json" "$cloud" "$stamp" "$repo/templates/model-pins.json" <<'PY'
 import json, os, shutil, sys
 src, dst, cloud, stamp = sys.argv[1], sys.argv[2], sys.argv[3] == '1', sys.argv[4]
 def load(p):
@@ -98,6 +102,17 @@ for k in ('deny', 'ask'):
 perms['disableBypassPermissionsMode'] = 'disable'
 cur['useAutoModeDuringPlan'] = False
 notes = []
+pinned = 0
+pins = load(sys.argv[5]).get('env', {}) if os.path.exists(sys.argv[5]) else {}
+if pins:   # model pins: set only the keys you have not set yourself
+    env = cur.setdefault('env', {})
+    if not isinstance(env, dict):
+        print('ERROR %s: "env" is not an object - left untouched' % dst); sys.exit(1)
+    for k, v in pins.items():
+        if k not in env:
+            env[k] = v; pinned += 1
+        elif env[k] != v:
+            notes.append('%s is %r (kept); the repo pins %r' % (k, env[k], v))
 if not cloud:
     mode = perms.get('defaultMode')
     if mode is None:
@@ -115,8 +130,9 @@ else:
         f.write('\n')
     load(tmp)
     os.replace(tmp, dst)
-    print('OK   settings.json merged: +%d deny, +%d ask%s (%s)' % (
-        added['deny'], added['ask'], '' if cloud else ', Plan default', dst))
+    print('OK   settings.json merged: +%d deny, +%d ask%s%s (%s)' % (
+        added['deny'], added['ask'], '' if cloud else ', Plan default',
+        ', %d model pin(s)' % pinned if pinned else '', dst))
 for n in notes:
     print('NOTE ' + n)
 PY
@@ -182,7 +198,7 @@ else
   done
 fi
 
-# ---- 4. optional hooks (local only): copy + register with absolute paths, never duplicated
+# ---- 4. optional hooks (cloud: review-gate only): copy + register with absolute paths, never duplicated
 if [ -n "$hooks" ] && [ "${settings_bad:-0}" = 1 ]; then
   warn "hooks not registered: settings.json could not be merged (see the ERROR above)"; hooks=""
 fi
@@ -200,15 +216,17 @@ try:
 except (OSError, ValueError) as e:
     print('ERROR hooks not registered: cannot read %s (%s)' % (dst, e)); sys.exit(1)
 spec = {'guard': ('PreToolUse', {'matcher': 'Bash|PowerShell|Monitor|Write|Edit'}, {}),
-        'plan-gate': ('Stop', {}, {'timeout': 15})}
+        'plan-gate': ('Stop', {}, {'timeout': 15}),
+        'review-gate': ('PreToolUse', {'matcher': 'Bash|PowerShell|Monitor'}, {})}
 hooks = cur.setdefault('hooks', {})
 changed = []
 for n in names:
     event, entry_extra, hook_extra = spec[n]
     cmd = os.path.join(hdir, n + '.sh')
     lst = hooks.setdefault(event, [])
-    if any(n + '.sh' in str(h.get('command', '')) for e in lst if isinstance(e, dict)
-           for h in (e.get('hooks') or []) if isinstance(h, dict)):
+    if any(n + ext in ' '.join([str(h.get('command', ''))] + [str(a) for a in (h.get('args') or [])])
+           for ext in ('.sh', '.ps1') for e in lst if isinstance(e, dict)
+           for h in (e.get('hooks') or []) if isinstance(h, dict)):   # a .ps1 twin registered by the Windows installer counts
         print('OK   hook %s already registered on %s' % (n, event)); continue
     e = dict(entry_extra); e['hooks'] = [dict({'type': 'command', 'command': cmd}, **hook_extra)]
     lst.append(e); changed.append('%s on %s' % (n, event))

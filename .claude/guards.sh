@@ -939,7 +939,7 @@ def st_plan_gate_bounds():
     d = load_or_fail(HOOKS_EXAMPLE)
     if not any(re.search(r'plan-gate\.(sh|ps1)', c) for e in hook_entries(d, 'Stop') for c in entry_commands(e)):
         hard.append('%s: Stop no longer registers the plan-gate hook' % HOOKS_EXAMPLE)
-    if os.path.isfile('.claude/hooks/plan-gate.sh') and sh(['bash', '-c', 'true'])[0] == 0:
+    if os.path.isfile('.claude/hooks/plan-gate.sh'):
         hard += ['.claude/hooks/plan-gate.sh: ' + x for x in _plan_gate_behaviour(os.path.abspath('.claude/hooks/plan-gate.sh'))]
     done(hard=hard)
 
@@ -1075,7 +1075,9 @@ def st_user_installer():
             return json.load(f)
     try:
         stop = [{'hooks': [{'type': 'command', 'command': '/opt/harness/stop.sh'}]}]
-        h = home('local', {'customKey': 1, 'hooks': {'Stop': stop},
+        pins = load_or_fail('templates/model-pins.json').get('env', {})
+        own = {'ANTHROPIC_DEFAULT_OPUS_MODEL': 'my-own-opus'}
+        h = home('local', {'customKey': 1, 'hooks': {'Stop': stop}, 'env': dict(own),
                            'permissions': {'defaultMode': 'acceptEdits', 'deny': ['Bash(custom:*)']}}, '# My own notes\n')
         rc1 = run(h)
         s1 = settings(h)
@@ -1093,6 +1095,8 @@ def st_user_installer():
             ("the owner's own CLAUDE.md is kept", read(os.path.join(h, '.claude', 'CLAUDE.md')) == '# My own notes\n'),
             ('the new CLAUDE.md goes next to it', os.path.isfile(os.path.join(h, '.claude', 'CLAUDE.md.claude-md-new'))),
             ('the base agents are copied', os.path.isfile(os.path.join(h, '.claude', 'agents', 'completion-auditor.md'))),
+            ('an env key you set yourself is kept over the model pin', s1.get('env', {}).get('ANTHROPIC_DEFAULT_OPUS_MODEL') == 'my-own-opus'),
+            ('every unset model pin is added', all(s1.get('env', {}).get(k) == v for k, v in pins.items() if k not in own)),
         )
         hard += ['local install: ' + what for what, good in checks if not good]
         rc2 = run(h)
@@ -1100,7 +1104,7 @@ def st_user_installer():
         if rc2 != 0 or s2 != s1 or len(s2['permissions']['deny']) != len(set(s2['permissions']['deny'])):
             hard.append('a re-run must change nothing and add no duplicate')
         h = home('cloud', {'hooks': {'Stop': stop}})
-        if run(h, '--cloud') != 0:
+        if run(h, '--cloud', '--hooks', 'review-gate') != 0:   # what templates/cloud-setup.sh runs
             hard.append('cloud install: exit is not 0')
         else:
             sc = settings(h)
@@ -1108,6 +1112,12 @@ def st_user_installer():
                 hard.append('cloud install: must not set a Plan default (phone sessions and routines would stall)')
             if not os.path.isfile(os.path.join(h, '.claude', 'CLAUDE.md')):
                 hard.append('cloud install: global CLAUDE.md not installed')
+            if sc.get('hooks', {}).get('Stop') != stop:
+                hard.append("cloud install: the environment's own Stop hook was not kept")
+            if not (os.access(os.path.join(h, '.claude', 'hooks', 'review-gate.sh'), os.X_OK) and any(
+                    'review-gate.sh' in c and all(matcher_covers(e.get('matcher'), t) for t in ('Bash', 'PowerShell', 'Monitor'))
+                    for e in hook_entries(sc, 'PreToolUse') for c in entry_commands(e))):
+                hard.append('cloud install: --hooks review-gate did not install and register review-gate on Bash, PowerShell and Monitor')
         h = home('broken', '{"permissions": [')
         if run(h) != 1 or read(os.path.join(h, '.claude', 'settings.json')) != '{"permissions": [':
             hard.append('an unparseable settings.json must be left untouched with exit 1')
@@ -1115,6 +1125,135 @@ def st_user_installer():
         hard.append('installer fixture failed to run: %s' % ex)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
+    done(hard=hard)
+
+
+# ---- model pins: aliases mean a known version; no agent runs on the costliest tier
+PIN_KEYS = {'ANTHROPIC_DEFAULT_OPUS_MODEL': 'opus', 'ANTHROPIC_DEFAULT_SONNET_MODEL': 'sonnet',
+            'ANTHROPIC_DEFAULT_HAIKU_MODEL': 'haiku'}
+PIN_DOCS = ('README.md', 'WORKFLOW.md', 'setup.md', 'templates/cloud-setup.sh')
+
+
+def st_model_pins():
+    hard = []
+    d = load_or_fail('templates/model-pins.json')
+    env = d.get('env') if isinstance(d.get('env'), dict) else {}
+    for k, fam in sorted(PIN_KEYS.items()):
+        v = env.get(k)
+        if not isinstance(v, str) or not re.fullmatch(r'claude-%s-[0-9][0-9a-z-]*' % fam, v):
+            hard.append('templates/model-pins.json: %s must pin an exact claude-%s-<version> ID, got %r' % (k, fam, v))
+    for p in ('scripts/install-user-config.sh', 'scripts/install-user-config.ps1'):
+        if os.path.isfile(p) and 'model-pins.json' not in _code_only(read(p), p.endswith('.ps1')):
+            hard.append('%s no longer merges templates/model-pins.json' % p)
+    for p in agent_paths():
+        m = str(parse_fm(read(p))[0].get('model', '')).lower()
+        if 'fable' in m:
+            hard.append('%s: model %r - agents never run on Fable (costliest tier); use opus, sonnet or haiku' % (p, m))
+    for k, fam in sorted(PIN_KEYS.items()):   # the docs name the pinned versions, so a bump can't leave them stale
+        v = env.get(k) if isinstance(env.get(k), str) else ''
+        name = '%s %s' % (fam.capitalize(), v[len('claude-%s-' % fam):].replace('-', '.'))
+        hard += ['%s names no %r (the pinned %s) - update its model versions' % (p, name, v)
+                 for p in PIN_DOCS if not re.search(re.escape(name) + r'(?![.0-9])', read(p))]
+    ip = 'plugins/base/commands/implement-plan.md'
+    if 'Never run a subagent on fable' not in read(ip):
+        hard.append('%s: the "Never run a subagent on fable" rule is gone' % ip)
+    print('%d agents checked, pins %s' % (len(agent_paths()), ', '.join('%s=%s' % (PIN_KEYS[k], env.get(k)) for k in sorted(PIN_KEYS))))
+    done(hard=hard)
+
+
+# ---- review-gate hook: no commit without a review recorded for exactly that diff
+REVIEW_RULE_FILES = ('global/CLAUDE.md', 'CLAUDE.md', 'plugins/base/commands/implement-plan.md')
+REVIEW_RULE_NEEDLES = ('code-reviewer', 'ponytail', 'review-gate.sh --record agents|inline')
+
+
+def _review_gate_cases(runner):
+    """Runs the R-027 fixture against one twin; runner = argv prefix. Returns the failures."""
+    import shutil, tempfile
+    tmp = tempfile.mkdtemp(prefix='review-gate-guard-')
+    try:
+        repo, other, state = (os.path.join(tmp, x) for x in ('my repo', 'other', 'state'))
+        for x in (repo, other, state):
+            os.makedirs(x)
+        env = dict(os.environ, TMPDIR=state, TEMP=state, GIT_AUTHOR_NAME='g', GIT_AUTHOR_EMAIL='g@example.com',
+                   GIT_COMMITTER_NAME='g', GIT_COMMITTER_EMAIL='g@example.com')
+        env.pop('CLAUDE_REVIEW_GATE', None)
+        env.pop('CLAUDE_REVIEW_GATE_INLINE_MAX', None)
+
+        def git(*a):
+            subprocess.run(['git', '-C', repo] + list(a), stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env, check=True)
+
+        def edit(text, name='f.txt', mode='a'):
+            with open(os.path.join(repo, name), mode) as f:
+                f.write(text)
+            git('add', name)
+
+        def decision(cmd, cwd=repo, tool='Bash'):
+            inp = json.dumps({'tool_name': tool, 'tool_input': {'command': cmd}, 'cwd': cwd})
+            r = subprocess.run(runner, input=inp.encode(), stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                               env=env, timeout=60)
+            m = re.search(r'"permissionDecision":\s*"([a-z]+)"', r.stdout.decode('utf-8', 'replace'))
+            return m.group(1) if m else 'allow'
+
+        def record(mode):
+            return str(subprocess.run(runner + ['--record', mode, '-C', repo], stdout=subprocess.PIPE,
+                                      stderr=subprocess.PIPE, env=env, timeout=60).returncode)
+        git('init', '-q')
+        edit('a\n')
+        git('commit', '-qm', 'init')
+        edit('b\n')
+        q = '"%s"' % repo
+        cases = [('an unreviewed commit', decision('git commit -m x'), 'deny'),
+                 ('a quoted git -C from another folder', decision('git -C %s commit -m x' % q, other), 'deny'),
+                 ('cd <repo> && git commit from another folder', decision('cd %s && git commit -m x' % q, other), 'deny'),
+                 ('a commit whose repository cannot be resolved', decision('git commit -m x', other), 'deny'),
+                 ('a path-prefixed git with --no-pager', decision('/usr/bin/git --no-pager commit -m x'), 'deny'),
+                 ("sh -c 'git commit'", decision("sh -c 'git commit -m x'"), 'deny'),
+                 ('Set-Location <repo>; git commit (PowerShell)', decision('Set-Location -Path %s; git commit -m x' % q, other, 'PowerShell'), 'deny'),
+                 ('a commit through the Monitor tool', decision('git commit -m x', tool='Monitor'), 'deny'),
+                 ('a commit on its own line', decision('git add f.txt\ngit commit -m x'), 'deny'),
+                 ('a bare git commit before ;', decision('git commit; echo done'), 'deny'),
+                 ("echo 'git commit' (not a commit)", decision("echo 'git commit'"), 'allow'),
+                 ('a command that is not a commit', decision('git status'), 'allow'),
+                 ('record inline for a 1-line diff (exit code)', record('inline'), '0'),
+                 ('the same diff after recording', decision('git -C %s commit -m x' % q, other), 'allow'),
+                 ('the PowerShell tool after recording', decision('git commit -m x', tool='PowerShell'), 'allow'),
+                 ('an echoed git -C before the real commit', decision('echo git -C "%s" commit && git commit -m x' % other), 'allow'),
+                 ('a heredoc message quoting `git commit`', decision("git commit -F - <<'EOF'\nfix: the `git commit` hook\nEOF"), 'allow'),
+                 ('two commits in one command', decision('git commit;git commit -m y'), 'deny')]
+        edit('c\n')
+        cases.append(('an edit after recording', decision('git commit -m x'), 'deny'))
+        edit(''.join('%d\n' % i for i in range(40)))
+        cases.append(('record inline above the limit (exit code)', record('inline'), '1'))
+        git('commit', '-qm', 'reviewed')
+        edit('\x00\x01binary\x00', 'b.bin', 'w')
+        cases.append(('record inline with a binary file (exit code)', record('inline'), '1'))
+        cases.append(('record agents with a binary file (exit code)', record('agents'), '0'))
+        return ['%s -> %s, expected %s' % (what, got, want) for what, got, want in cases if got != want]
+    except (OSError, subprocess.SubprocessError) as ex:
+        return ['fixture failed to run: %s' % ex]
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def st_review_gate():
+    import shutil
+    sh_hook, ps_hook = (os.path.abspath('.claude/hooks/review-gate.' + x) for x in ('sh', 'ps1'))
+    hard = ['%s missing' % p for p in ('.claude/hooks/review-gate.sh', '.claude/hooks/review-gate.ps1') if not os.path.isfile(p)]
+    d = load_or_fail(HOOKS_EXAMPLE)
+    if not any(re.search(r'review-gate\.(sh|ps1)', c) and all(matcher_covers(e.get('matcher'), t) for t in ('Bash', 'PowerShell', 'Monitor'))
+               for e in hook_entries(d, 'PreToolUse') for c in entry_commands(e)):
+        hard.append('%s: PreToolUse no longer registers review-gate for Bash, PowerShell and Monitor' % HOOKS_EXAMPLE)
+    for p in REVIEW_RULE_FILES:
+        text = read(p) if os.path.isfile(p) else ''
+        hard += ['%s: the review-before-commit rule lost %r' % (p, n) for n in REVIEW_RULE_NEEDLES if n not in text]
+    if hard:
+        done(hard=hard)
+    hard += ['review-gate.sh: ' + f for f in _review_gate_cases(['bash', sh_hook])]
+    pwsh = shutil.which('pwsh')
+    if pwsh:
+        hard += ['review-gate.ps1: ' + f for f in _review_gate_cases([pwsh, '-NoProfile', '-File', ps_hook])]
+    else:
+        print('NOTE: pwsh not found - review-gate.ps1 cases not run here (CI runs them)')
     done(hard=hard)
 
 
@@ -1191,6 +1330,8 @@ STEPS = {
     'completeness-chain': st_completeness_chain, 'template-guard-steps': st_template_guard_steps,
     'user-installer': st_user_installer,
     'guard-readers': st_guard_readers,
+    'review-gate': st_review_gate,
+    'model-pins': st_model_pins,
     'json-parse': st_json_parse, 'frontmatter': st_frontmatter,
     'settings-baseline': st_settings_baseline, 'settings-deny': st_settings_deny,
     'managed-settings': st_managed_settings, 'network-agents': st_network_agents,
@@ -1354,6 +1495,8 @@ step completeness-chain -- py completeness-chain
 step template-guard-steps -- py template-guard-steps
 step user-installer -- py user-installer
 step guard-readers -- py guard-readers
+step review-gate -- py review-gate
+step model-pins -- py model-pins
 step plugin-validate slow -- plugin_validate
 
 # ---------------------------------------------------------------- summary

@@ -1,15 +1,15 @@
 #requires -Version 5
 # install-user-config.ps1 - install the claude-md user layer into ~/.claude (%USERPROFILE%\.claude) in one
 # command: the security baseline (merged, never overwritten), the global working agreement (CLAUDE.md), the
-# plugin packs, and optionally the guard / plan-gate hooks. Windows twin of scripts/install-user-config.sh -
+# plugin packs, and optionally the guard / plan-gate / review-gate hooks. Windows twin of scripts/install-user-config.sh -
 # same steps, same output lines, same exit codes; runs on Windows PowerShell 5.1 and PowerShell 7.
 #
 # Usage (from anywhere):
 #   powershell -NoProfile -ExecutionPolicy Bypass -File scripts\install-user-config.ps1
 #       local: base pack, Plan default
 #   ... install-user-config.ps1 -Packs base,council     more packs (base marketing council ecc)
-#   ... install-user-config.ps1 -Hooks guard,plan-gate  also install + register these hooks (.ps1, exec form)
-#   ... install-user-config.ps1 -Cloud                  cloud preset: no Plan default, no hooks,
+#   ... install-user-config.ps1 -Hooks guard,plan-gate,review-gate  also install + register these hooks (.ps1, exec form)
+#   ... install-user-config.ps1 -Cloud                  cloud preset: no Plan default, only the review-gate hook,
 #                                                       marketplace = this clone (pinned ref)
 # Options: -Dest <dir> (default %USERPROFILE%\.claude, else $HOME\.claude) ; -Marketplace <owner/repo | path>
 #          (default: this repo's GitHub origin, else this folder) ; -Files (copy agents/skills/commands
@@ -44,7 +44,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $repo = Split-Path -Parent $PSScriptRoot
-$usage = 'usage: powershell -NoProfile -ExecutionPolicy Bypass -File scripts\install-user-config.ps1 [-Packs a,b] [-Hooks guard,plan-gate] [-Cloud] [-Files] [-Dest dir] [-Marketplace src] [-ReplaceClaudeMd]'
+$usage = 'usage: powershell -NoProfile -ExecutionPolicy Bypass -File scripts\install-user-config.ps1 [-Packs a,b] [-Hooks guard,plan-gate,review-gate] [-Cloud] [-Files] [-Dest dir] [-Marketplace src] [-ReplaceClaudeMd]'
 $extra = @($Rest | Where-Object { $null -ne $_ })
 
 if ($Help -or @($extra | Where-Object { @('--help', '-h', '-?', '/?') -contains $_ }).Count -gt 0) {
@@ -64,8 +64,8 @@ foreach ($p in $packList) {
   }
 }
 foreach ($h in $hookList) {
-  if (@('guard', 'plan-gate') -cnotcontains $h) {
-    [Console]::Error.WriteLine("unknown hook: $h (guard plan-gate; format/verify run project code - register them by hand, see setup.md)"); exit 2
+  if (@('guard', 'plan-gate', 'review-gate') -cnotcontains $h) {
+    [Console]::Error.WriteLine("unknown hook: $h (guard plan-gate review-gate; format/verify run project code - register them by hand, see setup.md)"); exit 2
   }
 }
 
@@ -75,7 +75,10 @@ function Out-Note([string]$m) { Write-Output "NOTE $m" }
 function Out-Warn([string]$m) { Write-Output "WARN $m" }
 function Out-Fail([string]$m) { Write-Output "ERROR $m"; $script:rc = 1 }
 
-if ($Cloud -and $hookList.Count -gt 0) { Out-Warn '-Hooks is ignored with -Cloud'; $hookList = @() }
+if ($Cloud -and $hookList.Count -gt 0) {   # cloud: only review-gate (runs no project code, needs no allowlist)
+  foreach ($h in $hookList) { if ($h -cne 'review-gate') { Out-Warn "-Hooks $h is ignored with -Cloud" } }
+  $hookList = @($hookList | Where-Object { $_ -ceq 'review-gate' })
+}
 
 $onWindows = ($PSVersionTable.PSEdition -ne 'Core') -or ((Get-Variable IsWindows -ValueOnly -ErrorAction SilentlyContinue) -eq $true)
 $homeDir = if ($env:USERPROFILE) { $env:USERPROFILE } else { $HOME }
@@ -120,22 +123,8 @@ function Read-JsonString {
   $m = $script:rxStr.Match($script:js, $script:jp)
   if (-not $m.Success) { throw (Get-JsonError 'Invalid string (unterminated, bad escape or control character)') }
   $script:jp += $m.Length
-  $raw = $m.Groups[1].Value
-  if ($raw.IndexOf([char]92) -lt 0) { return $raw }
-  $sb = New-Object System.Text.StringBuilder
-  $i = 0
-  while ($i -lt $raw.Length) {
-    $c = $raw[$i]
-    if ($c -ne [char]92) { [void]$sb.Append($c); $i++; continue }
-    $n = [string]$raw[$i + 1]
-    if ($n -ceq 'u') {
-      [void]$sb.Append([char][Convert]::ToInt32($raw.Substring($i + 2, 4), 16)); $i += 6
-    } else {
-      $r = switch -CaseSensitive ($n) { 'b' { "`b" } 'f' { "`f" } 'n' { "`n" } 'r' { "`r" } 't' { "`t" } default { $n } }
-      [void]$sb.Append($r); $i += 2
-    }
-  }
-  return $sb.ToString()
+  # rxStr admits only the JSON escapes (\" \\ \/ \b \f \n \r \t \uXXXX); Regex.Unescape maps each to the same character
+  return [regex]::Unescape($m.Groups[1].Value)
 }
 
 function Read-JsonValue([int]$depth) {
@@ -323,6 +312,23 @@ function Invoke-SettingsMerge {
   $perms['disableBypassPermissionsMode'] = 'disable'
   $cur['useAutoModeDuringPlan'] = $false
   $notes = @()
+  $pinned = 0
+  $pinsPath = [IO.Path]::Combine($repo, 'templates', 'model-pins.json')
+  if (Test-Path -LiteralPath $pinsPath) {   # model pins: set only the keys you have not set yourself
+    try { $pinsDoc = Read-JsonFile $pinsPath } catch { Out-Fail "cannot read $pinsPath ($(Get-Msg $_))"; return }
+    $pins = $pinsDoc['env']
+    if ($pins -is [System.Collections.IDictionary] -and $pins.Count -gt 0) {
+      if (-not $cur.Contains('env')) { $cur['env'] = New-JsonObject }
+      $envObj = $cur['env']
+      if (-not ($envObj -is [System.Collections.IDictionary])) { Out-Fail "${dst}: ""env"" is not an object - left untouched"; return }
+      foreach ($k in @($pins.Keys)) {
+        if (-not $envObj.Contains($k)) { $envObj[$k] = $pins[$k]; $pinned++ }
+        elseif (-not ($envObj[$k] -is [string] -and $envObj[$k] -ceq $pins[$k])) {
+          $notes += "$k is $(Format-PyRepr $envObj[$k]) (kept); the repo pins $(Format-PyRepr $pins[$k])"
+        }
+      }
+    }
+  }
   if (-not $Cloud) {
     $mode = $perms['defaultMode']
     if ($null -eq $mode) {
@@ -339,7 +345,8 @@ function Invoke-SettingsMerge {
       Write-JsonFile $dst $cur
     } catch { Out-Fail "cannot write $dst ($(Get-Msg $_))"; return }
     $plan = if ($Cloud) { '' } else { ', Plan default' }
-    Out-Ok "settings.json merged: +$($added['deny']) deny, +$($added['ask']) ask$plan ($dst)"
+    $pinText = if ($pinned -gt 0) { ", $pinned model pin(s)" } else { '' }
+    Out-Ok "settings.json merged: +$($added['deny']) deny, +$($added['ask']) ask$plan$pinText ($dst)"
   }
   foreach ($n in $notes) { Out-Note $n }
 }
@@ -352,10 +359,7 @@ function Test-SameFile([string]$a, [string]$b) {
   return [Convert]::ToBase64String([IO.File]::ReadAllBytes($a)) -ceq [Convert]::ToBase64String([IO.File]::ReadAllBytes($b))
 }
 function Test-OurClaudeMd([string]$path) {
-  foreach ($l in ([IO.File]::ReadAllText($path) -split "`n")) {
-    if ($l.StartsWith('# Working agreement (all projects)', [StringComparison]::Ordinal)) { return $true }
-  }
-  return $false
+  return [IO.File]::ReadAllText($path) -cmatch '(?m)^# Working agreement \(all projects\)'
 }
 $md = [IO.Path]::Combine($Dest, 'CLAUDE.md'); $srcMd = [IO.Path]::Combine($repo, 'global', 'CLAUDE.md')
 try {
@@ -470,7 +474,7 @@ if (-not $useFiles) {
   } catch { Out-Fail "cannot create the agents/skills/commands folders in $Dest ($(Get-Msg $_))" }
 }
 
-# ---- 4. optional hooks (local only): copy + register in exec form with absolute paths, never duplicated
+# ---- 4. optional hooks (cloud: review-gate only): copy + register in exec form with absolute paths, never duplicated
 function Test-HookRegistered($lst, [string]$n) {
   foreach ($e in $lst) {
     if (-not ($e -is [System.Collections.IDictionary])) { continue }
@@ -499,7 +503,7 @@ function Register-Hooks([string[]]$names, [string]$hd) {
   $hdFwd = $hd -replace '\\', '/'
   $changed = @()
   foreach ($n in $names) {
-    $evt = if ($n -ceq 'guard') { 'PreToolUse' } else { 'Stop' }
+    $evt = if ($n -ceq 'plan-gate') { 'Stop' } else { 'PreToolUse' }
     if (-not $hooksObj.Contains($evt)) { $hooksObj[$evt] = New-JsonArray }
     $lst = $hooksObj[$evt]
     if (-not ($lst -is [System.Collections.IList])) { Out-Fail "${dst}: hooks.$evt is not a list - hooks not registered"; return }
@@ -511,6 +515,7 @@ function Register-Hooks([string[]]$names, [string]$hd) {
     if ($n -ceq 'plan-gate') { $hook['timeout'] = 15 }
     $entry = New-JsonObject
     if ($n -ceq 'guard') { $entry['matcher'] = 'Bash|PowerShell|Monitor|Write|Edit' }
+    if ($n -ceq 'review-gate') { $entry['matcher'] = 'Bash|PowerShell|Monitor' }
     $hl = New-JsonArray; [void]$hl.Add($hook); $entry['hooks'] = $hl
     [void]$lst.Add($entry)
     $changed += "$n on $evt"
