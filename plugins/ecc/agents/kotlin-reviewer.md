@@ -1,6 +1,6 @@
 ---
 name: kotlin-reviewer
-description: Kotlin and Android/KMP reviewer for idiomatic patterns, coroutine safety, Compose best practices, clean-architecture violations, and common Android pitfalls. MUST BE USED for Kotlin code changes. Focuses on Kotlin-specific correctness; the holistic pre-merge review is the `code-reviewer` agent.
+description: Kotlin and Android/KMP reviewer for idiomatic patterns, coroutine safety, Compose best practices, clean-architecture violations, and common Android pitfalls. Use proactively for Kotlin code changes. Focuses on Kotlin-specific correctness; the holistic pre-merge review is the `code-reviewer` agent.
 tools: ["Read", "Grep", "Glob", "Bash"]
 model: sonnet
 ---

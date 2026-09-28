@@ -1,7 +1,13 @@
 # --- Personal / local Claude Code state (never commit) ---
 .claude/settings.local.json
 .claude/*.local.json
-# Auto-executed by the optional verify hook — keep user-authored, never pull from an untrusted repo
+# Personal project notes (loads after CLAUDE.md; per machine/worktree)
+CLAUDE.local.md
+# Full output of the guard runner (.claude/guards.sh / .claude/guards.ps1)
+.claude/guards.log
+# Local, user-created one-line wrappers that the optional verify Stop hook auto-runs (only for projects listed in
+# ~/.claude/verify-allowed.txt) — keep them user-authored, never pull them from an untrusted repo.
+# The committed guard runners live in .claude/guards.sh and .claude/guards.ps1 (NOT ignored: cloud sessions and CI need them).
 .claude/checks.cmd
 .claude/checks.sh
 

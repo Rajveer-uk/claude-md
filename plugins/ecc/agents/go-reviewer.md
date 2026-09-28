@@ -1,6 +1,6 @@
 ---
 name: go-reviewer
-description: Expert Go reviewer for idiomatic Go, concurrency patterns, error handling, and performance. MUST BE USED for Go code changes. Focuses on Go-specific correctness; the holistic pre-merge review is the `code-reviewer` agent.
+description: Expert Go reviewer for idiomatic Go, concurrency patterns, error handling, and performance. Use proactively for Go code changes. Focuses on Go-specific correctness; the holistic pre-merge review is the `code-reviewer` agent.
 tools: ["Read", "Grep", "Glob", "Bash"]
 model: sonnet
 ---

@@ -1,6 +1,6 @@
 ---
 name: vue-reviewer
-description: Expert Vue.js reviewer for Composition API correctness, reactivity pitfalls, component architecture, template security, and Vue-specific performance. MUST BE USED for changes to .vue files, Vue imports, or Vue ecosystem code (Pinia, Vue Router, Nuxt). Focuses on Vue-specific correctness; the holistic pre-merge review is the `code-reviewer` agent.
+description: Expert Vue.js reviewer for Composition API correctness, reactivity pitfalls, component architecture, template security, and Vue-specific performance. Use proactively for changes to .vue files, Vue imports, or Vue ecosystem code (Pinia, Vue Router, Nuxt). Focuses on Vue-specific correctness; the holistic pre-merge review is the `code-reviewer` agent.
 tools: ["Read", "Grep", "Glob", "Bash"]
 model: sonnet
 ---

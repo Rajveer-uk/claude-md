@@ -1,6 +1,6 @@
 ---
 name: rust-reviewer
-description: Expert Rust reviewer for ownership, lifetimes, error handling, unsafe usage, and idiomatic patterns. MUST BE USED for Rust code changes. Focuses on Rust-specific correctness; the holistic pre-merge review is the `code-reviewer` agent.
+description: Expert Rust reviewer for ownership, lifetimes, error handling, unsafe usage, and idiomatic patterns. Use proactively for Rust code changes. Focuses on Rust-specific correctness; the holistic pre-merge review is the `code-reviewer` agent.
 tools: ["Read", "Grep", "Glob", "Bash"]
 model: sonnet
 ---

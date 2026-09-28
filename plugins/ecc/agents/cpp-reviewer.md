@@ -1,6 +1,6 @@
 ---
 name: cpp-reviewer
-description: Expert C++ reviewer for memory safety, modern C++ idioms, concurrency, and performance. MUST BE USED for C++ code changes. Focuses on C++-specific correctness; the holistic pre-merge review is the `code-reviewer` agent.
+description: Expert C++ reviewer for memory safety, modern C++ idioms, concurrency, and performance. Use proactively for C++ code changes. Focuses on C++-specific correctness; the holistic pre-merge review is the `code-reviewer` agent.
 tools: ["Read", "Grep", "Glob", "Bash"]
 model: sonnet
 ---

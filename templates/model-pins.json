@@ -1,0 +1,8 @@
+{
+  "_comment": "Model pins merged into ~/.claude/settings.json by scripts/install-user-config.* (only keys you have not set yourself). The aliases opus / sonnet / haiku in agent files, /model and opusplan follow the newest model of each family; these env keys pin what each alias means, so a new release changes nothing until you bump a pin on purpose, after checking its price. Current pins (price per million input/output tokens): Opus 5.5 $4/$20, Sonnet 5 $2/$10, Haiku 4.5 $1/$5. Fable 5.1 ($10/$50) is never pinned for subagents. To bump: change the ID here, re-run the installer (it never overwrites a pin you changed by hand, so edit ~/.claude/settings.json too if you had).",
+  "env": {
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-5-5",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-5",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-4-5"
+  }
+}

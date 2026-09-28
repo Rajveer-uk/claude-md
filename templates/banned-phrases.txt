@@ -1,0 +1,21 @@
+# brand/banned-phrases.txt - TEMPLATE (claude-md/templates/banned-phrases.txt). Copy to <project>/brand/.
+# Phrases that must never appear in published content. The content-lint step of .claude/guards.sh
+# (and guards.ps1) fails on any hit in CONTENT_DIRS; the brand/ folder itself is never scanned.
+#
+# Rules:
+# - One phrase per line, plain text (not a regex), matched case-insensitively anywhere in a line.
+# - Lines starting with # and blank lines are ignored.
+# - Every wording correction from the owner adds a line here, plus a REGRESSIONS.md row with the
+#   guard "check: content-lint".
+# - Removing or loosening a line needs the owner's explicit OK (the guard hook asks first).
+# - Ban the narrowest phrase that catches the problem: "best" would also flag "best practice"
+#   and "best regards", so ban "best-in-class" instead. Before adding a line, grep the content
+#   folders for it and make sure it doesn't hit copy you want to keep.
+#
+# Examples - delete the leading "# " to activate:
+# game-changer
+# unlock the power of
+# in today's fast-paced world
+# seamless integration
+# [VERIFY:
+#   (bans unresolved fact-check markers - only if CONTENT_DIRS holds publish-ready files, not drafts)

@@ -27,6 +27,8 @@ If the input is genuinely ambiguous, ask one short question rather than guessing
    - `"Ship it"` — only if the output is flawless and completely ready, or
    - `"Fix these 2 things first:"` — followed by exactly two high-priority, actionable revisions that unlock approval.
 
+If the draft's Project or folder has a `REGRESSIONS.md` (a knowledge file or a file on disk), also check the draft against the rows whose Area matches it; list a violated row under Logic & Structural Gaps with its ID — it blocks "Ship it".
+
 The verdict must be earned, not polite: don't soften to "Ship it" to be agreeable, and don't manufacture flaws to seem rigorous. Critique is specific and fixable, never vague.
 
 ### Mode A report template

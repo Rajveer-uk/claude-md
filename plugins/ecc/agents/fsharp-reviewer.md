@@ -1,6 +1,6 @@
 ---
 name: fsharp-reviewer
-description: Expert F# reviewer for functional idioms, type safety, pattern matching, computation expressions, and performance. MUST BE USED for F# code changes. Focuses on F#-specific correctness; the holistic pre-merge review is the `code-reviewer` agent.
+description: Expert F# reviewer for functional idioms, type safety, pattern matching, computation expressions, and performance. Use proactively for F# code changes. Focuses on F#-specific correctness; the holistic pre-merge review is the `code-reviewer` agent.
 tools: ["Read", "Grep", "Glob", "Bash"]
 model: sonnet
 ---
