@@ -71,6 +71,8 @@ cwd="$(field '.cwd')"
 # Commands that can read or copy a file's content: shell readers + interpreters.
 readers='get-content|\bgc\b|\bcat\b|\btype\b|\bsls\b|select-string|\bmore\b|\bless\b|\bhead\b|\btail\b|\bnl\b|\bcut\b|\bgrep\b|\begrep\b|\bsed\b|\bawk\b|\bbase64\b|\bxxd\b|\bod\b|\bstrings\b|\bdd\b|\btar\b|\brsync\b|format-hex|copy-item|\bcp\b|move-item|\bmv\b|out-file|set-content'
 readers="$readers"'|\brg\b|\bfindstr\b|\bjq\b|\byq\b|\bzip\b|\b7z\b|\bgpg\b|\bcertutil\b|\bxcopy\b|\brobocopy\b|readall(text|bytes|lines)'
+# Line-preserving text tools and editors dump a file's content too (sort ~/.env prints it whole).
+readers="$readers"'|\bsort\b|\buniq\b|\btac\b|\brev\b|\bcolumn\b|\bpaste\b|\bjoin\b|\bfold\b|\bexpand\b|\bunexpand\b|\bfmt\b|\bpr\b|\bcomm\b|\bdiff\b|\bsdiff\b|\bcmp\b|\btr\b|\biconv\b|\bsplit\b|\bcsplit\b|\blook\b|\bhexdump\b|\bhd\b|\bzcat\b|\bgzip\b|\bbzip2\b|\bxz\b|\bzstd\b|\bopenssl\b|\btee\b|\bed\b|\bex\b|\bvi\b|\bvim\b|\bnano\b|\bemacs\b'
 interp='\bpython[0-9.]*\b|\bnode\b|\bdeno\b|\bbunx?\b|\bnpx\b|\bperl\b|\bruby\b|\bphp\b|\bpwsh\b|powershell|\b(ba|z|da|k)?sh[[:space:]]+-[a-z]*c\b'
 readers="$readers|$interp"'|\bsource\b|(^|[;&|({])[[:space:]]*\.[[:space:]]+[^[:space:]]'
 # Protected secret paths (mirrors the settings.json Read deny-list, incl. home-dir credentials).

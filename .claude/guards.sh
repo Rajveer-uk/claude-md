@@ -1118,6 +1118,49 @@ def st_user_installer():
     done(hard=hard)
 
 
+# ---- guard hook: every command that can dump a file's content counts as a reader of secret paths
+READER_TOOLS = ('sort', 'uniq', 'tac', 'rev', 'column', 'paste', 'join', 'fold', 'expand', 'unexpand', 'fmt',
+                'pr', 'comm', 'diff', 'sdiff', 'cmp', 'tr', 'iconv', 'split', 'csplit', 'look', 'hexdump', 'hd',
+                'zcat', 'gzip', 'bzip2', 'xz', 'zstd', 'openssl', 'tee', 'ed', 'ex', 'vi', 'vim', 'nano', 'emacs')
+READER_FIXTURES = ['sort ~/.env', 'sort < ~/.env', 'sort ~/.aws/credentials', 'tac ~/.env', 'rev ~/.env',
+                   'uniq ~/.env', 'paste ~/.env', 'column ~/.env', 'join ~/.env ~/.env', 'fold ~/.env',
+                   'expand ~/.env', 'unexpand ~/.env', 'fmt ~/.env', 'pr ~/.env', 'comm ~/.env /dev/null',
+                   'diff /dev/null ~/.env', 'sdiff /dev/null ~/.env', 'cmp -l ~/.env /dev/null', 'tr a a < ~/.env',
+                   'iconv -f utf8 ~/.env', 'split -l1 ~/.env /tmp/x', 'csplit ~/.env 1', 'look a ~/.env',
+                   'hexdump -C ~/.ssh/id_rsa', 'hd ~/.env', 'zcat ~/.env.gz', 'gzip -c ~/.env', 'bzip2 -c ~/.env',
+                   'xz -c ~/.env', 'zstd -c ~/.env', 'openssl enc -in ~/.env', 'tee /tmp/x < ~/.env', 'ed -s ~/.env',
+                   'ex -s ~/.env', 'vi ~/.env', 'vim -es ~/.env', 'nano ~/.env', 'emacs ~/.env']
+READER_CONTROLS = ['sort data.txt', 'diff a.txt b.txt', 'tee out.log']
+
+
+def st_guard_readers():
+    import shutil
+    hard = []
+    p1 = '.claude/hooks/guard.ps1'
+    if os.path.isfile(p1):
+        code = _code_only(read(p1), True)
+        hard += ['%s: reader %s missing from $readers (keep the twins in sync)' % (p1, t)
+                 for t in READER_TOOLS if '\\b%s\\b' % t not in code]
+    if not shutil.which('jq'):
+        print('SKIP: jq not installed - guard.sh defers without it (static check of guard.ps1 still ran)')
+        if hard:
+            done(hard=hard)
+        sys.exit(77)
+    hook = os.path.abspath('.claude/hooks/guard.sh')
+
+    def decision(cmd):
+        inp = json.dumps({'tool_name': 'Bash', 'cwd': '/tmp', 'tool_input': {'command': cmd}})
+        r = subprocess.run(['bash', hook], input=inp.encode(), stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=30)
+        m = re.search(r'"permissionDecision":\s*"([a-z]+)"', r.stdout.decode('utf-8', 'replace'))
+        return m.group(1) if m else 'allow'
+    hard += ['guard.sh: `%s` -> %s, expected deny (secret read)' % (c, d)
+             for c in READER_FIXTURES for d in [decision(c)] if d != 'deny']
+    hard += ['guard.sh: `%s` -> %s, expected no decision (not a secret path)' % (c, d)
+             for c in READER_CONTROLS for d in [decision(c)] if d != 'allow']
+    print('%d secret-read fixtures, %d controls' % (len(READER_FIXTURES), len(READER_CONTROLS)))
+    done(hard=hard)
+
+
 TEMPLATE_RUNNERS = (('templates/guards.sh', re.compile(r'^step\s+([A-Za-z0-9._-]+)', re.M)),
                     ('templates/guards.ps1', re.compile(r"^Step\s+'([A-Za-z0-9._-]+)'", re.M)))
 TEMPLATE_STEPS_REQUIRED = {'ledger-integrity', 'content-lint', 'lint', 'tests', 'no-stubs', 'spec-integrity'}
@@ -1147,6 +1190,7 @@ STEPS = {
     'prompt-hygiene': st_prompt_hygiene, 'plan-gate-bounds': st_plan_gate_bounds,
     'completeness-chain': st_completeness_chain, 'template-guard-steps': st_template_guard_steps,
     'user-installer': st_user_installer,
+    'guard-readers': st_guard_readers,
     'json-parse': st_json_parse, 'frontmatter': st_frontmatter,
     'settings-baseline': st_settings_baseline, 'settings-deny': st_settings_deny,
     'managed-settings': st_managed_settings, 'network-agents': st_network_agents,
@@ -1309,6 +1353,7 @@ step plan-gate-bounds -- py plan-gate-bounds
 step completeness-chain -- py completeness-chain
 step template-guard-steps -- py template-guard-steps
 step user-installer -- py user-installer
+step guard-readers -- py guard-readers
 step plugin-validate slow -- plugin_validate
 
 # ---------------------------------------------------------------- summary
